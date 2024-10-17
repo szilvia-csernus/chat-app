@@ -1,0 +1,12 @@
+services:
+  postgres-db-for-nextjs-prisma-template:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-db-data-for-template:/var/lib/postgresql/data
+
+volumes:
+  postgres-db-data-for-template:
