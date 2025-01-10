@@ -8,12 +8,13 @@ import React from 'react'
 type NavLinkProps = {
   href: string;
   label: string;
+  onClick?: () => void;
 }
 
-export default function NavLink({href, label}: NavLinkProps) {
+export default function NavLink({href, label, onClick}: NavLinkProps) {
   const pathname = usePathname()
   return (
-    <NavbarItem isActive={pathname === href} as={Link} href={href}>
+    <NavbarItem isActive={pathname === href} as={Link} href={href} onClick={onClick}>
       {label} 
     </NavbarItem>
   );
