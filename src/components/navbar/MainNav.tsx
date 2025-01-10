@@ -1,36 +1,80 @@
+"use client";
+
 import { Button } from "@nextui-org/button";
-import { Navbar, NavbarBrand, NavbarContent } from "@nextui-org/navbar";
+import {
+  Navbar,
+  NavbarBrand,
+  NavbarContent,
+  NavbarMenu,
+  NavbarMenuItem,
+  NavbarMenuToggle,
+} from "@nextui-org/navbar";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import { FiUser } from "react-icons/fi";
-import { auth } from "@/auth";
 import UserMenu from "./UserMenu";
 import NavLink from "./NavLink";
+import { useRouter } from "next/navigation";
+import { User } from "@prisma/client";
 
-export default async function MainNav() {
-  const session = await auth();
+type MainNavProps = {
+  user: User | null;
+  photoUrl: string;
+};
+
+export default function MainNav({ user, photoUrl }: MainNavProps) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const router = useRouter();
+
+  const menuItems = [
+    { href: "/about", label: "About Us" },
+    { href: "/profile", label: "Profile" },
+  ];
+
   return (
     <Navbar
+      isMenuOpen={isMenuOpen}
+      onMenuOpenChange={setIsMenuOpen}
       maxWidth="2xl"
       className="bg-primary p-3 text-white"
       classNames={{
         item: ["text-m", "text-white", "data-[active=true]:text-accent"],
       }}
     >
+      <NavbarContent className="sm:hidden" justify="start">
+        <NavbarMenuToggle
+          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+        />
+      </NavbarContent>
       <NavbarBrand as={Link} href="/">
         <div className="font-bold text-xl  p-1">
           <span>Next.js</span>
           <span className="text-accent">AUTH</span>
         </div>
       </NavbarBrand>
-      <NavbarContent justify="center">
-        <NavLink href="/about" label="About Us" />
-        <NavLink href="/profile" label="Profile Page" />
+      <NavbarMenu className="top-20 z-40 h-auto bg-foreground text-background">
+        {menuItems.map((item, index) => (
+          <NavbarMenuItem key={index}>
+            <Link href={item.href} onClick={() => setIsMenuOpen(false)}>
+              {item.label}
+            </Link>
+          </NavbarMenuItem>
+        ))}
+      </NavbarMenu>
+      <NavbarContent className="hidden sm:flex gap-4" justify="center">
+        {menuItems.map((item, index) => (
+            <NavLink
+              key={index}
+              href={item.href}
+              label={item.label}
+              onClick={() => setIsMenuOpen(false)}
+            />
+        ))}
       </NavbarContent>
       <NavbarContent justify="end">
         <>
-          {session?.user ? (
-            <UserMenu user={session.user} />
+          {user ? (
+            <UserMenu user={user} photoUrl={photoUrl} />
           ) : (
             <>
               <Button

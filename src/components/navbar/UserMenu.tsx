@@ -9,28 +9,32 @@ import {
   DropdownItem,
 } from "@nextui-org/dropdown";
 import { Avatar } from "@nextui-org/avatar";
-import { Session } from "next-auth";
 import Link from "next/link";
 import { signOutUser } from "@/app/actions/authActions";
+import { User } from "@prisma/client";
 
 type UserMenuProps = {
-  // this user type is from the session object
-  user: Session["user"];
+  user: User;
+  photoUrl: string;
 };
 
-export default function UserMenu({ user }: UserMenuProps) {
+export default function UserMenu({ user, photoUrl }: UserMenuProps) {
+
   return (
-    <Dropdown placement="bottom-end">
+    <Dropdown placement="bottom-end" className="shadow-sm shadow-foreground">
       <DropdownTrigger>
         <Avatar
-          className="transition-transform"
-          color="primary"
-          size="sm"
+          className="transition-transform cursor-pointer"
+          size="md"
           radius="full"
-          src={user?.image || "/images/user.png"}
+          src={photoUrl}
         />
       </DropdownTrigger>
-      <DropdownMenu variant="flat" aria-label="User actions menu" className="text-gray-500">
+      <DropdownMenu
+        variant="flat"
+        aria-label="User actions menu"
+        className="text-foreground"
+      >
         <DropdownSection>
           <DropdownItem
             showDivider
@@ -39,12 +43,12 @@ export default function UserMenu({ user }: UserMenuProps) {
             className="h-14 flex flex-row"
             aria-label="username"
           >
-            Signed in as {user?.name}
+            Signed in as {user.name}
           </DropdownItem>
-          <DropdownItem as={Link} href="/profile">
+          <DropdownItem color="secondary" as={Link} href="/profile">
             Profile
           </DropdownItem>
-          <DropdownItem color="danger" onClick={async () => signOutUser()}>
+          <DropdownItem color="secondary" onClick={async () => signOutUser()}>
             Sign Out
           </DropdownItem>
         </DropdownSection>
