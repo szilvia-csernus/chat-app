@@ -13,15 +13,32 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
-        accent: "#fdba74", // orange-300
-        primary: "#64748b", // slate-500
-        secondary: "#0f766e", // teal-700
+        primary: "var(--primary)",
+        secondary: "var(--secondary)",
+        accent: "var(--accent)",
       },
     },
   },
   darkMode: "class",
   plugins: [
-    nextui(),
+    nextui({
+      themes: {
+        light: {
+          colors: {
+            primary: "#344664",
+            secondary: "#fb9f3c",
+            default: "#020617", // foreground
+          },
+        },
+        dark: {
+          colors: {
+            primary: "#476492",
+            secondary: "#ffbe79",
+            default: "#ededed", // foreground
+          },
+        },
+      },
+    }),
   ],
 };
 export default config;
