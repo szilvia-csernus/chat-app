@@ -1,9 +1,11 @@
 export const publicRoutes = [
-  '/',
-  '/about',
-]
+  "/",
+  "/about",
+];
 
 export const authRoutes = [
-  '/login',
-  '/register',
-]
+  "/login",
+  "/register-new-credentials",
+];
+
+export const protectedRoutes = ["/profile", "/complete-profile"];
