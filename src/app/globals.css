@@ -3,14 +3,20 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #3a3a3a;
+  --background: #ededed;
+  --foreground: #020617;
+  --primary: #344664;
+  --secondary: #344664;
+  --accent: #fb9f3c;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #3a3a3a;
+    --background: #020617;
     --foreground: #ededed;
+    --primary: #344664;
+    --secondary: #5f88cc;
+    --accent: #ffbe79;
   }
 }
 
@@ -20,13 +26,66 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-input {
-  color: gray;
+div[data-slot="input-wrapper"],
+button[data-slot="trigger"] {
+  border: 1px solid gray;
+  border-radius: .5rem;
 }
 
+div[data-slot="input-wrapper"],
+div[data-slot="input-wrapper"]:hover,
+div[data-slot="input-wrapper"]:focus,
+div[data-slot="input-wrapper"]:active,
+div[data-slot="content"],
+div[data-focus="true"],
+input[data-filled="true"],
+input[data-slot="input"] {
+  background-color: var(--background) !important;
+  color: var(--foreground) !important;
+}
+
+span[data-slot="label"],
+label[data-slot="label"] {
+  color: var(--foreground);
+}
+
+li[role="option"][data-selectable="true"]:focus,
+li[role="option"][data-selectable="true"]:hover,
+li[role="option"][data-selected="true"]:active {
+  background-color: rgb(180, 180, 180);
+}
+
+/* Override the internal autofill selected color */
+input:-internal-autofill-selected {
+  appearance: menulist-button;
+  background-image: none !important;
+  background-color: light-dark(
+    rgb(232, 240, 254),
+    rgba(70, 90, 126, 0.4)
+  ) !important;
+  color: var(--foreground) !important;
+}
+
+/* Ensure autofill text color is applied */
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: var(--foreground) !important;
+}
+
+input:-moz-autofill,
+textarea:-moz-autofill,
+select:-moz-autofill {
+  -moz-text-fill-color: var(--foreground) !important;
+}
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+.before\:border-default:before {
+  border-color: var(--foreground) !important;
+  opacity: unset;
 }
