@@ -1,0 +1,8 @@
+{
+  "name": "Test User",
+  "email": "test@test.com",
+  "password": "superstrongPassword123!",
+  "country": "Test Country",
+  "gender": "other",
+  "dateOfBirth": "1990-01-01"
+}
