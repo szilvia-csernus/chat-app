@@ -1,10 +1,9 @@
 import React from "react";
 import LoginForm from "./LoginForm";
 
-export default function LoginPage() {
+export default async function LoginPage() {
   return (
-    <div
-      className="flex items-center justify-center vertical-center">
+    <div className="flex items-center justify-center vertical-center">
       <LoginForm />
     </div>
   );
