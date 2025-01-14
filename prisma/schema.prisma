@@ -17,17 +17,71 @@ model User {
   id            String          @id @default(cuid())
   name          String?
   email         String          @unique
-  emailVerified DateTime?
-  passwordHash  String?
+
+  // The image field is required by Auth.js but isn't utilised in this app. Instead,
+  // the user's profile photo is stored in the Photo model.
   image         String?
+
+  // the emailVerified field was required by Auth.js but isn't utilised in 
+  // this app, because the user can only be created with a verified email.
+  emailVerified DateTime? 
+  profileComplete Boolean @default(false)
+
+  profile Profile?
+
+  photo Photo?
+
+  // For Email + Password
+  credentials   Credentials?
+
+  // For OAuth support
   accounts      Account[]
-  // Optional for WebAuthn support
-  Authenticator Authenticator[]
- 
+
+  // For WebAuthn support
+  authenticator Authenticator[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model Profile {
+  id        String   @id @default(cuid())
+  userId    String  @unique
+  country  String
+  gender   String
+  dateOfBirth DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Photo {
+  userId              String @unique
+  cloudinaryImageId   String @unique
+  imageUrl           String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// For Email + Password
+model Credentials {
+  email    String  @unique
+  passwordHash  String
+  userId    String  @unique  
+  createdAt DateTime @default(now())
+ 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Token {
+  id         String   @id @default(cuid())
+  email      String   @unique
+  token      String   @unique
+  expires    DateTime
+}
+
+// For OAuth
 model Account {
   userId            String
   type              String
@@ -49,15 +103,8 @@ model Account {
   @@id([provider, providerAccountId])
 }
  
-model VerificationToken {
-  identifier String
-  token      String
-  expires    DateTime
  
-  @@id([identifier, token])
-}
- 
-// Optional for WebAuthn support
+// For WebAuthn
 model Authenticator {
   credentialID         String  @unique
   userId               String
@@ -72,3 +119,4 @@ model Authenticator {
  
   @@id([userId, credentialID])
 }
+
