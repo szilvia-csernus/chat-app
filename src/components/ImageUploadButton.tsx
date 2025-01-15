@@ -17,7 +17,7 @@ export default function ImageUploadButton({ onUploadImage }: ImageUploadButtonPr
       onSuccess={onUploadImage}
       signatureEndpoint="/api/sign-image"
       uploadPreset="nextjs-authjs-template"
-      className={`flex items-center gap-2 bg-secondary text-white rounded-lg py-2 px-4 hover:bg-secondary/70}`}
+      className={`flex items-center gap-2 bg-secondary text-white text-medium font-light rounded-lg py-2 px-4 hover:bg-secondary/70}`}
     >
       <HiPhoto size={28} />
       Upload new image
