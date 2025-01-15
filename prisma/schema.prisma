@@ -18,8 +18,8 @@ model User {
   name          String?
   email         String          @unique
 
-  // The image field is required by Auth.js but isn't utilised in this app. Instead,
-  // the user's profile photo is stored in the Photo model.
+  // The image field is required by Auth.js - synchronisation with the Photo
+  // table is managed manually! Take care when manipulating / accessing image data!
   image         String?
 
   // the emailVerified field was required by Auth.js but isn't utilised in 
