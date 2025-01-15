@@ -28,12 +28,10 @@ export const profileSchema = z.object({
 
 export const photoSchema = z.object({
   imageUrl: z.string(),
-  imageId: z.string(),
+  cloudinaryImageId: z.string(),
 });
 
-export const completeProfileSchema = profileSchema.and(
-  photoSchema
-);
+export const completeProfileSchema = profileSchema.and(photoSchema);
 
 export type ProfileSchema = z.infer<typeof profileSchema>;
 export type PhotoSchema = z.infer<typeof photoSchema>;
