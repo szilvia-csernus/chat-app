@@ -12,7 +12,6 @@ export async function getCurrentUserId() {
   return session?.user?.id;
 }
 
-
 /** Finds User in the User table by id
  * @param id - string
  * @returns User
@@ -44,18 +43,6 @@ export async function getUserByEmail(email: string) {
     where: { email },
   });
 }
-
-/** Finds User's Credentials in the Credentials table
- * by unique email
- * @param email - string
- * @returns Credentials
- */
-export async function getUserCredentials(email: string) {
-  return prisma.credentials.findUnique({
-    where: { email },
-  });
-}
-
 
 /** Signs out user
  * @returns void
