@@ -34,7 +34,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className="font-body h-screen">
-        <Providers>
+        <Providers userId={session?.user?.id}>
           <MainNav user={user} photoUrl={photoUrl}/>
           <main className="container mx-auto p-10">{children}</main>
         </Providers>
