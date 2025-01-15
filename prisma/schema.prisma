@@ -31,14 +31,8 @@ model User {
 
   photo Photo?
 
-  // For Email + Password
-  credentials   Credentials?
-
   // For OAuth support
   accounts      Account[]
-
-  // For WebAuthn support
-  authenticator Authenticator[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -54,6 +48,10 @@ model Profile {
   updatedAt DateTime @updatedAt
  
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sentMessages  Message[]       @relation("SentMessages")
+  receivedMessages Message[]    @relation("ReceivedMessages")
+  conversationsAsUser1 Conversation[] @relation("User1Conversations")
+  conversationsAsUser2 Conversation[] @relation("User2Conversations")
 }
 
 model Photo {
@@ -64,15 +62,6 @@ model Photo {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-// For Email + Password
-model Credentials {
-  email    String  @unique
-  passwordHash  String
-  userId    String  @unique  
-  createdAt DateTime @default(now())
- 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
 
 model Token {
   id         String   @id @default(cuid())
@@ -102,21 +91,33 @@ model Account {
  
   @@id([provider, providerAccountId])
 }
- 
- 
-// For WebAuthn
-model Authenticator {
-  credentialID         String  @unique
-  userId               String
-  providerAccountId    String
-  credentialPublicKey  String
-  counter              Int
-  credentialDeviceType String
-  credentialBackedUp   Boolean
-  transports           String?
- 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
-  @@id([userId, credentialID])
+
+model Message {
+  id            String          @id @default(cuid())
+  content       String
+  createdAt     DateTime        @default(now())
+  senderId      String
+  receiverId    String
+  sender        Profile         @relation("SentMessages", fields: [senderId], references: [id])
+  receiver      Profile         @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  conversationId String
+  conversation  Conversation    @relation(fields: [conversationId], references: [id])
+
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([conversationId])
 }
 
+model Conversation {
+  id            String          @id @default(cuid())
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  user1Id       String
+  user2Id       String
+  user1         Profile         @relation("User1Conversations", fields: [user1Id], references: [id])
+  user2         Profile         @relation("User2Conversations", fields: [user2Id], references: [id])
+  messages      Message[]
+
+  @@index([user1Id])
+  @@index([user2Id])
+}
