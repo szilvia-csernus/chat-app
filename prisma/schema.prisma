@@ -50,8 +50,8 @@ model Profile {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   sentMessages  Message[]       @relation("SentMessages")
   receivedMessages Message[]    @relation("ReceivedMessages")
-  conversationsAsUser1 Conversation[] @relation("User1Conversations")
-  conversationsAsUser2 Conversation[] @relation("User2Conversations")
+  conversationsAsProfile1 Conversation[] @relation("Profile1Conversations")
+  conversationsAsProfile2 Conversation[] @relation("Profile2Conversations")
 }
 
 model Photo {
@@ -96,10 +96,14 @@ model Message {
   id            String          @id @default(cuid())
   content       String
   createdAt     DateTime        @default(now())
+  read          Boolean         @default(false)
+
   senderId      String
-  receiverId    String
   sender        Profile         @relation("SentMessages", fields: [senderId], references: [id])
+  
+  receiverId    String
   receiver      Profile         @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  
   conversationId String
   conversation  Conversation    @relation(fields: [conversationId], references: [id])
 
@@ -112,12 +116,12 @@ model Conversation {
   id            String          @id @default(cuid())
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
-  user1Id       String
-  user2Id       String
-  user1         Profile         @relation("User1Conversations", fields: [user1Id], references: [id])
-  user2         Profile         @relation("User2Conversations", fields: [user2Id], references: [id])
+  profile1Id       String
+  profile2Id       String
+  profile1         Profile         @relation("Profile1Conversations", fields: [profile1Id], references: [id])
+  profile2         Profile         @relation("Profile2Conversations", fields: [profile2Id], references: [id])
   messages      Message[]
 
-  @@index([user1Id])
-  @@index([user2Id])
+  @@index([profile1Id])
+  @@index([profile2Id])
 }
