@@ -26,9 +26,8 @@ export default function MainNav({ user, photoUrl }: MainNavProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const menuItems = [
-    { href: "/about", label: "About Us" },
     { href: "/members", label: "Members" },
-    { href: "/profile", label: "Profile" },
+    { href: "/chats", label: "Chats" },
   ];
 
   return (
