@@ -13,12 +13,20 @@ export async function getMembersFn(session: Session) {
   }
 
   try {
-    return prisma.user.findMany({
+    return prisma.profile.findMany({
       where: {
         NOT: {
-          id: session.user.id,
+          userId: session.user.id,
         },
       },
+      include: {
+        user: {
+          select: {
+            name: true,
+            image: true
+          }
+        },
+      }
     });
   } catch (error) {
     throw error;
@@ -41,3 +49,14 @@ export async function getMembers() {
   return await cachedGetMembers(session);
 }
 
+export async function getCurrentProfile() {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return null;
+  }
+  return await prisma.profile.findUnique({
+    where: {
+      userId: session.user.id,
+    },
+  });
+}
