@@ -1,24 +1,24 @@
 import { Image } from '@nextui-org/react';
-import { User } from '@prisma/client';
 import { CldImage } from 'next-cloudinary';
 import React from 'react'
 
 type MemberImageProps = {
-  member: User;
+  memberName: string;
+  memberImage: string;
   width?: number;
   height?: number;
   className?: string;
 };
 
-export default function MemberImage({ member, width, height, className }: MemberImageProps) {
+export default function MemberImage({ memberName, memberImage, width, height, className }: MemberImageProps) {
   
-  let memberImage = null
+  let image = null
 
-  if (member.image && member.image.includes('cloudinary')) {
-    memberImage = (
+  if (memberImage && memberImage.includes('cloudinary')) {
+    image = (
       <CldImage
         alt="Image of member"
-        src={member.image}
+        src={memberImage}
         width={width || 300}
         height={height || 300}
         className={className || "aspect-square object-cover"}
@@ -27,15 +27,16 @@ export default function MemberImage({ member, width, height, className }: Member
       />
     ); // faces is a Cloudinary transformation, makes sure that the faces are not cropped out
   } else {
-    memberImage = (
+    image = (
       <Image
         isZoomed
-        alt={member.name || "user"}
+        alt={memberName || "user"}
         width={width || 300}
-        src={member.image || "/images/user.png"}
+        height={height || 300}
+        src={memberImage || "/images/user.png"}
         className={className || "aspect-square object-cover"}
       />
     );
   }
-  return <>{memberImage}</>;
+  return <>{image}</>;
 }

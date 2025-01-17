@@ -1,27 +1,56 @@
 "use client";
 
 import { Card, CardFooter } from "@nextui-org/card";
-import { User } from "@prisma/client";
-import Link from "next/link";
 import MemberImage from "./MemberImage";
 import PresenceDot from "@/components/PresenceDot";
+import { useRouter } from "next/navigation";
+import NewConversation from "./NewConversation";
+import { useDisclosure } from "@nextui-org/react";
+import { Member } from "@/types";
 
 export type MemberCardProps = {
-  member: User;
+  member: Member;
   online: boolean;
+  chatting: boolean;
+  chatId: string | undefined;
 };
 
-export default function MemberCard({ member, online }: MemberCardProps) {
+export default function MemberCard({
+  member,
+  online,
+  chatting,
+  chatId,
+}: MemberCardProps) {
+  const router = useRouter();
+
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+
+  const onClickHandler = () => {
+    if (chatting) {
+      router.push(`/chats/${chatId}`);
+    } else {
+      onOpen();
+    }
+  };
 
   return (
-    <>
-      <Card fullWidth as={Link} href={`/members/${member.id}`}>
-        <MemberImage member={member} />
-        
-
+    <div onClick={onClickHandler}>
+      {isOpen && (
+        <NewConversation
+          member={member}
+          isOpen={isOpen}
+          onOpenChange={onOpenChange}
+          onClose={onClose}
+        />
+      )}
+      <Card fullWidth>
+        <MemberImage
+          memberImage={member.image}
+          memberName={member.name}
+        />
         {online && (
           <div className="absolute top-2 left-3 z-20">
-            <PresenceDot outlineColor="white"/>
+            <PresenceDot outlineColor="white" />
           </div>
         )}
 
@@ -31,6 +60,6 @@ export default function MemberCard({ member, online }: MemberCardProps) {
           </div>
         </CardFooter>
       </Card>
-    </>
+    </div>
   );
 }
