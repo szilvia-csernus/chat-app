@@ -4,7 +4,7 @@ import { Card, CardFooter } from "@nextui-org/card";
 import MemberImage from "./MemberImage";
 import PresenceDot from "@/components/PresenceDot";
 import { useRouter } from "next/navigation";
-import NewConversation from "./NewConversation";
+import NewChat from "./NewChat";
 import { useDisclosure } from "@nextui-org/react";
 import { Member } from "@/types";
 
@@ -36,7 +36,7 @@ export default function MemberCard({
   return (
     <div onClick={onClickHandler}>
       {isOpen && (
-        <NewConversation
+        <NewChat
           member={member}
           isOpen={isOpen}
           onOpenChange={onOpenChange}
