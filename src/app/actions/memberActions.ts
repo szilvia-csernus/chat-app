@@ -2,21 +2,17 @@
 
 import { auth } from "@/auth";
 import { prisma } from "@/prisma";
-import { Session } from "next-auth";
-import { unstable_cache as nextCache } from "next/cache";
-import { redirect } from "next/navigation";
+import { getCurrentUserId } from "./authActions";
 
 
-export async function getMembersFn(session: Session) {
-  if (!session?.user?.email) {
-    return null;
-  }
-
+export async function getMembers() {
   try {
+    const currentUserId = await getCurrentUserId();
+
     return prisma.profile.findMany({
       where: {
         NOT: {
-          userId: session.user.id,
+          userId: currentUserId,
         },
       },
       include: {
@@ -33,21 +29,22 @@ export async function getMembersFn(session: Session) {
   }
 }
 
-const cachedGetMembers = nextCache(
-  async (session: Session) => {
-    return await getMembersFn(session);
-  },
-  ["members"],
-  { tags: ["members"] }
-);
-
-export async function getMembers() {
-  const session = await auth(); // Access dynamic data outside the cached function
-  if (!session) {
-    redirect("/login");
-  }
-  return await cachedGetMembers(session);
+export async function getMemberById(id: string) {
+  return prisma.profile.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      user: {
+        select: {
+          name: true,
+          image: true,
+        },
+      },
+    },
+  });
 }
+
 
 export async function getCurrentProfile() {
   const session = await auth();
