@@ -4,9 +4,9 @@ import { devtools } from "zustand/middleware";
 
 type ChatPartnersState = {
   chatPartners: ChatPartner[];
-  set: (chatPartners: ChatPartner[]) => void;
-  add: (chatPartner: ChatPartner) => void;
-  remove: (id: string) => void;
+  setChatPartners: (chatPartners: ChatPartner[]) => void;
+  addChatPartner: (chatPartner: ChatPartner) => void;
+  removeChatPartner: (id: string) => void;
 }
 
 
@@ -14,7 +14,7 @@ export const useChatPartnersStore = create<ChatPartnersState>()(
   devtools(
     (set) => ({
       chatPartners: [],
-      set: (chatPartners) => {
+      setChatPartners: (chatPartners) => {
         console.log("Setting chatPartners:", chatPartners);
         set((state) => {
           if (state.chatPartners !== chatPartners) {
@@ -23,7 +23,7 @@ export const useChatPartnersStore = create<ChatPartnersState>()(
           return state;
         });
       },
-      add: (chatPartner) => {
+      addChatPartner: (chatPartner) => {
         console.log("Adding chatPartner:", chatPartner);
         set((state) => {
           if (!state.chatPartners.find((c) => c.chatId === chatPartner.chatId)) {
@@ -32,7 +32,7 @@ export const useChatPartnersStore = create<ChatPartnersState>()(
           return state;
         });
       },
-      remove: (id) => {
+      removeChatPartner: (id) => {
         console.log("Removing chatPartner with id:", id);
         set((state) => {
           const newChatPartners = state.chatPartners.filter(
