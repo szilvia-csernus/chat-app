@@ -23,11 +23,11 @@ export default function Providers({
   chatPartners,
 }: ProvidersProps) {
   usePresenceChannel(userId);
-  const { set: setRecentChats } = useRecentChatsStore();
+  const setRecentChats = useRecentChatsStore(state => state.setRecentChats)
   if (recentChats) {
     setRecentChats(recentChats);
   }
-  const { set: setChatPartners } = useChatPartnersStore();
+  const  setChatPartners = useChatPartnersStore(state => state.setChatPartners);
   if (chatPartners) {
     setChatPartners(chatPartners);
   }
