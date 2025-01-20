@@ -6,10 +6,7 @@ import { auth } from "@/auth";
 import { getUserById } from "./actions/authActions";
 import { getPhotoByUserId } from "./actions/photoActions";
 import { User } from "@prisma/client";
-import {
-  getChatPartners,
-  getRecentChats,
-} from "./actions/conversationActions";
+import { getChatPartners, getRecentChats } from "./actions/chatActions";
 import { getCurrentProfile } from "./actions/memberActions";
 
 export const metadata: Metadata = {
@@ -47,7 +44,6 @@ export default async function RootLayout({
           name: cp.profile2.user.name || "",
           image: cp.profile2.user.image || "",
         },
-        participant1: false
       };
     } else {
       return {
@@ -57,7 +53,6 @@ export default async function RootLayout({
           name: cp.profile1.user.name || "",
           image: cp.profile1.user.image || "",
         },
-        participant1: true
       };
     }
   });
@@ -90,7 +85,7 @@ export default async function RootLayout({
           chatPartners={chatPartners}
         >
           <MainNav user={user} photoUrl={photoUrl} />
-          <main className="container mx-auto p-10">{children}</main>
+          <main className="container mx-auto p-8">{children}</main>
         </Providers>
       </body>
     </html>
