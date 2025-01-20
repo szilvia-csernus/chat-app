@@ -9,32 +9,38 @@ import {
   ModalFooter,
 } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
-import { createConversation } from "../actions/conversationActions";
+import { createChat } from "@/app/actions/chatActions";
 import { PressEvent } from "@react-types/shared";
 import { Member } from "@/types";
+import { useChatPartnersStore } from "@/hooks/useChatPartnersStore";
 
 
-type NewConversationProps = {
+type NewChatProps = {
   member: Member;
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   onClose: () => void;
 };
 
-export default function NewConversation({
+export default function NewChat({
   member,
   isOpen,
   onOpenChange,
   onClose,
-}: NewConversationProps) {
+}: NewChatProps) {
   
   const router = useRouter();
+  const addChatPartner = useChatPartnersStore(state => state.addChatPartner);
 
   const newChatHandler = async (event: PressEvent, onClose: () => void) => {
-    const newChat = await createConversation(member.id);
+    const newChat = await createChat(member.id);
     if (!newChat) {
       throw new Error("Failed to create new chat");
     }
+    addChatPartner({
+      chatId: newChat.id,
+      chatPartner: member,
+    });
     router.push(`/chats/${newChat.id}`);
     onClose();
   }
