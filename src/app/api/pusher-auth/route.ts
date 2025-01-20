@@ -1,12 +1,12 @@
-import { auth } from "@/auth";
 import { pusherServer } from "@/lib/pusher";
 import { NextResponse } from "next/server";
+import { getCurrentProfile } from "@/app/actions/memberActions";
 
 export async function POST(request: Request) {
   try {
-    const session = await auth();
+    const currentProfile = await getCurrentProfile()
 
-    if (!session?.user?.id) {
+    if (!currentProfile || !currentProfile.id) {
       return new Response('Unauthorised', {status: 401})
     }
 
@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     const socketId = body.get('socket_id') as string;
     const channel = body.get('channel_name') as string;
     const data = {
-      user_id: session.user.id,
+      user_id: currentProfile.id,
     }
 
     const authResponse = pusherServer.authorizeChannel(socketId, channel, data);
