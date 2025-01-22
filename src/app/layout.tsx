@@ -85,7 +85,7 @@ export default async function RootLayout({
           chatPartners={chatPartners}
         >
           <MainNav user={user} photoUrl={photoUrl} />
-          <main className="container mx-auto p-8">{children}</main>
+          <main className="container mx-auto p-4">{children}</main>
         </Providers>
       </body>
     </html>
