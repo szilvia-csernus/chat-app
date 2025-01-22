@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { notFound, redirect } from "next/navigation";
-import { Card } from "@nextui-org/card";
+import { Card } from "@heroui/card";
 import { auth } from "@/auth";
 import Sidebar from "./(sidebar)/Sidebar";
 

@@ -7,8 +7,8 @@ import {
   DropdownMenu,
   DropdownSection,
   DropdownItem,
-} from "@nextui-org/dropdown";
-import { Avatar } from "@nextui-org/avatar";
+} from "@heroui/dropdown";
+import { Avatar } from "@heroui/avatar";
 import Link from "next/link";
 import { signOutUser } from "@/app/actions/authActions";
 import { User } from "@prisma/client";

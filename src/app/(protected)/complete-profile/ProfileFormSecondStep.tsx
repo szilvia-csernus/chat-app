@@ -1,4 +1,4 @@
-import { Checkbox, Input } from "@nextui-org/react";
+import { Checkbox, Input } from "@heroui/react";
 import { Session } from "next-auth";
 import React, { ChangeEvent, useState } from "react";
 import { useFormContext } from "react-hook-form";

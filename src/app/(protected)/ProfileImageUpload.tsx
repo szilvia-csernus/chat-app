@@ -2,7 +2,7 @@
 
 import { deleteImageFromCloudinary } from "@/app/actions/photoActions";
 import ImageUploadButton from "@/components/ImageUploadButton";
-import { Image } from "@nextui-org/react";
+import { Image } from "@heroui/react";
 import { CloudinaryUploadWidgetResults } from "next-cloudinary";
 import { useRouter } from "next/navigation";
 import { UseFormSetValue } from "react-hook-form";

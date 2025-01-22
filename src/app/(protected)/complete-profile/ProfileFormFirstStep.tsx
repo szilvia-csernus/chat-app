@@ -1,4 +1,4 @@
-import { Input, Select, SelectItem } from "@nextui-org/react";
+import { Input, Select, SelectItem } from "@heroui/react";
 import { Session } from "next-auth";
 import React from "react";
 import { useFormContext } from "react-hook-form";

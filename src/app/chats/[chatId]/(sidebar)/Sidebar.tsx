@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Card, CardBody, CardFooter, Divider, Button } from "@nextui-org/react";
+import { Card, CardBody, CardFooter, Divider, Button } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import usePresenceStore from "@/hooks/usePresenceStore";
 import { useChatPartnersStore } from "@/hooks/useChatPartnersStore";

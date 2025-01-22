@@ -6,7 +6,7 @@ import {
   CardBody,
   CardFooter,
   Button,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import React, { ReactNode } from "react";
 import { IconType } from "react-icons";
 

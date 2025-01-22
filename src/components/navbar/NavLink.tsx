@@ -1,6 +1,6 @@
 "use client";
 
-import { NavbarItem } from '@nextui-org/navbar'
+import { NavbarItem } from "@heroui/navbar"
 import Link from 'next/link'
 import { usePathname } from 'next/navigation';
 import React from 'react'

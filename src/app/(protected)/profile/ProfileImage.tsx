@@ -1,6 +1,6 @@
 "use client";
 
-import { Image } from "@nextui-org/react";
+import { Image } from "@heroui/react";
 import { Session } from "next-auth";
 import React, { useState } from "react";
 import EditProfileImage from "./EditProfileImage";

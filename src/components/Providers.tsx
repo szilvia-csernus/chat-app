@@ -4,7 +4,7 @@ import { useRecentChatsStore } from "@/hooks/useRecentChatsStore";
 import { usePresenceChannel } from "@/hooks/usePresenceChannel";
 import { useChatPartnersStore } from "@/hooks/useChatPartnersStore";
 import { ChatPartner, RecentChat } from "@/types";
-import { NextUIProvider } from "@nextui-org/react";
+import { HeroUIProvider } from "@heroui/react";
 import React, { ReactNode } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/ReactToastify.min.css";
@@ -33,9 +33,9 @@ export default function Providers({
   }
 
   return (
-    <NextUIProvider>
+    <HeroUIProvider>
       <ToastContainer position="bottom-right" hideProgressBar className="z-4" />
       {children}
-    </NextUIProvider>
+    </HeroUIProvider>
   );
 }

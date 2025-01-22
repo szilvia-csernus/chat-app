@@ -1,11 +1,11 @@
 "use client";
 
-import { Card, CardFooter } from "@nextui-org/card";
+import { Card, CardFooter } from "@heroui/card";
 import MemberImage from "./MemberImage";
 import PresenceDot from "@/components/PresenceDot";
 import { useRouter } from "next/navigation";
 import NewChat from "./NewChat";
-import { useDisclosure } from "@nextui-org/react";
+import { useDisclosure } from "@heroui/react";
 import { Member } from "@/types";
 
 export type MemberCardProps = {
