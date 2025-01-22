@@ -1,5 +1,5 @@
-import { ChatPartner, CPData } from "@/types";
-import { Conversation, Profile } from "@prisma/client";
+import { ChatPartner, CPData, RCData, RecentChat } from "@/types";
+import { Profile } from "@prisma/client";
 import { format, formatDistanceToNow } from "date-fns";
 
 export const calculateAge = (dateString: string) => {
@@ -51,4 +51,28 @@ export function mapCPDataToChatPartnerType(currentProfile: Profile | null, chatP
       };
     }
   });
+}
+
+
+export function mapRCDataToRecentChatsType(rcData: RCData[] | null): RecentChat[] {
+  if (!rcData) return [];
+
+  return rcData.map((chat) => {
+    return {
+      id: chat.id,
+      participant1: {
+        id: chat.profile1.id,
+        name: chat.profile1.user.name || "",
+        image: chat.profile1.user.image || "",
+      },
+      participant2: {
+        id: chat.profile2.id,
+        name: chat.profile2.user.name || "",
+        image: chat.profile2.user.image || "",
+      },
+      lastMessage: chat.messages[0]?.content || "",
+      unreadMessages: chat._count.messages,
+    };
+  });
+
 }
