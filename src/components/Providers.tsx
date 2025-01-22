@@ -13,7 +13,7 @@ type ProvidersProps = {
   children: ReactNode;
   userId: string;
   recentChats: RecentChat[] | null;
-  chatPartners: ChatPartner[] | null;
+  chatPartners: ChatPartner[];
 };
 
 export default function Providers({
@@ -27,10 +27,9 @@ export default function Providers({
   if (recentChats) {
     setRecentChats(recentChats);
   }
-  const  setChatPartners = useChatPartnersStore(state => state.setChatPartners);
-  if (chatPartners) {
-    setChatPartners(chatPartners);
-  }
+  const setChatPartners = useChatPartnersStore(state => state.setChatPartners);
+  setChatPartners(chatPartners);
+
 
   return (
     <HeroUIProvider>

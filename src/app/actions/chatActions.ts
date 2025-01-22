@@ -4,7 +4,11 @@ import { auth } from "@/auth";
 import { prisma } from "@/prisma";
 import { redirect } from "next/navigation";
 
-
+/** fetches the list of ChatPartners for the Members page,
+ * in order to decide if current user has ever chatted with
+ * the given member.
+ * @returns CPData[]
+ */
 export async function getChatPartners() {
   const session = await auth();
 
@@ -64,6 +68,9 @@ export async function getChatPartners() {
   }
 }
 
+/** fetches the list of recent chats for the "Your Chats" sidebar.
+ * @returns Conversation[]
+ */
 export async function getRecentChats() {
   const session = await auth();
 

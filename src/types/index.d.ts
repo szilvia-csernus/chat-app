@@ -1,3 +1,4 @@
+import { Conversation } from "@prisma/client";
 import { ZodIssue } from "zod";
 
 type ActionResult<T> =
@@ -17,6 +18,23 @@ type Chat = {
   messages: Message[];
 }
 
+type CPData = {
+  profile2: {
+    id: string;
+    user: {
+      name: string | null;
+      image: string | null;
+    };
+  };
+  profile1: {
+    id: string;
+    user: {
+      name: string | null;
+      image: string | null;
+    };
+  };
+} & Conversation;
+
 type ChatPartner = {
   chatPartner: Member;
   chatId: string;
@@ -29,3 +47,16 @@ type RecentChat = {
   lastMessage: string;
   unreadMessages: number;
 }
+
+// type MessageDto = {
+//   id: string;
+//   content: string;
+//   createdAt: string;
+//   read: boolean;
+//   senderId?: string;
+//   senderName?: string | null;
+//   senderImage?: string | null;
+//   recipientId?: string;
+//   recipientName?: string | null;
+//   recipientImage?: string | null;
+// };
