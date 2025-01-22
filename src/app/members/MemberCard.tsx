@@ -23,7 +23,7 @@ export default function MemberCard({
 }: MemberCardProps) {
   const router = useRouter();
 
-  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const onClickHandler = () => {
     if (chatting) {
@@ -40,7 +40,6 @@ export default function MemberCard({
           member={member}
           isOpen={isOpen}
           onOpenChange={onOpenChange}
-          onClose={onClose}
         />
       )}
       <Card fullWidth>
