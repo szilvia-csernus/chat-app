@@ -40,6 +40,30 @@ type ChatPartner = {
   chatId: string;
 }
 
+type RCData = {
+    profile1: {
+        id: string;
+        user: {
+            name: string | null;
+            image: string | null;
+        };
+    };
+    profile2: {
+        id: string;
+        user: {
+            name: string | null;
+            image: string | null;
+        };
+    };
+    messages: {
+        content: string;
+        createdAt: Date;
+        senderId: string;
+    }[];
+    _count: { messages: number};
+} & Conversation;
+
+
 type RecentChat = {
   id: string;
   participant1: Member;
