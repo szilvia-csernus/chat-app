@@ -69,7 +69,7 @@ export async function getChatPartners() {
 }
 
 /** fetches the list of recent chats for the "Your Chats" sidebar.
- * @returns Conversation[]
+ * @returns RCData[]
  */
 export async function getRecentChats() {
   const session = await auth();
