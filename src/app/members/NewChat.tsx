@@ -10,7 +10,6 @@ import {
 } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { createChat } from "@/app/actions/chatActions";
-import { PressEvent } from "@react-types/shared";
 import { Member } from "@/types";
 import { useChatPartnersStore } from "@/hooks/useChatPartnersStore";
 
@@ -19,20 +18,18 @@ type NewChatProps = {
   member: Member;
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
-  onClose: () => void;
 };
 
 export default function NewChat({
   member,
   isOpen,
-  onOpenChange,
-  onClose,
+  onOpenChange
 }: NewChatProps) {
   
   const router = useRouter();
   const addChatPartner = useChatPartnersStore(state => state.addChatPartner);
 
-  const newChatHandler = async (event: PressEvent, onClose: () => void) => {
+  const newChatHandler = async (onClose: () => void) => {
     const newChat = await createChat(member.id);
     if (!newChat) {
       throw new Error("Failed to create new chat");
@@ -87,7 +84,7 @@ export default function NewChat({
                       size="lg"
                       color="secondary"
                       className="btn w-full btn-secondary text-white"
-                      onPress={(event) => newChatHandler(event, onClose)}
+                      onPress={() => newChatHandler(onClose)}
                     >
                       Start Chat
                     </Button>
