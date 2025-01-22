@@ -1,4 +1,4 @@
-import { Image } from '@nextui-org/react';
+import { Image } from "@heroui/react";
 import { CldImage } from 'next-cloudinary';
 import React from 'react'
 

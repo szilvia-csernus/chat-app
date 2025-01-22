@@ -1,7 +1,7 @@
 "use client";
 
-import { Card, CardHeader, CardBody } from "@nextui-org/card";
-import { Button } from "@nextui-org/button";
+import { Card, CardHeader, CardBody } from "@heroui/card";
+import { Button } from "@heroui/button";
 import React, { useState } from "react";
 import { FiLock } from "react-icons/fi";
 import { FormProvider, useForm } from "react-hook-form";

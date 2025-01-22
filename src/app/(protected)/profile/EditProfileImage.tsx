@@ -6,7 +6,7 @@
 
 "use client";
 
-import { Button, Checkbox, Image, Input } from "@nextui-org/react";
+import { Button, Checkbox, Image, Input } from "@heroui/react";
 import { Session } from "next-auth";
 import React, { ChangeEvent, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -26,7 +26,7 @@ import {
   ModalBody,
   ModalFooter,
   useDisclosure,
-} from "@nextui-org/react";
+} from "@heroui/react";
 
 type EditProfileImageProps = {
   session: Session | null;
