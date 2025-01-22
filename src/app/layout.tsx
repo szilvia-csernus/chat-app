@@ -8,6 +8,7 @@ import { getPhotoByUserId } from "./actions/photoActions";
 import { User } from "@prisma/client";
 import { getChatPartners, getRecentChats } from "./actions/chatActions";
 import { getCurrentProfile } from "./actions/memberActions";
+import { mapCPDataToChatPartnerType, mapRCDataToRecentChatsType } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Chat App",
@@ -35,46 +36,10 @@ export default async function RootLayout({
   const currentProfile = await getCurrentProfile();
 
   const chatPartnersData = await getChatPartners();
-  const chatPartners = (chatPartnersData || []).map((cp) => {
-    if (cp.profile1.id === currentProfile?.id) {
-      return {
-        chatId: cp.id,
-        chatPartner: {
-          id: cp.profile2.id,
-          name: cp.profile2.user.name || "",
-          image: cp.profile2.user.image || "",
-        },
-      };
-    } else {
-      return {
-        chatId: cp.id,
-        chatPartner: {
-          id: cp.profile1.id,
-          name: cp.profile1.user.name || "",
-          image: cp.profile1.user.image || "",
-        },
-      };
-    }
-  });
+  const chatPartners = mapCPDataToChatPartnerType(currentProfile, chatPartnersData);
 
   const recentChatsData = await getRecentChats();
-  const recentChats = (recentChatsData || []).map((chat) => {
-    return {
-      id: chat.id,
-      participant1: {
-        id: chat.profile1.id,
-        name: chat.profile1.user.name || "",
-        image: chat.profile1.user.image || "",
-      },
-      participant2: {
-        id: chat.profile2.id,
-        name: chat.profile2.user.name || "",
-        image: chat.profile2.user.image || "",
-      },
-      lastMessage: chat.messages[0]?.content || "",
-      unreadMessages: chat._count.messages,
-    };
-  });
+  const recentChats = mapRCDataToRecentChatsType(recentChatsData);
 
   return (
     <html lang="en">

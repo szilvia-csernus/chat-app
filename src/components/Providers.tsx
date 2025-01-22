@@ -12,7 +12,7 @@ import "react-toastify/ReactToastify.min.css";
 type ProvidersProps = {
   children: ReactNode;
   userId: string;
-  recentChats: RecentChat[] | null;
+  recentChats: RecentChat[];
   chatPartners: ChatPartner[];
 };
 
@@ -22,11 +22,12 @@ export default function Providers({
   recentChats,
   chatPartners,
 }: ProvidersProps) {
+
   usePresenceChannel(userId);
+  
   const setRecentChats = useRecentChatsStore(state => state.setRecentChats)
-  if (recentChats) {
-    setRecentChats(recentChats);
-  }
+  setRecentChats(recentChats);
+  
   const setChatPartners = useChatPartnersStore(state => state.setChatPartners);
   setChatPartners(chatPartners);
 
