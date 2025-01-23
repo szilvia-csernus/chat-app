@@ -15,7 +15,6 @@ export const useChatPartnersStore = create<ChatPartnersState>()(
     (set) => ({
       chatPartners: [],
       setChatPartners: (chatPartners) => {
-        console.log("Setting chatPartners:", chatPartners);
         set((state) => {
           if (state.chatPartners !== chatPartners) {
             return { chatPartners };
