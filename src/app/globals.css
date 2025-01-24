@@ -29,7 +29,7 @@ body {
 div[data-slot="input-wrapper"],
 button[data-slot="trigger"] {
   border: 1px solid gray;
-  border-radius: .5rem;
+  border-radius: .8rem;
 }
 
 div[data-slot="input-wrapper"],
