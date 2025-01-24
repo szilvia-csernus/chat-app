@@ -5,11 +5,11 @@ import { usePresenceChannel } from "@/hooks/usePresenceChannel";
 import { useChatPartnersStore } from "@/hooks/useChatPartnersStore";
 import { ChatPartner, RecentChat } from "@/types";
 import { HeroUIProvider } from "@heroui/react";
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/ReactToastify.min.css";
 
-type ProvidersProps = {
+type Props = {
   children: ReactNode;
   userId: string;
   recentChats: RecentChat[];
@@ -21,15 +21,19 @@ export default function Providers({
   userId,
   recentChats,
   chatPartners,
-}: ProvidersProps) {
+}: Props) {
 
   usePresenceChannel(userId);
-  
-  const setRecentChats = useRecentChatsStore(state => state.setRecentChats)
-  setRecentChats(recentChats);
-  
-  const setChatPartners = useChatPartnersStore(state => state.setChatPartners);
-  setChatPartners(chatPartners);
+
+  const setRecentChats = useRecentChatsStore((state) => state.setRecentChats);
+  const setChatPartners = useChatPartnersStore(
+    (state) => state.setChatPartners
+  );
+
+  useEffect(() => {
+    setRecentChats(recentChats);
+    setChatPartners(chatPartners);
+  }, [recentChats, chatPartners, setRecentChats, setChatPartners]);
 
 
   return (
