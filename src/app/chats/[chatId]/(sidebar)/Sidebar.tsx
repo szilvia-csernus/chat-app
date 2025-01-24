@@ -10,26 +10,24 @@ import { Member } from "@/types";
 import { Profile } from "@prisma/client";
 
 type SidebarProps = {
-  currentChatId: string;
-  currentProfile: Profile;
+  currentProfileId: string;
 };
 
-const Sidebar: React.FC<SidebarProps> = ({ currentChatId, currentProfile }) => {
+const Sidebar: React.FC<SidebarProps> = ({ currentProfileId }) => {
   const membersOnline = usePresenceStore((state) => state.membersOnline);
   const router = useRouter();
   const recentChats = useRecentChatsStore((state) => state.recentChats);
 
   return (
-    <Card className="w-full items-center h-full">
-      <CardBody className="flex flex-col h-full items-center text-primary ">
+    <Card className="w-full items-center h-full border-1 border-gray-300 bg-background">
+      <CardBody className="flex flex-col h-full items-center ">
         <div className="text-2xl font-bold mt-4 flex flex-row gap-2">
           <span>Your Chats</span>
         </div>
         <Divider className="mt-3 mb-5 bg-accent" />
         <RecentChatsList
           recentChats={recentChats}
-          currentProfile={currentProfile}
-          currentChatId={currentChatId}
+          currentProfileId={currentProfileId}
           membersOnline={membersOnline}
         />
         
@@ -38,8 +36,9 @@ const Sidebar: React.FC<SidebarProps> = ({ currentChatId, currentProfile }) => {
         <Button
           onPress={() => router.back()}
           color="secondary"
-          variant="bordered"
-          className="w-full"
+          variant="solid"
+          radius="lg"
+          className="w-full text-white"
         >
           Go back
         </Button>

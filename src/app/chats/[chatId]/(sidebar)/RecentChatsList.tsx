@@ -6,32 +6,30 @@ import { Profile } from "@prisma/client";
 
 type Props = {
   recentChats: RecentChatType[];
-  currentProfile: Profile;
-  currentChatId: string;
+  currentProfileId: string;
   membersOnline: string[];
 };
 
 export default function RecentChatsList({
   recentChats,
-  currentProfile,
-  currentChatId,
+  currentProfileId,
   membersOnline,
 }: Props) {
 
   return (
     <ul className="flex flex-col gap-1 w-full ">
       {recentChats.map((rc) => {
-        const chatPartner = currentProfile.id === rc.participant1.id ? rc.participant2 : rc.participant1;
+        const chatPartner = currentProfileId === rc.participant1.id ? rc.participant2 : rc.participant1;
         return (
+          <li key={rc.id}>
           <RecentChat
-            key={rc.id}
             chatId={rc.id}
             chatPartner={chatPartner}
             lastMessage={rc.lastMessage}
             unreadMessages={rc.unreadMessages}
-            currentChatId={currentChatId}
             membersOnline={membersOnline}
           />
+          </li>
         );
       })}
     </ul>
