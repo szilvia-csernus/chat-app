@@ -6,7 +6,6 @@ import { auth } from "@/auth";
 import {
   CompleteProfileSchema,
   photoSchema,
-  ProfileSchema,
   profileSchema,
 } from "@/lib/schemas/completeProfileSchema";
 import { unstable_cache as nextCache, revalidateTag } from "next/cache";
@@ -14,6 +13,7 @@ import {
   editProfileSchema,
   EditProfileSchema,
 } from "@/lib/schemas/editProfileSchema";
+
 
 /** Finds Profile in the Profile table by userId
  * @param userId - string
@@ -30,6 +30,27 @@ export const getProfileByUserId = nextCache(
   ["user-profile"],
   { tags: ["user-profile"] }
 );
+
+export async function getCurrentProfileId() {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return null;
+  }
+  try {
+    const profile = await prisma.profile.findUnique({
+      where: {
+        userId: session.user.id,
+      },
+    });
+    if (!profile) {
+      return null;
+    }
+    return profile.id;
+  } catch (error) {
+    console.log(error)
+    return null
+  }
+}
 
 export async function completeProfile(
   data: CompleteProfileSchema
