@@ -30,30 +30,65 @@ export async function getMembers() {
 }
 
 export async function getMemberById(id: string) {
-  return prisma.profile.findUnique({
-    where: {
-      id,
-    },
-    include: {
-      user: {
-        select: {
-          name: true,
-          image: true,
+  try {
+    const profile = await prisma.profile.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        user: {
+          select: {
+            name: true,
+            image: true,
+          },
         },
       },
-    },
-  });
+    });
+    if (!profile) {
+      return null;
+    }
+    return {
+      id: profile.id,
+      name: profile.user.name || "",
+      image: profile.user.image || "",
+    };
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
 }
 
-
-export async function getCurrentProfile() {
+export async function getCurrentMember() {
   const session = await auth();
+
   if (!session?.user?.id) {
     return null;
   }
-  return await prisma.profile.findUnique({
-    where: {
-      userId: session.user.id,
-    },
-  });
+
+  try{
+    const profile = await prisma.profile.findUnique({
+      where: {
+        userId: session.user.id,
+      },
+      include: {
+        user: {
+          select: {
+            name: true,
+            image: true,
+          },
+        },
+      },
+    });
+    if (!profile) {
+      return null;
+    }
+    return {
+      id: profile.id,
+      name: profile.user.name || '',
+      image: profile.user.image || '',
+    }
+  } catch (error) {
+    console.log(error)
+    return null;
+  }
 }
