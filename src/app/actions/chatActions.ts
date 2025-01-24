@@ -128,6 +128,7 @@ export async function getRecentChats() {
             content: true,
             createdAt: true,
             senderId: true,
+            read: true,
           },
           orderBy: {
             createdAt: "desc",
@@ -138,7 +139,12 @@ export async function getRecentChats() {
           select: {
             messages: {
               where: {
-                read: false,
+                AND: {
+                  senderId: {
+                    not: profile.id,
+                  },
+                  read: false,
+                }
               },
             },
           },
