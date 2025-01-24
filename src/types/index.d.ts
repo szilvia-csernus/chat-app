@@ -59,6 +59,7 @@ type RCData = {
         content: string;
         createdAt: Date;
         senderId: string;
+        read: boolean;
     }[];
     _count: { messages: number};
 } & Conversation;
@@ -72,15 +73,26 @@ type RecentChat = {
   unreadMessages: number;
 }
 
-// type MessageDto = {
-//   id: string;
-//   content: string;
-//   createdAt: string;
-//   read: boolean;
-//   senderId?: string;
-//   senderName?: string | null;
-//   senderImage?: string | null;
-//   recipientId?: string;
-//   recipientName?: string | null;
-//   recipientImage?: string | null;
-// };
+type CData = {
+  profile1: {
+    id: string;
+    user: {
+      name: string | null;
+      image: string | null;
+    };
+  };
+  profile2: {
+    id: string;
+    user: {
+      name: string | null;
+      image: string | null;
+    };
+  };
+  messages: {
+    content: string;
+    createdAt: Date;
+    senderId: string;
+    read: boolean;
+  }[];
+} & Conversation;
+
