@@ -1,6 +1,23 @@
-import { ChatPartner, CPData, RCData, RecentChat } from "@/types";
-import { Profile } from "@prisma/client";
+import { ChatPartner, CPData, RCData, RecentChat, Chat, CData } from "@/types";
 import { format, formatDistanceToNow } from "date-fns";
+import { FieldValues, UseFormSetError, Path } from "react-hook-form";
+import { ZodIssue } from "zod";
+
+
+export function handleFormServerErrors<TFieldValues extends FieldValues>(
+  errorResponse: { error: string | ZodIssue[] },
+  setError: UseFormSetError<TFieldValues>
+) {
+  // Handle server errors by Zod
+  if (Array.isArray(errorResponse.error)) {
+    errorResponse.error.forEach((e) => {
+      const fieldName = e.path.join(".") as Path<TFieldValues>;
+      setError(fieldName, { message: e.message });
+    });
+  } else {
+    setError("root.serverError", { message: errorResponse.error });
+  }
+}
 
 export const calculateAge = (dateString: string) => {
   const today = new Date();
@@ -13,7 +30,7 @@ export const calculateAge = (dateString: string) => {
   }
 
   return age;
-}
+};
 
 export function formatShortDateTime(date: Date) {
   return format(date, "dd MMM yy h:mm:a");
@@ -27,11 +44,14 @@ export function timeAgo(date: string) {
   }
 }
 
-export function mapCPDataToChatPartnerType(currentProfile: Profile | null, chatPartnersData: CPData[] | null): ChatPartner[] {
-  if (!currentProfile || !chatPartnersData) return [];
+export function mapCPDataToChatPartnerType(
+  currentProfileId: string | null,
+  chatPartnersData: CPData[] | null
+): ChatPartner[] {
+  if (!currentProfileId || !chatPartnersData) return [];
 
-  return chatPartnersData.map(cp => {
-    if (cp.profile1.id === currentProfile?.id) {
+  return chatPartnersData.map((cp) => {
+    if (cp.profile1.id === currentProfileId) {
       return {
         chatId: cp.id,
         chatPartner: {
@@ -53,8 +73,9 @@ export function mapCPDataToChatPartnerType(currentProfile: Profile | null, chatP
   });
 }
 
-
-export function mapRCDataToRecentChatsType(rcData: RCData[] | null): RecentChat[] {
+export function mapRCDataToRecentChatsType(
+  rcData: RCData[] | null
+): RecentChat[] {
   if (!rcData) return [];
 
   return rcData.map((chat) => {
@@ -74,5 +95,25 @@ export function mapRCDataToRecentChatsType(rcData: RCData[] | null): RecentChat[
       unreadMessages: chat._count.messages,
     };
   });
+}
 
+export function mapChatDataToChatType(
+  chatData: CData | null
+): Chat | null {
+  if (!chatData) return null;
+
+  return {
+    id: chatData.id,
+    participant1: {
+      id: chatData.profile1Id,
+      name: chatData.profile1.user.name || "",
+      image: chatData.profile1.user.image || "",
+    },
+    participant2: {
+      id: chatData.profile2Id,
+      name: chatData.profile2.user.name || "",
+      image: chatData.profile2.user.image || "",
+    },
+    messages: chatData.messages,
+  };
 }
