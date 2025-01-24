@@ -7,7 +7,7 @@ import { getUserById } from "./actions/authActions";
 import { getPhotoByUserId } from "./actions/photoActions";
 import { User } from "@prisma/client";
 import { getChatPartners, getRecentChats } from "./actions/chatActions";
-import { getCurrentProfile } from "./actions/memberActions";
+import { getCurrentProfileId } from "@/app/actions/profileActions";
 import { mapCPDataToChatPartnerType, mapRCDataToRecentChatsType } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -33,10 +33,11 @@ export default async function RootLayout({
   }
   const photoUrl = userPhoto ? userPhoto.imageUrl : "/images/user.png";
 
-  const currentProfile = await getCurrentProfile();
+  const currentProfileId = await getCurrentProfileId();
 
   const chatPartnersData = await getChatPartners();
-  const chatPartners = mapCPDataToChatPartnerType(currentProfile, chatPartnersData);
+  
+  const chatPartners = mapCPDataToChatPartnerType(currentProfileId, chatPartnersData);
 
   const recentChatsData = await getRecentChats();
   const recentChats = mapRCDataToRecentChatsType(recentChatsData);
