@@ -36,17 +36,17 @@ export default async function RootLayout({
   const currentProfileId = await getCurrentProfileId();
 
   const chatPartnersData = await getChatPartners();
-  
   const chatPartners = mapCPDataToChatPartnerType(currentProfileId, chatPartnersData);
 
   const recentChatsData = await getRecentChats();
   const recentChats = mapRCDataToRecentChatsType(recentChatsData);
 
+
   return (
     <html lang="en">
       <body className="font-body h-screen">
         <Providers
-          userId={session?.user?.id}
+          currentProfileId={currentProfileId || null}
           recentChats={recentChats}
           chatPartners={chatPartners}
         >

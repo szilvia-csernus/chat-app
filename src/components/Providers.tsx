@@ -11,19 +11,19 @@ import "react-toastify/ReactToastify.min.css";
 
 type Props = {
   children: ReactNode;
-  userId: string;
+  currentProfileId: string | null;
   recentChats: RecentChat[];
   chatPartners: ChatPartner[];
 };
 
 export default function Providers({
   children,
-  userId,
+  currentProfileId,
   recentChats,
   chatPartners,
 }: Props) {
 
-  usePresenceChannel(userId);
+  usePresenceChannel(currentProfileId);
 
   const setRecentChats = useRecentChatsStore((state) => state.setRecentChats);
   const setChatPartners = useChatPartnersStore(

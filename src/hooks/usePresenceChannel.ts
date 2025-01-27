@@ -5,7 +5,7 @@ import usePresenceStore from "./usePresenceStore";
 import { Channel, Members } from "pusher-js";
 import { pusherClient } from "@/lib/pusher";
 
-export const usePresenceChannel = (userId: string | null) => {
+export const usePresenceChannel = (currentProfileId: string | null) => {
   const set = usePresenceStore((state) => state.set);
   const add = usePresenceStore((state) => state.add);
   const remove = usePresenceStore((state) => state.remove);
@@ -35,14 +35,20 @@ export const usePresenceChannel = (userId: string | null) => {
   );
 
   useEffect(() => {
-    if (!userId) return;
+    if (!currentProfileId) return;
+
     if (!channelRef.current) {
-      channelRef.current = pusherClient.subscribe("presence-chat");
+      channelRef.current = pusherClient.subscribe("presence-chat-app");
 
       channelRef.current.bind(
         "pusher:subscription_succeeded",
         (members: Members) => {
-          handleSetMembers(Object.keys(members.members));
+          console.log("Members:", members); // Debugging statement
+          if (members && members.members) {
+            handleSetMembers(Object.keys(members.members));
+          } else {
+            console.error("Unexpected members object structure:", members);
+          }
         }
       );
 
@@ -72,5 +78,5 @@ export const usePresenceChannel = (userId: string | null) => {
         channelRef.current.unbind("pusher:member_removed", handleRemoveMember);
       }
     };
-  }, [handleSetMembers, handleAddMember, handleRemoveMember, userId]);
+  }, [handleSetMembers, handleAddMember, handleRemoveMember, currentProfileId]);
 };
