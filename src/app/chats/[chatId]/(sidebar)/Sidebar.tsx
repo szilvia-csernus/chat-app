@@ -32,7 +32,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentProfileId }) => {
         />
         
       </CardBody>
-      <CardFooter className="h-full flex flex-col justify-end mb-2">
+      <CardFooter className="flex flex-col justify-end mb-2">
         <Button
           onPress={() => router.back()}
           color="secondary"
