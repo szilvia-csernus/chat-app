@@ -22,7 +22,7 @@ export default function RecentChat({
   membersOnline,
 }: Props) {
   const online = membersOnline.includes(chatPartner.id);
-  const message = lastMessage.length > 15 ? `${lastMessage.slice(0, 7)}...` : lastMessage;
+  const message = lastMessage.length > 18 ? `${lastMessage.slice(0, 18)}...` : lastMessage;
 
   return (
     <Suspense fallback={<RecentChatFallback />}>
