@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React from "react";
 import {
@@ -18,7 +18,6 @@ type UserMenuProps = {
 };
 
 export default function UserMenu({ userName, photoUrl }: UserMenuProps) {
-
   return (
     <Dropdown placement="bottom-end" className="shadow-sm shadow-foreground">
       <DropdownTrigger>
@@ -34,24 +33,28 @@ export default function UserMenu({ userName, photoUrl }: UserMenuProps) {
         aria-label="User actions menu"
         className="text-foreground"
       >
-        <DropdownSection>
-          <DropdownItem
-          key={0}
-            showDivider
-            isReadOnly
-            as="span"
-            className="h-14 flex flex-row"
-            aria-label="username"
-          >
-            Signed in as {userName}
-          </DropdownItem>
-          <DropdownItem key={1} color="secondary" as={Link} href="/profile">
-            Profile
-          </DropdownItem>
-          <DropdownItem key={2} color="secondary" onPress={async () => signOutUser()}>
-            Sign Out
-          </DropdownItem>
-        </DropdownSection>
+        <DropdownItem
+          key="username"
+          showDivider
+          isReadOnly
+          as="span"
+          className="h-14 flex flex-row"
+          aria-label="username"
+        >
+          Signed in as {userName}
+        </DropdownItem>
+        <DropdownItem key="profile" color="secondary" textValue="Profile">
+          <Link href="/profile">
+            <div className="w-full h-full">Profile</div>
+          </Link>
+        </DropdownItem>
+        <DropdownItem
+          key="signout"
+          color="secondary"
+          onPress={async () => signOutUser()}
+        >
+          Sign Out
+        </DropdownItem>
       </DropdownMenu>
     </Dropdown>
   );
