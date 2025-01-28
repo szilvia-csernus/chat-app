@@ -10,7 +10,7 @@ import { Button, Checkbox, Image, Input } from "@heroui/react";
 import { Session } from "next-auth";
 import React, { ChangeEvent, useState } from "react";
 import { useForm } from "react-hook-form";
-import ProfileImageUpload from "../ProfileImageUpload";
+import ProfileImageUpload from "./ProfileImageUpload";
 import {
   addPhotoToDatabase,
   deleteImageFromCloudinary,
@@ -87,7 +87,7 @@ export default function EditProfileImage({
     }
     resetAll();
     onClose();
-  }
+  };
 
   const onSocialImageSelect = async (event: ChangeEvent<HTMLInputElement>) => {
     const isChecked = event.target.checked;
@@ -98,7 +98,7 @@ export default function EditProfileImage({
         setIsSocialImageSelected(true);
         setIsUploadDisabled(true);
         // Clear the previous image if any
-        
+
         if (imageId.length > 0) {
           await deleteImageFromCloudinary(imageId);
           resetImgUploadValues();
