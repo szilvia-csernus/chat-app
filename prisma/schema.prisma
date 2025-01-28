@@ -101,14 +101,14 @@ model Message {
   senderId      String
   sender        Profile         @relation("SentMessages", fields: [senderId], references: [id])
   
-  receiverId    String
-  receiver      Profile         @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  recipientId    String
+  recipient      Profile         @relation("ReceivedMessages", fields: [recipientId], references: [id])
   
   conversationId String
   conversation  Conversation    @relation(fields: [conversationId], references: [id])
 
   @@index([senderId])
-  @@index([receiverId])
+  @@index([recipientId])
   @@index([conversationId])
 }
 
