@@ -8,28 +8,30 @@ import {
 import { cloudinary } from "@/lib/cloudinary";
 import { UploadApiResponse } from "cloudinary";
 import { unstable_cache as nextCache, revalidateTag } from "next/cache";
+import { authWithError, getCurrentUserId } from "./authActions";  
 
-
+/** Fetches the photo for a given user (internal function) */
 async function getPhotoByUserIdFn(userId: string) {
+  await authWithError();
   return prisma.photo.findFirst({
     where: { userId },
   });
 }
 
+/** Fetches the photo for a given user (cached, exported version) */
 export const getPhotoByUserId = nextCache(
   async (userId: string) => await getPhotoByUserIdFn(userId),
   ["user-photo"],
   { tags: ["user-photo"] }
 );
 
+/** Add cloudinary image data to the database */
 export async function addPhotoToDatabase(
   imageUrl: string,
   cloudinaryImageId: string
 ) {
-  const session = await auth();
-
-  console.log(imageUrl, cloudinaryImageId);
-  if (!session?.user) return { status: "error", error: "User not found" };
+  const currentUserId = await getCurrentUserId();
+    if (!currentUserId) return { status: "error", error: "User not found" };
 
   try {
     // Safe parse and validate data with Zod
@@ -38,7 +40,7 @@ export async function addPhotoToDatabase(
       console.log(validated.error);
       return { status: "error", error: "Invalid data" };
     }
-    const userId = session.user.id as string;
+    const userId = currentUserId as string;
     const userOldPhoto = await prisma.photo.findFirst({
       where: { userId },
     });
@@ -85,15 +87,21 @@ export async function addPhotoToDatabase(
   }
 }
 
+/** Upload image url to Cloudinary */
 export async function uploadImageToCloudinaryFromUrl(
   imageUrl: string
 ): Promise<UploadApiResponse> {
+  await authWithError();
+
   const result = await cloudinary.v2.uploader.upload(imageUrl);
   console.log(result);
   return result;
 }
 
+/** Delete image from Cloudinary by its id */
 export async function deleteImageFromCloudinary(cloudinaryImageId: string) {
+  await authWithError();
+
   try {
     await cloudinary.v2.uploader.destroy(cloudinaryImageId);
   } catch (error) {
@@ -103,7 +111,10 @@ export async function deleteImageFromCloudinary(cloudinaryImageId: string) {
   }
 }
 
+/** Delete Photo from database by its cloudinary id. */
 export async function deletePhotoFromDatabase(cloudinaryImageId: string) {
+  await authWithError();
+  
   try {
     const result = await prisma.photo.delete({
       where: { cloudinaryImageId },

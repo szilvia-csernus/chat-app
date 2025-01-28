@@ -1,11 +1,14 @@
 "use server";
 
-import { auth } from "@/auth";
 import { prisma } from "@/prisma";
-import { getCurrentUserId } from "./authActions";
+import { getCurrentUserId, authWithError } from "./authActions";
 
 
+/** Fetches all the members data, inc. name and image except for 
+ * the current user. */
 export async function getMembers() {
+  await authWithError();
+
   try {
     const currentUserId = await getCurrentUserId();
 
@@ -25,11 +28,15 @@ export async function getMembers() {
       }
     });
   } catch (error) {
-    throw error;
+    console.log(error);
+    return null;
   }
 }
 
+/** Fetches a member's data by its id. */
 export async function getMemberById(id: string) {
+  await authWithError();
+
   try {
     const profile = await prisma.profile.findUnique({
       where: {
@@ -58,17 +65,15 @@ export async function getMemberById(id: string) {
   }
 }
 
+/** Fetches the current member's data. */
 export async function getCurrentMember() {
-  const session = await auth();
-
-  if (!session?.user?.id) {
-    return null;
-  }
+    const currentUserId = await getCurrentUserId();
+    if (!currentUserId) return null;
 
   try{
     const profile = await prisma.profile.findUnique({
       where: {
-        userId: session.user.id,
+        userId: currentUserId,
       },
       include: {
         user: {

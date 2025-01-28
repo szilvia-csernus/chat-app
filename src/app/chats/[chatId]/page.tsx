@@ -4,14 +4,24 @@ import { getChat } from "@/app/actions/chatActions";
 import ChatThread from "./(main)/ChatThread";
 import { mapChatDataToChatType } from "@/lib/utils";
 import { getCurrentMember, getMemberById } from "@/app/actions/memberActions";
+import { updateMessagesWithReadStatus } from "@/app/actions/messageActions";
+import { authWithRedirect } from "@/app/actions/authActions";
+
+export const dynamic = "force-dynamic";
 
 export default async function Chat({ params }: { params: { chatId: string } }) {
-  const chat = await getChat(params.chatId);
-  if (!chat) return notFound();
-  const currentChat = mapChatDataToChatType(chat);
+  await authWithRedirect();
 
   const currentMember = await getCurrentMember();
   if (!currentMember) return redirect("/complete-profile");
+
+  await updateMessagesWithReadStatus(params.chatId, currentMember.id);
+
+  const chat = await getChat(params.chatId);
+
+  if (!chat) return notFound();
+  const initialChat = mapChatDataToChatType(chat);
+
   const chatPartnerId =
     chat.profile1Id === currentMember.id ? chat.profile2Id : chat.profile1Id;
 
@@ -21,7 +31,7 @@ export default async function Chat({ params }: { params: { chatId: string } }) {
   return (
     <div className="flex flex-col justify-between h-full">
       <ChatThread
-        currentChat={currentChat}
+        initialChat={initialChat}
         currentMember={currentMember}
         chatPartner={chatPartner}
       />
