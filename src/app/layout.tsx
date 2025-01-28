@@ -20,6 +20,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const user = await getCurrentUser();
+  const userName = user?.name || null;
 
   let userPhoto = null;
 
@@ -40,14 +41,16 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className="font-body h-screen">
+      <body className="font-body h-auto">
         <Providers
           currentProfileId={currentProfileId || null}
           recentChats={recentChats}
           chatPartners={chatPartners}
         >
-          <MainNav userName={user.name} photoUrl={photoUrl} />
-          <main className="container mx-auto p-4">{children}</main>
+          <MainNav userName={userName} photoUrl={photoUrl} />
+          <main className="container mx-auto p-4">
+            {children}
+          </main>
         </Providers>
       </body>
     </html>
