@@ -16,7 +16,7 @@ export default async function ProfilePage() {
 
   const user = await getCurrentUser();
   if (user && !user.profileComplete) {
-    redirect("/complete-profile");
+    redirect("/profile/complete-profile");
   }
   
   const userName = user?.name ?? "";
