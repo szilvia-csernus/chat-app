@@ -18,11 +18,11 @@ import { User } from "@prisma/client";
 import { HiOutlineChatBubbleLeftRight } from "react-icons/hi2";
 
 type MainNavProps = {
-  user: User | null;
+  userName: string | null;
   photoUrl: string;
 };
 
-export default function MainNav({ user, photoUrl }: MainNavProps) {
+export default function MainNav({ userName, photoUrl }: MainNavProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const menuItems = [
@@ -73,8 +73,8 @@ export default function MainNav({ user, photoUrl }: MainNavProps) {
       </NavbarContent>
       <NavbarContent justify="end">
         <>
-          {user ? (
-            <UserMenu user={user} photoUrl={photoUrl} />
+          {userName ? (
+            <UserMenu userName={userName} photoUrl={photoUrl} />
           ) : (
             <>
               <Button

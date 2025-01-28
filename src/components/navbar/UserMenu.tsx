@@ -11,14 +11,13 @@ import {
 import { Avatar } from "@heroui/avatar";
 import Link from "next/link";
 import { signOutUser } from "@/app/actions/authActions";
-import { User } from "@prisma/client";
 
 type UserMenuProps = {
-  user: User;
+  userName: string;
   photoUrl: string;
 };
 
-export default function UserMenu({ user, photoUrl }: UserMenuProps) {
+export default function UserMenu({ userName, photoUrl }: UserMenuProps) {
 
   return (
     <Dropdown placement="bottom-end" className="shadow-sm shadow-foreground">
@@ -37,18 +36,19 @@ export default function UserMenu({ user, photoUrl }: UserMenuProps) {
       >
         <DropdownSection>
           <DropdownItem
+          key={0}
             showDivider
             isReadOnly
             as="span"
             className="h-14 flex flex-row"
             aria-label="username"
           >
-            Signed in as {user.name}
+            Signed in as {userName}
           </DropdownItem>
-          <DropdownItem color="secondary" as={Link} href="/profile">
+          <DropdownItem key={1} color="secondary" as={Link} href="/profile">
             Profile
           </DropdownItem>
-          <DropdownItem color="secondary" onClick={async () => signOutUser()}>
+          <DropdownItem key={2} color="secondary" onPress={async () => signOutUser()}>
             Sign Out
           </DropdownItem>
         </DropdownSection>
