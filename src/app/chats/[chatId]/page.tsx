@@ -13,7 +13,7 @@ export default async function Chat({ params }: { params: { chatId: string } }) {
   await authWithRedirect();
 
   const currentMember = await getCurrentMember();
-  if (!currentMember) return redirect("/complete-profile");
+  if (!currentMember) return redirect("/profile/complete-profile");
 
   await updateMessagesWithReadStatus(params.chatId, currentMember.id);
 
