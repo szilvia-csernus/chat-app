@@ -1,25 +1,20 @@
 "use server";
 
-import { auth } from "@/auth";
 import { prisma } from "@/prisma";
 import { redirect } from "next/navigation";
+import { authWithError, getCurrentUserId } from "./authActions";
 
-/** fetches the list of ChatPartners for the Members page,
+/** Fetches the list of ChatPartners for the Members page,
  * in order to decide if current user has ever chatted with
- * the given member.
- * @returns CPData[]
- */
+ * the given member. */
 export async function getChatPartners() {
-  const session = await auth();
-
-  if (!session?.user?.id) {
-    return null;
-  }
+  const currentUserId = await getCurrentUserId();
+  if (!currentUserId) return null;
 
   try {
     const profile = await prisma.profile.findUnique({
       where: {
-        userId: session.user.id,
+        userId: currentUserId,
       }
   });
 
@@ -68,20 +63,15 @@ export async function getChatPartners() {
   }
 }
 
-/** fetches the list of recent chats for the "Your Chats" sidebar.
- * @returns RCData[]
- */
+/** Fetches the list of recent chats for the "Your Chats" sidebar. */
 export async function getRecentChats() {
-  const session = await auth();
-
-  if (!session?.user?.id) {
-    return null;
-  }
+  const currentUserId = await getCurrentUserId();
+  if (!currentUserId) return null;
 
   try {
     const profile = await prisma.profile.findUnique({
       where: {
-        userId: session.user.id,
+        userId: currentUserId,
       },
     });
 
@@ -156,17 +146,15 @@ export async function getRecentChats() {
   }
 }
 
+/** Fetches chat data */
 export async function getChat(chatId: string) {
-  const session = await auth();
-
-  if (!session?.user?.id) {
-    return null;
-  }
+  const currentUserId = await getCurrentUserId();
+  if (!currentUserId) return null;
 
   try {
     const profile = await prisma.profile.findUnique({
       where: {
-        userId: session.user.id,
+        userId: currentUserId,
       },
     });
 
@@ -213,13 +201,14 @@ export async function getChat(chatId: string) {
         },
         messages: {
           select: {
+            id: true,
             content: true,
             createdAt: true,
             senderId: true,
             read: true,
           },
           orderBy: {
-            createdAt: "desc",
+            createdAt: "asc",
           },
         },
       },
@@ -229,15 +218,15 @@ export async function getChat(chatId: string) {
   }
 }
 
+/** Creates a chat between current user and another member */
 export async function createChat(memberId: string) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return redirect("/login");
-    }
+    const currentUserId = await getCurrentUserId();
+    if (!currentUserId) return redirect("/login");
+    
     const currentMember = await prisma.profile.findUnique({
       where: {
-        userId: session.user.id,
+        userId: currentUserId,
       },
     });
     if (!currentMember) {
@@ -264,3 +253,19 @@ export async function createChat(memberId: string) {
   }
 }
 
+/** Fetches the number of unread messages in a chat */
+export async function getUnreadMessageCount(chatId: string) {
+  await authWithError();
+
+  try {
+    return prisma.message.count({
+      where: {
+        conversationId: chatId,
+        read: false,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}

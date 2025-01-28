@@ -1,5 +1,5 @@
-import { getUserById } from '@/app/actions/authActions';
-import { getProfileByUserId } from '@/app/actions/profileActions';
+import { getCurrentUser } from '@/app/actions/authActions';
+import { getCurrentProfile } from '@/app/actions/profileActions';
 import { getPhotoByUserId } from '@/app/actions/photoActions';
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
@@ -14,13 +14,14 @@ export default async function ProfilePage() {
     redirect('/login');
   }
 
-  const user = await getUserById(session?.user.id as string);
+  const user = await getCurrentUser();
   if (user && !user.profileComplete) {
     redirect("/complete-profile");
   }
   
   const userName = user?.name ?? "";
-  const profile = await getProfileByUserId(session?.user.id as string);
+  const profile = await getCurrentProfile();
+
   const photo = await getPhotoByUserId(session?.user.id as string);
   const photoUrl = photo ? photo.imageUrl : null;
 

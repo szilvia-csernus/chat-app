@@ -2,44 +2,28 @@
 
 import { prisma } from "@/prisma";
 import { ActionResult } from "@/types";
-import { auth } from "@/auth";
 import {
   CompleteProfileSchema,
   photoSchema,
   profileSchema,
 } from "@/lib/schemas/completeProfileSchema";
-import { unstable_cache as nextCache, revalidateTag } from "next/cache";
+import { revalidateTag } from "next/cache";
 import {
   editProfileSchema,
   EditProfileSchema,
 } from "@/lib/schemas/editProfileSchema";
+import { getCurrentUserId } from "./authActions";
 
 
-/** Finds Profile in the Profile table by userId
- * @param userId - string
- * @returns Profile
- */
-export async function getProfileByUserIdFn(userId: string) {
-  return prisma.profile.findUnique({
-    where: { userId },
-  });
-}
-
-export const getProfileByUserId = nextCache(
-  async (userId) => await getProfileByUserIdFn(userId),
-  ["user-profile"],
-  { tags: ["user-profile"] }
-);
-
+/** Returns the authenticated user's profile Id */
 export async function getCurrentProfileId() {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return null;
-  }
+  const currentUserId = await getCurrentUserId();
+  if (!currentUserId) return null;
+
   try {
     const profile = await prisma.profile.findUnique({
       where: {
-        userId: session.user.id,
+        userId: currentUserId,
       },
     });
     if (!profile) {
@@ -52,12 +36,34 @@ export async function getCurrentProfileId() {
   }
 }
 
+/** Returns the authenticated user's profile */
+export async function getCurrentProfile() {
+  const currentUserId = await getCurrentUserId();
+  if (!currentUserId) return null;
+
+  try {
+    const profile = await prisma.profile.findUnique({
+      where: {
+        userId: currentUserId,
+      },
+    });
+    if (!profile) {
+      return null;
+    }
+    return profile;
+  } catch (error) {
+    console.log(error)
+    return null
+  }
+}
+
+/** Completes the user's profile */
 export async function completeProfile(
   data: CompleteProfileSchema
 ): Promise<ActionResult<string>> {
-  let session = await auth();
+  const currentUserId = await getCurrentUserId();
 
-  if (!session?.user) return { status: "error", error: "User not found" };
+  if (!currentUserId) return { status: "error", error: "User not found" };
 
   try {
     // Safe parse and validate data with Zod
@@ -66,10 +72,8 @@ export async function completeProfile(
       return { status: "error", error: "Invalid data" };
     }
 
-    const userId = session.user.id as string;
-
     const user = await prisma.user.update({
-      where: { id: userId },
+      where: { id: currentUserId },
       data: {
         profileComplete: true,
         name: data.name,
@@ -122,12 +126,13 @@ export async function completeProfile(
   }
 }
 
+/** Edits the user's profile details */
 export async function editProfileDetails(
   data: EditProfileSchema
 ): Promise<ActionResult<string>> {
-  let session = await auth();
+  const currentUserId = await getCurrentUserId();
 
-  if (!session?.user) return { status: "error", error: "User not found" };
+  if (!currentUserId) return { status: "error", error: "User not found" };
 
   try {
     // Safe parse and validate data with Zod
@@ -135,10 +140,9 @@ export async function editProfileDetails(
     if (!validated.success) {
       return { status: "error", error: "Invalid data" };
     }
-    const userId = session.user.id as string;
 
     const user = await prisma.user.update({
-      where: { id: userId },
+      where: { id: currentUserId },
       data: {
         name: data.name,
         profile: {
