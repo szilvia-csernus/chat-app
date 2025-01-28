@@ -18,7 +18,7 @@ export default async function ChatLayout({
   }
 
   const currentProfileId = await getCurrentProfileId();
-  if (!currentProfileId) return redirect("/complete-profile");
+  if (!currentProfileId) return redirect("/profile/complete-profile");
 
   return (
     <>
