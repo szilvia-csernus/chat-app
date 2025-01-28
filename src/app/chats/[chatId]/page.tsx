@@ -29,7 +29,7 @@ export default async function Chat({ params }: { params: { chatId: string } }) {
   if (!chatPartner) return notFound();
 
   return (
-    <div className="flex flex-col justify-between h-full">
+    <div className="flex flex-col justify-between">
       <ChatThread
         initialChat={initialChat}
         currentMember={currentMember}

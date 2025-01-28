@@ -32,13 +32,13 @@ const Sidebar: React.FC<SidebarProps> = ({ currentProfileId }) => {
         />
         
       </CardBody>
-      <CardFooter className="flex flex-col justify-end mb-2">
+      <CardFooter className="flex flex-col justify-end">
         <Button
           onPress={() => router.back()}
           color="secondary"
           variant="solid"
           radius="lg"
-          className="w-full text-white"
+          className="w-full text-white h-12"
         >
           Go back
         </Button>
