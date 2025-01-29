@@ -7,6 +7,7 @@ type RecentChatsState = {
   setRecentChats: (recentChats: RecentChat[]) => void;
   addRecentChat: (recentChat: RecentChat) => void;
   removeRecentChat: (id: string) => void;
+  updateUnreadCount: (id: string, count: number) => void;
 }
 
 
@@ -43,6 +44,18 @@ export const useRecentChatsStore = create<RecentChatsState>()(
           return state;
         });
       },
+      updateUnreadCount: (id: string, count: number) => {
+        set((state) => {
+          const updatedRecentChats = state.recentChats.map((rc) => {
+            if (rc.id === id) {
+              return { ...rc, unreadMessages: count };
+            }
+            return rc;
+          });
+
+          return { recentChats: updatedRecentChats };
+        });
+      }
     }),
     { name: "recentChatsStore" }
   )

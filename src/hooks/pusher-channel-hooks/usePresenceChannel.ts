@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
-import usePresenceStore from "./usePresenceStore";
+import usePresenceStore from "../zustand-stores/usePresenceStore";
 import { Channel, Members } from "pusher-js";
 import { pusherClient } from "@/lib/pusher";
 
