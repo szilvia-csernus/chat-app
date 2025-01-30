@@ -70,7 +70,7 @@ type RecentChat = {
   participant1: Member;
   participant2: Member;
   lastMessage: string;
-  unreadMessages: number;
+  unreadMessageCount: number;
 }
 
 type CData = {

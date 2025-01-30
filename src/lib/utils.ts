@@ -92,7 +92,7 @@ export function mapRCDataToRecentChatsType(
         image: chat.profile2.user.image || "",
       },
       lastMessage: chat.messages[0]?.content || "",
-      unreadMessages: chat._count.messages,
+      unreadMessageCount: chat._count.messages,
     };
   });
 }
