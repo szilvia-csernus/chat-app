@@ -11,8 +11,7 @@ import {
 import { useRouter } from "next/navigation";
 import { createChat } from "@/app/actions/chatActions";
 import { Member } from "@/types";
-import { useChatPartnersStore } from "@/hooks/useChatPartnersStore";
-
+import { useChatPartnersStore } from "@/hooks/zustand-stores/useChatPartnersStore";
 
 type NewChatProps = {
   member: Member;
@@ -23,11 +22,10 @@ type NewChatProps = {
 export default function NewChat({
   member,
   isOpen,
-  onOpenChange
+  onOpenChange,
 }: NewChatProps) {
-  
   const router = useRouter();
-  const addChatPartner = useChatPartnersStore(state => state.addChatPartner);
+  const addChatPartner = useChatPartnersStore((state) => state.addChatPartner);
 
   const newChatHandler = async (onClose: () => void) => {
     const newChat = await createChat(member.id);
@@ -40,7 +38,7 @@ export default function NewChat({
     });
     router.push(`/chats/${newChat.id}`);
     onClose();
-  }
+  };
 
   return (
     <>
@@ -63,34 +61,33 @@ export default function NewChat({
             <>
               <ModalHeader>Start New Chat?</ModalHeader>
 
-                <ModalBody>
-                  <div className="space-y-4 flex justify-center">
-                    Would you like to start a new chat with {member.name}?
-                  </div>
-                </ModalBody>
-                <ModalFooter>
-                  <div className="flex items-center justify-between gap-5">
-                    <Button
-                      type="button"
-                      size="lg"
-                      color="secondary"
-                      className="btn border-medium w-full border-secondary bg-transparent text-foreground"
-                      onPress={onClose}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      type="submit"
-                      size="lg"
-                      color="secondary"
-                      className="btn w-full btn-secondary text-white"
-                      onPress={() => newChatHandler(onClose)}
-                    >
-                      Start Chat
-                    </Button>
-                  </div>
-                </ModalFooter>
-
+              <ModalBody>
+                <div className="space-y-4 flex justify-center">
+                  Would you like to start a new chat with {member.name}?
+                </div>
+              </ModalBody>
+              <ModalFooter>
+                <div className="flex items-center justify-between gap-5">
+                  <Button
+                    type="button"
+                    size="lg"
+                    color="secondary"
+                    className="btn border-medium w-full border-secondary bg-transparent text-foreground"
+                    onPress={onClose}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    size="lg"
+                    color="secondary"
+                    className="btn w-full btn-secondary text-white"
+                    onPress={() => newChatHandler(onClose)}
+                  >
+                    Start Chat
+                  </Button>
+                </div>
+              </ModalFooter>
             </>
           )}
         </ModalContent>

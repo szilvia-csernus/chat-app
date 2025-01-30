@@ -1,9 +1,9 @@
 "use client";
 
 import MemberCard from "./MemberCard";
-import usePresenceStore from "@/hooks/usePresenceStore";
+import usePresenceStore from "@/hooks/zustand-stores/usePresenceStore";
 import { Member } from "@/types";
-import { useChatPartnersStore } from "@/hooks/useChatPartnersStore";
+import { useChatPartnersStore } from "@/hooks/zustand-stores/useChatPartnersStore";
 
 type MembersListProps = {
   members: Member[] | null;
