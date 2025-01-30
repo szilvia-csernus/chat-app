@@ -1,8 +1,8 @@
 "use client";
 
-import { useRecentChatsStore } from "@/hooks/useRecentChatsStore";
-import { usePresenceChannel } from "@/hooks/usePresenceChannel";
-import { useChatPartnersStore } from "@/hooks/useChatPartnersStore";
+import { useRecentChatsStore } from "@/hooks/zustand-stores/useRecentChatsStore";
+import { usePresenceChannel } from "@/hooks/pusher-channel-hooks/usePresenceChannel";
+import { useChatPartnersStore } from "@/hooks/zustand-stores/useChatPartnersStore";
 import { ChatPartner, RecentChat } from "@/types";
 import { HeroUIProvider } from "@heroui/react";
 import React, { ReactNode, useEffect } from "react";
@@ -23,7 +23,6 @@ export default function Providers({
   recentChats,
   chatPartners,
 }: Props) {
-
   usePresenceChannel(currentProfileId);
 
   const router = useRouter();
@@ -37,7 +36,6 @@ export default function Providers({
     setRecentChats(recentChats);
     setChatPartners(chatPartners);
   }, [recentChats, chatPartners, setRecentChats, setChatPartners]);
-
 
   return (
     <HeroUIProvider navigate={router.push}>
