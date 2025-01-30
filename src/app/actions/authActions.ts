@@ -1,6 +1,7 @@
 "use server";
 
 import { auth, signOut } from "@/auth";
+import { prisma } from "@/prisma";
 import { redirect } from "next/navigation";
 
 
@@ -45,14 +46,18 @@ export async function getCurrentUserId() {
   }
 }
 
-/** Fetches the authenticated user's session data */
+/** Fetches the authenticated user's User data */
 export async function getCurrentUser() {
   try {
     const session = await auth();
     if (!session?.user?.id) {
       return null
     }
-    return session?.user;
+    return prisma.user.findUnique({
+      where: {
+        id: session?.user?.id,
+      },
+    })
   } catch (error) {
     return null
   }
