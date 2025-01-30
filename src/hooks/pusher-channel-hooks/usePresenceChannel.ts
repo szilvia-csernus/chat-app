@@ -43,7 +43,6 @@ export const usePresenceChannel = (currentProfileId: string | null) => {
       channelRef.current.bind(
         "pusher:subscription_succeeded",
         (members: Members) => {
-          console.log("Members:", members); // Debugging statement
           if (members && members.members) {
             handleSetMembers(Object.keys(members.members));
           } else {
