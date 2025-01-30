@@ -159,7 +159,7 @@ export async function getChat(chatId: string) {
     });
 
     if (!profile) {
-      return redirect("/complete-profile");
+      return redirect("/profile/complete-profile");
     }
 
     const chat = await prisma.conversation.findUnique({
@@ -230,7 +230,7 @@ export async function createChat(memberId: string) {
       },
     });
     if (!currentMember) {
-      return redirect("/complete-profile");
+      return redirect("/profile/complete-profile");
     }
 
     const profile2 = await prisma.profile.findUnique({
