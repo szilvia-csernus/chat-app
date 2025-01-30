@@ -12,7 +12,6 @@ import { authWithError, getCurrentUserId } from "./authActions";
 
 /** Fetches the photo for a given user (internal function) */
 async function getPhotoByUserIdFn(userId: string) {
-  await authWithError();
   return prisma.photo.findFirst({
     where: { userId },
   });
@@ -114,7 +113,7 @@ export async function deleteImageFromCloudinary(cloudinaryImageId: string) {
 /** Delete Photo from database by its cloudinary id. */
 export async function deletePhotoFromDatabase(cloudinaryImageId: string) {
   await authWithError();
-  
+
   try {
     const result = await prisma.photo.delete({
       where: { cloudinaryImageId },
