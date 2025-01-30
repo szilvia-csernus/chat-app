@@ -1,19 +1,26 @@
 import { notFound, redirect } from "next/navigation";
-import ChatForm from "./(main)/ChatForm";
 import { getChat } from "@/app/actions/chatActions";
-import ChatThread from "./(main)/ChatThread";
+
 import { mapChatDataToChatType } from "@/lib/utils";
 import { getCurrentMember, getMemberById } from "@/app/actions/memberActions";
 import { updateMessagesWithReadStatus } from "@/app/actions/messageActions";
 import { authWithRedirect } from "@/app/actions/authActions";
+import React from "react";
+import { Card } from "@heroui/card";
+import ChatThread from "./(main)/ChatThread";
+import ChatForm from "./(main)/ChatForm";
 
-export const dynamic = "force-dynamic";
+// export const dynamic = "force-dynamic";
 
-export default async function Chat({ params }: { params: { chatId: string } }) {
+export default async function ChatPage({
+  params,
+}: {
+  params: { chatId: string };
+}) {
   await authWithRedirect();
 
   const currentMember = await getCurrentMember();
-  if (!currentMember) return redirect("/profile/complete-profile");
+  if (!currentMember) return null; // layout.tsx will handle the redirect
 
   await updateMessagesWithReadStatus(params.chatId, currentMember.id);
 
@@ -29,16 +36,20 @@ export default async function Chat({ params }: { params: { chatId: string } }) {
   if (!chatPartner) return notFound();
 
   return (
-    <div className="flex flex-col justify-between">
-      <ChatThread
-        initialChat={initialChat}
-        currentMember={currentMember}
-        chatPartner={chatPartner}
-      />
+    <>
+      <Card className="w-full h-[85vh] p-5 overflow-auto py-3 border-1 border-gray-300 bg-background">
+        <div className="flex flex-col justify-between">
+          <ChatThread
+            currentMember={currentMember}
+            chatPartner={chatPartner}
+            initialChat={initialChat}
+          />
 
-      <div className="flex items-center space-x-2">
-        <ChatForm chatPartnerId={chatPartnerId} />
-      </div>
-    </div>
+          <div className="flex items-center space-x-2">
+            <ChatForm chatPartnerId={chatPartner.id} />
+          </div>
+        </div>
+      </Card>
+    </>
   );
 }
