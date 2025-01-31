@@ -4,11 +4,13 @@ import { devtools } from "zustand/middleware";
 
 type RecentChatsState = {
   recentChats: RecentChat[];
+  allUnreadMessageCount: number;
   setRecentChats: (recentChats: RecentChat[]) => void;
   addRecentChat: (recentChat: RecentChat) => void;
   removeRecentChat: (id: string) => void;
   addLastMessageToRecentChat: (id: string, message: string) => void;
   updateUnreadCount: (id: string, count: number) => void;
+  setAllUnreadMessageCount: () => void;
 }
 
 
@@ -67,6 +69,15 @@ export const useRecentChatsStore = create<RecentChatsState>()(
           });
 
           return { recentChats: updatedRecentChats };
+        });
+      },
+      setAllUnreadMessageCount: () => {
+        set((state) => {
+          const allUnreadMessageCount = state.recentChats.reduce(
+            (acc, rc) => acc + rc.unreadMessageCount,
+            0
+          );
+          return { allUnreadMessageCount };
         });
       }
     }),
