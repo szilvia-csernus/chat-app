@@ -27,6 +27,7 @@ export const usePrivateChatChannels = (currentMemberId: string) => {
   const updateUnreadCount = useRecentChatsStore(
     (state) => state.updateUnreadCount
   );
+  const setAllUnreadMessageCount = useRecentChatsStore((state) => state.setAllUnreadMessageCount);
 
   const handleNewMessage = useCallback(
     async (chatId: string, message: Message) => {
@@ -49,10 +50,19 @@ export const usePrivateChatChannels = (currentMemberId: string) => {
         const unreadCount = await getUnreadMessageCount(chatId);
         console.log("Unread count for chat", chatId, "is", unreadCount);
         updateUnreadCount(chatId, unreadCount);
+        setAllUnreadMessageCount();
       }
     },
-    [currentMemberId, addMessage, updateUnreadCount]
+    [currentMemberId, addMessage, updateUnreadCount, setAllUnreadMessageCount]
   );
+
+  const handleMessageRead = useCallback(
+    (messageId: string) => {
+      updateMessageReadStatus(messageId);
+      setAllUnreadMessageCount();
+    },
+    [updateMessageReadStatus, setAllUnreadMessageCount]);
+
 
   useEffect(() => {
     console.log("useEffect triggered with chats:", recentChats);
@@ -68,7 +78,7 @@ export const usePrivateChatChannels = (currentMemberId: string) => {
         });
         channel.bind("message-read", (data: { messageId: string }) => {
           console.log("Message read event received", data);
-          updateMessageReadStatus(data.messageId);
+          handleMessageRead(data.messageId);
         });
         channelRefs.current[chat.id] = channel;
         console.log(channelRefs.current);
