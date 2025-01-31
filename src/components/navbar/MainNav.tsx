@@ -10,12 +10,12 @@ import {
   NavbarMenuToggle,
 } from "@heroui/navbar";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FiUser } from "react-icons/fi";
 import UserMenu from "./UserMenu";
 import NavLink from "./NavLink";
-import { User } from "@prisma/client";
 import { HiOutlineChatBubbleLeftRight } from "react-icons/hi2";
+import { useRecentChatsStore } from "@/hooks/zustand-stores/useRecentChatsStore";
 
 type MainNavProps = {
   userName: string | null;
@@ -24,11 +24,24 @@ type MainNavProps = {
 
 export default function MainNav({ userName, photoUrl }: MainNavProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [msgCount, setMsgCount] = useState<number | null>(null);
+  const allUnreadMessageCount = useRecentChatsStore(
+    (state) => state.allUnreadMessageCount
+  );
+
+  useEffect(() => {
+    if (allUnreadMessageCount > 0) {
+      setMsgCount(allUnreadMessageCount);
+    } else {
+      setMsgCount(null);
+    }
+  }, [allUnreadMessageCount]);
 
   const menuItems = [
     { href: "/members", label: "Members" },
-    { href: "/chats", label: "Chats" },
+    { href: "/chats", label: "Chats", badge: msgCount },
   ];
+
 
   return (
     <Navbar
@@ -61,12 +74,13 @@ export default function MainNav({ userName, photoUrl }: MainNavProps) {
           </NavbarMenuItem>
         ))}
       </NavbarMenu>
-      <NavbarContent className="hidden sm:flex gap-4" justify="center">
+      <NavbarContent className="hidden sm:flex gap-6" justify="center">
         {menuItems.map((item, index) => (
           <NavLink
             key={index}
             href={item.href}
             label={item.label}
+            badge={item.badge ? item.badge : null}
             onClick={() => setIsMenuOpen(false)}
           />
         ))}
