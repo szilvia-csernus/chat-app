@@ -4,39 +4,39 @@ import { useCallback, useEffect, useRef } from "react";
 import usePresenceStore from "../zustand-stores/usePresenceStore";
 import { Channel, Members } from "pusher-js";
 import { pusherClient } from "@/lib/pusher";
+import{ useVisibilityChange}  from "../misc-hooks/useVisibilityChange";
 
 export const usePresenceChannel = (currentProfileId: string | null) => {
-  const set = usePresenceStore((state) => state.set);
-  const add = usePresenceStore((state) => state.add);
-  const remove = usePresenceStore((state) => state.remove);
+  const setMembers = usePresenceStore((state) => state.set);
+  const addMember = usePresenceStore((state) => state.add);
+  const removeMember = usePresenceStore((state) => state.remove);
 
-  // this is used to prevent the creation of multiple channels when the component re-renders
+  // Ref is used to prevent the creation of multiple channels when the component re-renders
   const channelRef = useRef<Channel | null>(null);
+  
 
   const handleSetMembers = useCallback(
     (memberIds: string[]) => {
-      set(memberIds);
+      setMembers(memberIds);
     },
-    [set]
+    [setMembers]
   );
 
   const handleAddMember = useCallback(
     (memberId: string) => {
-      add(memberId);
+      addMember(memberId);
     },
-    [add]
+    [addMember]
   );
 
   const handleRemoveMember = useCallback(
     (memberId: string) => {
-      remove(memberId);
+      removeMember(memberId);
     },
-    [remove]
+    [removeMember]
   );
 
-  useEffect(() => {
-    if (!currentProfileId) return;
-
+  const subscribeToChannel = () => {
     if (!channelRef.current) {
       channelRef.current = pusherClient.subscribe("presence-chat-app");
 
@@ -65,17 +65,40 @@ export const usePresenceChannel = (currentProfileId: string | null) => {
         }
       );
     }
+  };
 
+  const unsubscribeFromChannel = () => {
+    if (channelRef.current && channelRef.current.subscribed) {
+      channelRef.current.unbind(
+        "pusher:subscription_succeeded",
+        handleSetMembers
+      );
+      channelRef.current.unbind("pusher:member_added", handleAddMember);
+      channelRef.current.unbind("pusher:member_removed", handleRemoveMember);
+      channelRef.current.unsubscribe();
+      channelRef.current = null;
+    }
+  };
+
+  const isTabVisible = useVisibilityChange();
+
+
+  useEffect(() => {
+    if (!currentProfileId) return;
+
+    if (isTabVisible) {
+      // Tab is visible, subscribing to channel
+      subscribeToChannel();
+    } else {
+      // Tab is hidden, unsubscribing from channel
+      unsubscribeFromChannel();
+    }
+
+    // Cleanup
     return () => {
-      if (channelRef.current && channelRef.current.subscribed) {
-        channelRef.current.unsubscribe();
-        channelRef.current.unbind(
-          "pusher:subscription_succeeded",
-          handleSetMembers
-        );
-        channelRef.current.unbind("pusher:member_added", handleAddMember);
-        channelRef.current.unbind("pusher:member_removed", handleRemoveMember);
+      if (channelRef.current) {
+        unsubscribeFromChannel();
       }
     };
-  }, [handleSetMembers, handleAddMember, handleRemoveMember, currentProfileId]);
-};
+  }, [currentProfileId, isTabVisible])
+}
