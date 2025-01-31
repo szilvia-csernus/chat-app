@@ -3,6 +3,7 @@
 import { useRecentChatsStore } from "@/hooks/zustand-stores/useRecentChatsStore";
 import { usePresenceChannel } from "@/hooks/pusher-channel-hooks/usePresenceChannel";
 import { useChatPartnersStore } from "@/hooks/zustand-stores/useChatPartnersStore";
+import { usePrivateChatChannels } from "@/hooks/pusher-channel-hooks/usePrivateChatChannels";
 import { ChatPartner, RecentChat } from "@/types";
 import { HeroUIProvider } from "@heroui/react";
 import React, { ReactNode, useEffect } from "react";
@@ -31,11 +32,24 @@ export default function Providers({
   const setChatPartners = useChatPartnersStore(
     (state) => state.setChatPartners
   );
+  const setAllUnreadMessageCount = useRecentChatsStore(
+    (state) => state.setAllUnreadMessageCount
+  );
 
   useEffect(() => {
     setRecentChats(recentChats);
     setChatPartners(chatPartners);
+
+    return () => {
+      setRecentChats([]);
+      setChatPartners([]);
+    };
   }, [recentChats, chatPartners, setRecentChats, setChatPartners]);
+
+  if (currentProfileId) {
+    usePrivateChatChannels(currentProfileId);
+    setAllUnreadMessageCount();
+  }
 
   return (
     <HeroUIProvider navigate={router.push}>
