@@ -2,7 +2,7 @@ import React, { Suspense } from "react";
 import PresenceDot from "@/components/PresenceDot";
 import MemberImage from "@/app/members/MemberImage";
 import { Member } from "@/types";
-
+import usePresenceStore from "@/hooks/zustand-stores/usePresenceStore";
 import RecentChatFallback from "./RecentChatFallback";
 import RecentChatFrame from "./RecentChatFrame";
 
@@ -10,25 +10,23 @@ type Props = {
   chatId: string;
   chatPartner: Member;
   lastMessage: string;
-  unreadMessages: number;
-  membersOnline: string[];
+  unreadMessageCount: number;
 };
 
 export default function RecentChat({
   chatId,
   chatPartner,
   lastMessage,
-  unreadMessages,
-  membersOnline,
+  unreadMessageCount,
 }: Props) {
+  const membersOnline = usePresenceStore((state) => state.membersOnline);
   const online = membersOnline.includes(chatPartner.id);
-  const message = lastMessage.length > 18 ? `${lastMessage.slice(0, 18)}...` : lastMessage;
+  const message =
+    lastMessage.length > 18 ? `${lastMessage.slice(0, 18)}...` : lastMessage;
 
   return (
     <Suspense fallback={<RecentChatFallback />}>
-      <RecentChatFrame
-        chatId={chatId}
-      >
+      <RecentChatFrame chatId={chatId}>
         <div className="m-2 rounded-full border-2 border-slate-500 overflow-hidden">
           <MemberImage
             memberImage={chatPartner.image ? chatPartner.image : ""}
@@ -46,10 +44,10 @@ export default function RecentChat({
           <div>{chatPartner.name}</div>
           <div className="text-xs text-gray-500 min-w-full relative">
             {message || "No messages yet"}
-            {unreadMessages > 0 && (
-            <div className="absolute bottom-2 left-[125px] bg-secondary rounded-full text-white text-xs w-5 h-5 flex items-center justify-center">
-              {unreadMessages}
-            </div>
+            {unreadMessageCount > 0 && (
+              <div className="absolute bottom-2 left-[125px] bg-secondary rounded-full text-white text-xs w-5 h-5 flex items-center justify-center">
+                {unreadMessageCount}
+              </div>
             )}
           </div>
         </div>

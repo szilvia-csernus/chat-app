@@ -3,20 +3,15 @@
 import React from "react";
 import { Card, CardBody, CardFooter, Divider, Button, Skeleton } from "@heroui/react";
 import { useRouter } from "next/navigation";
-import usePresenceStore from "@/hooks/usePresenceStore";
-import { useRecentChatsStore } from "@/hooks/useRecentChatsStore";
 import RecentChatsList from "./RecentChatsList";
-import { Member } from "@/types";
-import { Profile } from "@prisma/client";
 
-type SidebarProps = {
-  currentProfileId: string;
+
+type Props = {
+  currentMemberId: string;
 };
 
-const Sidebar: React.FC<SidebarProps> = ({ currentProfileId }) => {
-  const membersOnline = usePresenceStore((state) => state.membersOnline);
+export default function Sidebar ({ currentMemberId }: Props) {
   const router = useRouter();
-  const recentChats = useRecentChatsStore((state) => state.recentChats);
 
   return (
     <Card className="w-full items-center h-full border-1 border-gray-300 bg-background">
@@ -26,9 +21,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentProfileId }) => {
         </div>
         <Divider className="mt-3 mb-5 bg-accent" />
         <RecentChatsList
-          recentChats={recentChats}
-          currentProfileId={currentProfileId}
-          membersOnline={membersOnline}
+          currentMemberId={currentMemberId}
         />
         
       </CardBody>
@@ -46,5 +39,3 @@ const Sidebar: React.FC<SidebarProps> = ({ currentProfileId }) => {
     </Card>
   );
 };
-
-export default React.memo(Sidebar);

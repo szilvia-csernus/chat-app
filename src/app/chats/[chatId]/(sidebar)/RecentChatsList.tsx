@@ -1,37 +1,35 @@
-import React, { useMemo } from "react";
-import { Member, RecentChat as RecentChatType } from "@/types";
+import React from "react";
 import RecentChat from "./RecentChat";
-import { Profile } from "@prisma/client";
-
+import { useRecentChatsStore } from "@/hooks/zustand-stores/useRecentChatsStore";
+import { useCurrentChatStore } from "@/hooks/zustand-stores/useCurrentChatStore";
 
 type Props = {
-  recentChats: RecentChatType[];
-  currentProfileId: string;
-  membersOnline: string[];
+  currentMemberId: string;
 };
 
-export default function RecentChatsList({
-  recentChats,
-  currentProfileId,
-  membersOnline,
-}: Props) {
+export default function RecentChatsList({ currentMemberId }: Props) {
+  const recentChats = useRecentChatsStore((state) => state.recentChats);
+  const currentChat = useCurrentChatStore((state) => state.chat);
 
   return (
     <ul className="flex flex-col gap-1 w-full ">
       {recentChats.map((rc) => {
-        const chatPartner = currentProfileId === rc.participant1.id ? rc.participant2 : rc.participant1;
+        const chatPartner =
+          currentMemberId === rc.participant1.id
+            ? rc.participant2
+            : rc.participant1;
+        const msgCount = currentChat?.id === rc.id ? 0 : rc.unreadMessageCount;
         return (
           <li key={rc.id}>
-          <RecentChat
-            chatId={rc.id}
-            chatPartner={chatPartner}
-            lastMessage={rc.lastMessage}
-            unreadMessages={rc.unreadMessages}
-            membersOnline={membersOnline}
-          />
+            <RecentChat
+              chatId={rc.id}
+              chatPartner={chatPartner}
+              lastMessage={rc.lastMessage}
+              unreadMessageCount={msgCount}
+            />
           </li>
         );
       })}
     </ul>
   );
-};
+}
