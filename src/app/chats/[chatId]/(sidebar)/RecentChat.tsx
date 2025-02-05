@@ -2,9 +2,11 @@ import React, { Suspense } from "react";
 import PresenceDot from "@/components/PresenceDot";
 import MemberImage from "@/app/members/MemberImage";
 import { Member } from "@/types";
-import usePresenceStore from "@/hooks/zustand-stores/usePresenceStore";
+import { selectMembersOnline } from "@/redux-store/features/presenceSlice";
 import RecentChatFallback from "./RecentChatFallback";
 import RecentChatFrame from "./RecentChatFrame";
+import { useAppSelector } from "@/redux-store/hooks";
+
 
 type Props = {
   chatId: string;
@@ -19,7 +21,7 @@ export default function RecentChat({
   lastMessage,
   unreadMessageCount,
 }: Props) {
-  const membersOnline = usePresenceStore((state) => state.membersOnline);
+  const membersOnline = useAppSelector(selectMembersOnline);
   const online = membersOnline.includes(chatPartner.id);
   const message =
     lastMessage.length > 18 ? `${lastMessage.slice(0, 18)}...` : lastMessage;

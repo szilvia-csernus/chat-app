@@ -11,11 +11,19 @@ type Member = {
   image: string;
 }
 
+type SerializedMessage = {
+  id: string;
+  content: string;
+  createdAt: string;
+  senderId: string;
+  read: boolean;
+};
+
 type Chat = {
   id: string;
   participant1: Member;
   participant2: Member;
-  messages: Message[];
+  messages: SerializedMessage[];
 }
 
 type CPData = {
@@ -73,6 +81,14 @@ type RecentChat = {
   unreadMessageCount: number;
 }
 
+type CDataMessage = {
+  id: string;
+  content: string;
+  createdAt: Date;
+  senderId: string;
+  read: boolean;
+}
+
 type CData = {
   profile1: {
     id: string;
@@ -88,11 +104,6 @@ type CData = {
       image: string | null;
     };
   };
-  messages: {
-    content: string;
-    createdAt: Date;
-    senderId: string;
-    read: boolean;
-  }[];
+  messages: CDataMessage[];
 } & Conversation;
 

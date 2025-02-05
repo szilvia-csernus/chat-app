@@ -1,15 +1,17 @@
 import React from "react";
 import RecentChat from "./RecentChat";
-import { useRecentChatsStore } from "@/hooks/zustand-stores/useRecentChatsStore";
-import { useCurrentChatStore } from "@/hooks/zustand-stores/useCurrentChatStore";
+import { useAppSelector } from "@/redux-store/hooks";
+import { selectRecentChats } from "@/redux-store/features/recentChatsSlice";
+import { selectCurrentChat } from "@/redux-store/features/currentChatSlice";
+
 
 type Props = {
   currentMemberId: string;
 };
 
 export default function RecentChatsList({ currentMemberId }: Props) {
-  const recentChats = useRecentChatsStore((state) => state.recentChats);
-  const currentChat = useCurrentChatStore((state) => state.chat);
+  const recentChats = useAppSelector(selectRecentChats);
+  const currentChat = useAppSelector(selectCurrentChat);
 
   return (
     <ul className="flex flex-col gap-1 w-full ">

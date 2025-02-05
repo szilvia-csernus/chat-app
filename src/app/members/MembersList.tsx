@@ -1,17 +1,19 @@
 "use client";
 
 import MemberCard from "./MemberCard";
-import usePresenceStore from "@/hooks/zustand-stores/usePresenceStore";
+import { selectAllChatPartners } from "@/redux-store/features/chatPartnersSlice";
+import { selectMembersOnline } from "@/redux-store/features/presenceSlice";
+import { useAppSelector } from "@/redux-store/hooks";
 import { Member } from "@/types";
-import { useChatPartnersStore } from "@/hooks/zustand-stores/useChatPartnersStore";
+
 
 type MembersListProps = {
   members: Member[] | null;
 };
 
 export default function MembersList({ members }: MembersListProps) {
-  const membersOnline = usePresenceStore((state) => state.membersOnline);
-  const chatPartners = useChatPartnersStore((state) => state.chatPartners);
+  const membersOnline = useAppSelector(selectMembersOnline);
+  const chatPartners = useAppSelector(selectAllChatPartners);
   console.log("members:", members);
   console.log("membersOnline:", membersOnline);
 

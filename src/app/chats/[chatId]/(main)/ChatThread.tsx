@@ -1,12 +1,15 @@
 "use client";
 
-import { useCurrentChatStore } from "@/hooks/zustand-stores/useCurrentChatStore";
 import { Chat, Member } from "@/types";
 import React, { useEffect } from "react";
 import MessageBox from "./MessageBox";
 
-import usePresenceStore from "@/hooks/zustand-stores/usePresenceStore";
-import { useRecentChatsStore } from "@/hooks/zustand-stores/useRecentChatsStore";
+import { selectMembersOnline } from "@/redux-store/features/presenceSlice";
+import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
+import { setAllUnreadMessageCount, updateUnreadCount } from "@/redux-store/features/recentChatsSlice";
+import { selectCurrentChat } from "@/redux-store/features/currentChatSlice";
+import { setCurrentChat } from "@/redux-store/features/currentChatSlice";
+
 
 type Props = {
   currentMember: Member;
@@ -15,27 +18,26 @@ type Props = {
 };
 
 export default function ChatThread({ currentMember, chatPartner, initialChat }: Props) {
-  const currentChat = useCurrentChatStore((state) => state.chat);
-  const membersOnline = usePresenceStore((state) => state.membersOnline);
-  const setCurrentChat = useCurrentChatStore((state) => state.setCurrentChat);
-  const resetCurrentChat = useCurrentChatStore((state) => state.resetCurrentChat);
-   const setAllUnreadMessageCount = useRecentChatsStore(
-      (state) => state.setAllUnreadMessageCount
-    );
+  const dispatch = useAppDispatch();
+  
+  const currentChat = useAppSelector(selectCurrentChat);
+  const membersOnline = useAppSelector(selectMembersOnline);
 
   useEffect(() => {
     if (initialChat) {
-      setCurrentChat(initialChat);
+      dispatch(setCurrentChat(initialChat));
     }
-
-    return () => {
-      resetCurrentChat();
-    };
   }, [initialChat, setCurrentChat]);
 
   useEffect(() => {
-    setAllUnreadMessageCount();
-  }, [currentChat?.id, setAllUnreadMessageCount]);
+    if (currentChat) {
+      // The user is currently viewing the chat, so reset the unread count
+      // in the redux store. For the database, the read status is updated
+      // in the backand in page.tsx
+      dispatch(updateUnreadCount({chatId: currentChat.id, count: 0}));
+      dispatch(setAllUnreadMessageCount());
+    }
+  });
 
   let chatThread: React.JSX.Element;
   if (
@@ -58,7 +60,7 @@ export default function ChatThread({ currentMember, chatPartner, initialChat }: 
                 currentMember={currentMember}
                 chatPartner={chatPartner}
                 isCurrentMemberSender={isCurrentMemberSender}
-                isChatPartnerOnline={isChatPartnerOnline}
+                isChatPartnerOnline={!!isChatPartnerOnline}
               />
             </li>
           );

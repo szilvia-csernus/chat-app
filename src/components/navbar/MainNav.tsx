@@ -10,36 +10,35 @@ import {
   NavbarMenuToggle,
 } from "@heroui/navbar";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { FiUser } from "react-icons/fi";
 import UserMenu from "./UserMenu";
 import NavLink from "./NavLink";
 import { HiOutlineChatBubbleLeftRight } from "react-icons/hi2";
-import { useRecentChatsStore } from "@/hooks/zustand-stores/useRecentChatsStore";
+import { usePresenceChannel } from "@/hooks/pusher-channel-hooks/usePresenceChannel";
+import { useAppSelector } from "@/redux-store/hooks";
+import { selectAllUnreadMessageCount } from "@/redux-store/features/recentChatsSlice";
+import { usePrivateChatChannels } from "@/hooks/pusher-channel-hooks/usePrivateChatChannels";
 
 type MainNavProps = {
+  currentProfileId: string | null;
   userName: string | null;
   photoUrl: string;
 };
 
-export default function MainNav({ userName, photoUrl }: MainNavProps) {
+export default function MainNav({ currentProfileId, userName, photoUrl }: MainNavProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [msgCount, setMsgCount] = useState<number | null>(null);
-  const allUnreadMessageCount = useRecentChatsStore(
-    (state) => state.allUnreadMessageCount
-  );
+  
+  const allUnreadMessageCount = useAppSelector(selectAllUnreadMessageCount);
 
-  useEffect(() => {
-    if (allUnreadMessageCount > 0) {
-      setMsgCount(allUnreadMessageCount);
-    } else {
-      setMsgCount(null);
-    }
-  }, [allUnreadMessageCount]);
+  if (currentProfileId) {
+    usePresenceChannel(currentProfileId);
+    usePrivateChatChannels(currentProfileId);
+  }
 
   const menuItems = [
     { href: "/members", label: "Members" },
-    { href: "/chats", label: "Chats", badge: msgCount },
+    { href: "/chats", label: "Chats", badge: allUnreadMessageCount },
   ];
 
 
