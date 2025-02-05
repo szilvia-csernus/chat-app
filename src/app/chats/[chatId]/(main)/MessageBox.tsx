@@ -1,14 +1,12 @@
 'use client';
 
 import PresenceAvatar from "@/components/PresenceAvatar";
-import { formatShortDateTime } from "@/lib/utils";
-import { Member } from "@/types";
-import { Message } from "@prisma/client";
+import { Member, SerializedMessage } from "@/types";
 import clsx from "clsx";
 import { useEffect, useRef } from "react";
 
 type MessageBoxProps = {
-  message: Message;
+  message: SerializedMessage;
   read: boolean;
   currentMember: Member;
   chatPartner: Member;
@@ -61,7 +59,7 @@ export default function MessageBox({
       
       <div className='flex'>
         <span className='text-xs font-semibold '>{sender.name}</span>
-        <span className='text-xs ml-2 '>{formatShortDateTime(message.createdAt)}</span>
+        <span className='text-xs ml-2 '>{message.createdAt}</span>
       </div>
     </div>
 

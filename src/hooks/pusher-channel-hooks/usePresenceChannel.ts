@@ -1,37 +1,35 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
-import usePresenceStore from "../zustand-stores/usePresenceStore";
 import { Channel, Members } from "pusher-js";
 import { pusherClient } from "@/lib/pusher";
 import{ useVisibilityChange}  from "../misc-hooks/useVisibilityChange";
+import { setPresentMembers, addMember, removeMember } from "@/redux-store/features/presenceSlice";
+import { useAppDispatch } from "@/redux-store/hooks";
 
 export const usePresenceChannel = (currentProfileId: string | null) => {
-  const setMembers = usePresenceStore((state) => state.set);
-  const addMember = usePresenceStore((state) => state.add);
-  const removeMember = usePresenceStore((state) => state.remove);
+  const dispatch = useAppDispatch();
 
   // Ref is used to prevent the creation of multiple channels when the component re-renders
   const channelRef = useRef<Channel | null>(null);
   
-
   const handleSetMembers = useCallback(
     (memberIds: string[]) => {
-      setMembers(memberIds);
+      dispatch(setPresentMembers(memberIds));
     },
-    [setMembers]
+    [setPresentMembers]
   );
 
   const handleAddMember = useCallback(
     (memberId: string) => {
-      addMember(memberId);
+      dispatch(addMember(memberId));
     },
     [addMember]
   );
 
   const handleRemoveMember = useCallback(
     (memberId: string) => {
-      removeMember(memberId);
+      dispatch(removeMember(memberId));
     },
     [removeMember]
   );

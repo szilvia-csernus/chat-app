@@ -11,7 +11,8 @@ import {
 import { useRouter } from "next/navigation";
 import { createChat } from "@/app/actions/chatActions";
 import { Member } from "@/types";
-import { useChatPartnersStore } from "@/hooks/zustand-stores/useChatPartnersStore";
+import { useAppDispatch } from "@/redux-store/hooks";
+import { addChatPartner } from "@/redux-store/features/chatPartnersSlice";
 
 type NewChatProps = {
   member: Member;
@@ -25,17 +26,19 @@ export default function NewChat({
   onOpenChange,
 }: NewChatProps) {
   const router = useRouter();
-  const addChatPartner = useChatPartnersStore((state) => state.addChatPartner);
+  const dispatch = useAppDispatch();
 
   const newChatHandler = async (onClose: () => void) => {
     const newChat = await createChat(member.id);
     if (!newChat) {
       throw new Error("Failed to create new chat");
     }
-    addChatPartner({
-      chatId: newChat.id,
-      chatPartner: member,
-    });
+    dispatch(
+      addChatPartner({
+        chatId: newChat.id,
+        chatPartner: member,
+      })
+    );
     router.push(`/chats/${newChat.id}`);
     onClose();
   };

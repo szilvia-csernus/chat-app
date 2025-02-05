@@ -3,66 +3,98 @@
 import { useEffect, useRef } from "react";
 import { Channel } from "pusher-js";
 import { pusherClient } from "@/lib/pusher";
-import { useCurrentChatStore } from "../zustand-stores/useCurrentChatStore";
 import { Message } from "@prisma/client";
 import { useCallback } from "react";
-import { useRecentChatsStore } from "@/hooks/zustand-stores/useRecentChatsStore";
 import { updateReadStatus } from "@/app/actions/messageActions";
 import { getUnreadMessageCount } from "@/app/actions/chatActions";
+import {
+  addLastMessageToRecentChat,
+  selectRecentChats,
+  setAllUnreadMessageCount,
+  updateUnreadCount,
+} from "@/redux-store/features/recentChatsSlice";
+import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
+import {
+  addMessage,
+  selectCurrentChat,
+  updateMessageReadStatus,
+} from "@/redux-store/features/currentChatSlice";
+import { SerializedMessage } from "@/types";
+import { serializeMessage } from "@/lib/serialize";
 
 
 export const usePrivateChatChannels = (currentMemberId: string) => {
-
   // Ref is used to prevent the creation of multiple channels when the component re-renders
   const channelRefs = useRef<{ [key: string]: Channel | null }>({});
-  const updateMessageReadStatus = useCurrentChatStore(
-    (state) => state.updateMessageReadStatus
-  );
+  const dispatch = useAppDispatch();
 
-  const recentChats = useRecentChatsStore((state) => state.recentChats);
-  const currentChat = useCurrentChatStore((state) => state.chat);
 
-  const addMessage = useCurrentChatStore((state) => state.addMessage);
-  const addLastMessageToRecentChat = useRecentChatsStore((state) => state.addLastMessageToRecentChat);
-  const updateUnreadCount = useRecentChatsStore(
-    (state) => state.updateUnreadCount
-  );
-  const setAllUnreadMessageCount = useRecentChatsStore((state) => state.setAllUnreadMessageCount);
+  const recentChats = useAppSelector(selectRecentChats);
+  const currentChat = useAppSelector(selectCurrentChat);
+  console.log("Current chat in usePrivateChatChannels", currentChat);
+  // storing the current chat in a ref to use in the handleNewMessage function
+  // which otherwise would not have access to the current chat when it is
+  // triggered by the channel event
+  const currentChatRef = useRef(currentChat);
+
+  useEffect(() => {
+    currentChatRef.current = currentChat;
+  }, [currentChat]);
 
   const handleNewMessage = useCallback(
-    async (chatId: string, message: Message) => {
+    async (chatId: string, message: SerializedMessage) => {
+      const currentChat = currentChatRef.current;
+      console.log("Handling new message", chatId, currentChat?.id);
+      // If the message is for the current chat, add it to the chat
+      // on both/either the sender and receiver side
       if (currentChat && currentChat.id === chatId) {
-        addMessage(message);
+        console.log("Supposed to add message to current chat", currentChat.id);
+        dispatch(addMessage(message));
       }
+      dispatch(
+        addLastMessageToRecentChat({ chatId, content: message.content })
+      );
 
+      // Receiver side: if the message is not for current chat,
+      // update the unread count for that chat
       if (
         currentChat &&
-        currentChat.id === chatId && 
+        currentChat.id !== chatId &&
         message.senderId !== currentMemberId
       ) {
-        console.log("New message received for chat: ",chatId, message);
+        const unreadCount = await getUnreadMessageCount(chatId);
+        dispatch(updateUnreadCount({ chatId, count: unreadCount }));
+        dispatch(setAllUnreadMessageCount());
+      }
+
+      // Receiver side: if the message is for the current chat,
+      // update the read status of the message
+      if (
+        currentChat &&
+        currentChat.id === chatId &&
+        message.senderId !== currentMemberId
+      ) {
+        console.log("New message received for chat: ", chatId, message);
         console.log("Current chat is: ", currentChat.id);
         await updateReadStatus(message.id);
       }
-      
-      addLastMessageToRecentChat(chatId, message.content);
-      if (chatId) {
-        const unreadCount = await getUnreadMessageCount(chatId);
-        console.log("Unread count for chat", chatId, "is", unreadCount);
-        updateUnreadCount(chatId, unreadCount);
-        setAllUnreadMessageCount();
-      }
     },
-    [currentMemberId, addMessage, updateUnreadCount, setAllUnreadMessageCount]
+    [
+      currentMemberId,
+      addMessage,
+      updateUnreadCount,
+      setAllUnreadMessageCount,
+      currentChat,
+    ]
   );
 
   const handleMessageRead = useCallback(
     (messageId: string) => {
-      updateMessageReadStatus(messageId);
-      setAllUnreadMessageCount();
+      dispatch(updateMessageReadStatus(messageId));
+      dispatch(setAllUnreadMessageCount());
     },
-    [updateMessageReadStatus, setAllUnreadMessageCount]);
-
+    [updateMessageReadStatus, setAllUnreadMessageCount]
+  );
 
   useEffect(() => {
     console.log("useEffect triggered with chats:", recentChats);
@@ -72,10 +104,14 @@ export const usePrivateChatChannels = (currentMemberId: string) => {
       if (!channelRefs.current[chat.id]) {
         const channel = pusherClient.subscribe(`private-chat-${chat.id}`);
         console.log("Subscribed to channel", `private-chat-${chat.id}`);
-        channel.bind("new-message", (data: {chatId: string, message: Message}) => {
-          console.log("New message received", data.chatId, data.message);
-          handleNewMessage(data.chatId, data.message);
-        });
+        channel.bind(
+          "new-message",
+          (data: { chatId: string; message: Message }) => {
+            const serializedMessage = serializeMessage(data.message);
+            console.log("New message received", data.chatId, serializedMessage);
+            handleNewMessage(data.chatId, serializedMessage);
+          }
+        );
         channel.bind("message-read", (data: { messageId: string }) => {
           console.log("Message read event received", data);
           handleMessageRead(data.messageId);

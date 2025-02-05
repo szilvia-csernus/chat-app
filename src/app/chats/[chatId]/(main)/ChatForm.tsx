@@ -6,7 +6,7 @@ import { messageSchema, MessageSchema } from "@/lib/schemas/messageSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Input } from "@heroui/react";
 import { HiPaperAirplane } from "react-icons/hi2";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import {
   createMessage,
 } from "@/app/actions/messageActions";
@@ -18,7 +18,6 @@ type Props = {
 };
 
 export default function ChatForm({ chatPartnerId }: Props) {
-  const router = useRouter();
   const params = useParams<{ chatId: string }>();
   const chatId = params.chatId;
   const {
@@ -29,8 +28,6 @@ export default function ChatForm({ chatPartnerId }: Props) {
     setFocus,
     formState: { isSubmitting, isValid, errors },
   } = useForm<MessageSchema>({ resolver: zodResolver(messageSchema) });
-
-  // const updateUnreadCount = useMessageStore((state) => state.updateUnreadCount);
 
   useEffect(() => {
     setFocus("content");
@@ -43,15 +40,6 @@ export default function ChatForm({ chatPartnerId }: Props) {
     } else {
       reset();
       setTimeout(() => setFocus("content"), 50);
-
-      // const updatedMessages = await getMessageThread(chatPartnerId);
-      // setMessages(updatedMessages);
-
-      // getUnreadMessageCount().then((count) => {
-      //   updateUnreadCount(count);
-      // });
-
-      router.refresh();
     }
   };
 

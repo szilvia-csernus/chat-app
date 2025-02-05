@@ -6,7 +6,7 @@ import { getCurrentUser } from "./actions/authActions";
 import { getPhotoByUserId } from "./actions/photoActions";
 import { getChatPartners, getRecentChats } from "./actions/chatActions";
 import { getCurrentProfileId } from "@/app/actions/profileActions";
-import { mapCPDataToChatPartnerType, mapRCDataToRecentChatsType } from "@/lib/utils";
+import { mapCPDataToChatPartnerType, mapRCDataToRecentChatsType } from "@/lib/maps";
 
 export const metadata: Metadata = {
   title: "Chat App",
@@ -43,11 +43,10 @@ export default async function RootLayout({
     <html lang="en">
       <body className="font-body h-auto">
         <Providers
-          currentProfileId={currentProfileId || null}
           recentChats={recentChats}
           chatPartners={chatPartners}
         >
-          <MainNav userName={userName} photoUrl={photoUrl} />
+          <MainNav currentProfileId={currentProfileId} userName={userName} photoUrl={photoUrl} />
           <main className="container mx-auto p-4">
             {children}
           </main>

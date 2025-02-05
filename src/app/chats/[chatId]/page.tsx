@@ -1,7 +1,7 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { getChat } from "@/app/actions/chatActions";
 
-import { mapChatDataToChatType } from "@/lib/utils";
+import { mapChatDataToChatType } from "@/lib/maps";
 import { getCurrentMember, getMemberById } from "@/app/actions/memberActions";
 import { updateMessagesWithReadStatus } from "@/app/actions/messageActions";
 import { authWithRedirect } from "@/app/actions/authActions";
@@ -10,7 +10,7 @@ import { Card } from "@heroui/card";
 import ChatThread from "./(main)/ChatThread";
 import ChatForm from "./(main)/ChatForm";
 
-// export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic";
 
 export default async function ChatPage({
   params,
@@ -20,8 +20,9 @@ export default async function ChatPage({
   await authWithRedirect();
 
   const currentMember = await getCurrentMember();
-  if (!currentMember) return null; // layout.tsx will handle the redirect
+  if (!currentMember) return null; // layout.tsx handles the redirect
 
+  // Update the messages in the database to be marked as read
   await updateMessagesWithReadStatus(params.chatId, currentMember.id);
 
   const chat = await getChat(params.chatId);
