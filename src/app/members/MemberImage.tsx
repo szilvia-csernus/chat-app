@@ -25,6 +25,7 @@ const MemberImage: React.FC<MemberImageProps> = ({ memberName, memberImage, widt
     className={className || "aspect-square object-cover"}
     crop="fill"
     gravity="faces"
+    priority={true}
     />
   ); // faces is a Cloudinary transformation, makes sure that the faces are not cropped out
   } else {
