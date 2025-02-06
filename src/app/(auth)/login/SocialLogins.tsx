@@ -20,7 +20,7 @@ export default function SocialLogins() {
           size="lg"
           fullWidth
           variant="faded"
-          onClick={() => socialClick("google")}
+          onPress={() => socialClick("google")}
           className="border-1 rounded-lg border-gray-400"
         >
           <FcGoogle size={24} />
@@ -32,7 +32,7 @@ export default function SocialLogins() {
           size="lg"
           fullWidth
           variant="faded"
-          onClick={() => socialClick("github")}
+          onPress={() => socialClick("github")}
           className="border-1 rounded-lg border-gray-400"
         >
           <FaGithub size={24} />
@@ -44,7 +44,7 @@ export default function SocialLogins() {
           size="lg"
           fullWidth
           variant="faded"
-          onClick={() => socialClick("linkedin")}
+          onPress={() => socialClick("linkedin")}
           className="border-1 rounded-lg border-gray-400"
         >
           <FaLinkedin color="#0077B5" size={24} />
