@@ -16,11 +16,11 @@ import {
 import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
 import {
   addMessage,
-  selectCurrentChat,
   updateMessageReadStatus,
 } from "@/redux-store/features/currentChatSlice";
 import { Chat, SerializedMessage } from "@/types";
 import { serializeMessage } from "@/lib/serialize";
+import { usePathname } from "next/navigation";
 
 
 export const usePrivateChatChannels = (currentMemberId: string | null) => {
@@ -28,25 +28,28 @@ export const usePrivateChatChannels = (currentMemberId: string | null) => {
   const channelRefs = useRef<{ [key: string]: Channel | null }>({});
   const dispatch = useAppDispatch();
 
-  // storing the current chat in a ref to use in the handleNewMessage function
-  // which otherwise would not have access to the current chat when it is
+  // storing the active chat in a ref to be used in the handleNewMessage function
+  // which otherwise would not have access to it when
   // triggered by the channel event
-  const currentChatRef = useRef(<Chat | null>null);
-  currentChatRef.current = useAppSelector(selectCurrentChat);
-  console.log("Current chat in usePrivateChatChannels", currentChatRef.current);
-
+  const currentChatRef = useRef(<string | null>null);
+  const pathname = usePathname();
+  if (pathname.startsWith("/chats/")) {
+    currentChatRef.current = pathname.split("/")[2];
+  }
+  console.log("Active chat in usePrivateChatChannels", currentChatRef.current);
+  
   const recentChats = useAppSelector(selectRecentChats);
 
 
   const handleNewMessage = useCallback(
     async (chatId: string, message: SerializedMessage) => {
-      console.log("Handling new message", chatId, currentChatRef.current?.id);
-      // If the message is for the current chat, add it to the chat
+      console.log("Handling new message", chatId, currentChatRef.current);
+      // If the message is for the acctive chat, add it to the chat
       // on either or both the sender and receiver side
-      if (currentChatRef.current && currentChatRef.current.id === chatId) {
+      if (currentChatRef.current === chatId) {
         console.log(
-          "Supposed to add message to current chat",
-          currentChatRef.current.id
+          "Supposed to add message to active chat",
+          currentChatRef.current
         );
         dispatch(addMessage(message));
       }
@@ -54,11 +57,10 @@ export const usePrivateChatChannels = (currentMemberId: string | null) => {
         addLastMessageToRecentChat({ chatId, content: message.content })
       );
 
-      // Receiver side: if the message is not for current chat,
+      // Receiver side: if the message is not for the active chat,
       // update the unread count for that chat
       if (
-        currentChatRef.current &&
-        currentChatRef.current.id !== chatId &&
+        currentChatRef.current !== chatId &&
         message.senderId !== currentMemberId
       ) {
         const unreadCount = await getUnreadMessageCount(chatId);
@@ -66,15 +68,14 @@ export const usePrivateChatChannels = (currentMemberId: string | null) => {
         dispatch(setAllUnreadMessageCount());
       }
 
-      // Receiver side: if the message is for the current chat,
+      // Receiver side: if the message is for the active chat,
       // update the read status of the message
       if (
-        currentChatRef.current &&
-        currentChatRef.current.id === chatId &&
+        currentChatRef.current === chatId &&
         message.senderId !== currentMemberId
       ) {
         console.log("New message received for chat: ", chatId, message);
-        console.log("Current chat is: ", currentChatRef.current.id);
+        console.log("Active chat is: ", currentChatRef.current);
         await updateReadStatus(message.id);
       }
     },
