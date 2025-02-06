@@ -46,12 +46,13 @@ model Profile {
   dateOfBirth DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  lastActive DateTime @default(now())
+  lastActiveConversationId String?
  
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   sentMessages  Message[]       @relation("SentMessages")
-  receivedMessages Message[]    @relation("ReceivedMessages")
-  conversationsAsProfile1 Conversation[] @relation("Profile1Conversations")
-  conversationsAsProfile2 Conversation[] @relation("Profile2Conversations")
+  conversations Conversation[] @relation("Conversations")
+  lastActiveConversation Conversation? @relation("LastActiveConversation", fields: [lastActiveConversationId], references: [id])
 }
 
 model Photo {
@@ -101,14 +102,10 @@ model Message {
   senderId      String
   sender        Profile         @relation("SentMessages", fields: [senderId], references: [id])
   
-  recipientId    String
-  recipient      Profile         @relation("ReceivedMessages", fields: [recipientId], references: [id])
-  
   conversationId String
-  conversation  Conversation    @relation(fields: [conversationId], references: [id])
+  conversation  Conversation    @relation("Messages", fields: [conversationId], references: [id])
 
   @@index([senderId])
-  @@index([recipientId])
   @@index([conversationId])
 }
 
@@ -116,12 +113,9 @@ model Conversation {
   id            String          @id @default(cuid())
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
-  profile1Id       String
-  profile2Id       String
-  profile1         Profile         @relation("Profile1Conversations", fields: [profile1Id], references: [id])
-  profile2         Profile         @relation("Profile2Conversations", fields: [profile2Id], references: [id])
-  messages      Message[]
 
-  @@index([profile1Id])
-  @@index([profile2Id])
+  profiles      Profile[]       @relation("Conversations")
+  messages      Message[]       @relation("Messages")
+
+  lastActiveProfiles Profile[]  @relation("LastActiveConversation")
 }
