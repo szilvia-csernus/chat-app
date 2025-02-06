@@ -18,9 +18,9 @@ import {
   addMessage,
   updateMessageReadStatus,
 } from "@/redux-store/features/currentChatSlice";
-import { Chat, SerializedMessage } from "@/types";
+import { SerializedMessage } from "@/types";
 import { serializeMessage } from "@/lib/serialize";
-import { usePathname } from "next/navigation";
+import { useParams, } from "next/navigation";
 
 
 export const usePrivateChatChannels = (currentMemberId: string | null) => {
@@ -32,10 +32,8 @@ export const usePrivateChatChannels = (currentMemberId: string | null) => {
   // which otherwise would not have access to it when
   // triggered by the channel event
   const currentChatRef = useRef(<string | null>null);
-  const pathname = usePathname();
-  if (pathname.startsWith("/chats/")) {
-    currentChatRef.current = pathname.split("/")[2];
-  }
+  const params = useParams<{ chatId: string }>();
+  currentChatRef.current = params.chatId;
   console.log("Active chat in usePrivateChatChannels", currentChatRef.current);
   
   const recentChats = useAppSelector(selectRecentChats);
