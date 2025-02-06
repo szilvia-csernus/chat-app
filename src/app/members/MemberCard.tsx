@@ -13,6 +13,7 @@ export type MemberCardProps = {
   online: boolean;
   chatting: boolean;
   chatId: string | undefined;
+  currentMember: Member;
 };
 
 export default function MemberCard({
@@ -20,6 +21,7 @@ export default function MemberCard({
   online,
   chatting,
   chatId,
+  currentMember,
 }: MemberCardProps) {
   const router = useRouter();
 
@@ -40,6 +42,7 @@ export default function MemberCard({
           member={member}
           isOpen={isOpen}
           onOpenChange={onOpenChange}
+          currentMember={currentMember}
         />
       )}
       <Card fullWidth>

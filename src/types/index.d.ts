@@ -5,6 +5,14 @@ type ActionResult<T> =
   | { status: "success"; data: T }
   | { status: "error"; error: string | ZodIssue[] };
 
+type ChatProfile = {
+  id: string;
+  user: {
+    name: string | null;
+    image: string | null;
+  };
+};
+
 type Member = {
   id: string;
   name: string;
@@ -21,26 +29,12 @@ type SerializedMessage = {
 
 type Chat = {
   id: string;
-  participant1: Member;
-  participant2: Member;
+  participants: Member[];
   messages: SerializedMessage[];
 }
 
 type CPData = {
-  profile2: {
-    id: string;
-    user: {
-      name: string | null;
-      image: string | null;
-    };
-  };
-  profile1: {
-    id: string;
-    user: {
-      name: string | null;
-      image: string | null;
-    };
-  };
+  profiles: ChatProfile[];
 } & Conversation;
 
 type ChatPartner = {
@@ -49,34 +43,20 @@ type ChatPartner = {
 }
 
 type RCData = {
-    profile1: {
-        id: string;
-        user: {
-            name: string | null;
-            image: string | null;
-        };
-    };
-    profile2: {
-        id: string;
-        user: {
-            name: string | null;
-            image: string | null;
-        };
-    };
-    messages: {
-        content: string;
-        createdAt: Date;
-        senderId: string;
-        read: boolean;
-    }[];
-    _count: { messages: number};
+  profiles: ChatProfile[];
+  messages: {
+    content: string;
+    createdAt: Date;
+    senderId: string;
+    read: boolean;
+  }[];
+  _count: { messages: number };
 } & Conversation;
 
 
 type RecentChat = {
   id: string;
-  participant1: Member;
-  participant2: Member;
+  participants: Member[];
   lastMessage: string;
   unreadMessageCount: number;
 }
@@ -90,20 +70,7 @@ type CDataMessage = {
 }
 
 type CData = {
-  profile1: {
-    id: string;
-    user: {
-      name: string | null;
-      image: string | null;
-    };
-  };
-  profile2: {
-    id: string;
-    user: {
-      name: string | null;
-      image: string | null;
-    };
-  };
+  profiles: ChatProfile[];
   messages: CDataMessage[];
 } & Conversation;
 

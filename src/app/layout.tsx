@@ -6,7 +6,7 @@ import { getCurrentUser } from "./actions/authActions";
 import { getPhotoByUserId } from "./actions/photoActions";
 import { getChatPartners, getRecentChats } from "./actions/chatActions";
 import { getCurrentProfileId } from "@/app/actions/profileActions";
-import { mapCPDataToChatPartnerType, mapRCDataToRecentChatsType } from "@/lib/maps";
+import { mapCPDataListToChatPartnerList, mapRCDataListToRecentChatsList } from "@/lib/maps";
 
 export const metadata: Metadata = {
   title: "Chat App",
@@ -33,10 +33,13 @@ export default async function RootLayout({
   const currentProfileId = await getCurrentProfileId();
 
   const chatPartnersData = await getChatPartners();
-  const chatPartners = mapCPDataToChatPartnerType(currentProfileId, chatPartnersData);
+  const chatPartners = mapCPDataListToChatPartnerList(
+    currentProfileId,
+    chatPartnersData
+  );
 
   const recentChatsData = await getRecentChats();
-  const recentChats = mapRCDataToRecentChatsType(recentChatsData);
+  const recentChats = mapRCDataListToRecentChatsList(recentChatsData);
 
 
   return (

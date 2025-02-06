@@ -34,7 +34,7 @@ export default function ChatForm({ chatPartnerId }: Props) {
   }, [setFocus]);
 
   const onSubmit = async (data: MessageSchema) => {
-    const result = await createMessage(chatId, chatPartnerId, data);
+    const result = await createMessage(chatId, data);
     if (result.status === "error") {
       handleFormServerErrors(result, setError);
     } else {

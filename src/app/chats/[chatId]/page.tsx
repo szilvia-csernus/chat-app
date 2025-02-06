@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
-import { getChat } from "@/app/actions/chatActions";
+import { getChat, getChatPartner } from "@/app/actions/chatActions";
 
 import { mapChatDataToChatType } from "@/lib/maps";
-import { getCurrentMember, getMemberById } from "@/app/actions/memberActions";
+import { getCurrentMember } from "@/app/actions/memberActions";
 import { updateMessagesWithReadStatus } from "@/app/actions/messageActions";
 import { authWithRedirect } from "@/app/actions/authActions";
 import React from "react";
@@ -30,10 +30,8 @@ export default async function ChatPage({
   if (!chat) return notFound();
   const initialChat = mapChatDataToChatType(chat);
 
-  const chatPartnerId =
-    chat.profile1Id === currentMember.id ? chat.profile2Id : chat.profile1Id;
+  const chatPartner = await getChatPartner(chat.id);
 
-  const chatPartner = await getMemberById(chatPartnerId);
   if (!chatPartner) return notFound();
 
   return (

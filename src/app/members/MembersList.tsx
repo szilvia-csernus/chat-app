@@ -9,9 +9,10 @@ import { Member } from "@/types";
 
 type MembersListProps = {
   members: Member[] | null;
+  currentMember: Member;
 };
 
-export default function MembersList({ members }: MembersListProps) {
+export default function MembersList({ members, currentMember }: MembersListProps) {
   const membersOnline = useAppSelector(selectMembersOnline);
   const chatPartners = useAppSelector(selectAllChatPartners);
   console.log("members:", members);
@@ -35,6 +36,7 @@ export default function MembersList({ members }: MembersListProps) {
               online={online}
               chatting={chatting}
               chatId={chatId}
+              currentMember={currentMember}
             />
           );
         })}

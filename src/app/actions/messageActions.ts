@@ -7,14 +7,12 @@ import { prisma } from "@/prisma";
 import { Message } from "@prisma/client";
 
 import { pusherServer } from "@/lib/pusher";
-import { redirect } from "next/navigation";
 import { authWithError } from "./authActions";
 
 
 /** Creates a message in the given chat. */
 export async function createMessage(
   chatId: string,
-  chatPartnerId: string,
   data: MessageSchema
 ): Promise<ActionResult<Message>> {
   await authWithError();
@@ -32,10 +30,16 @@ export async function createMessage(
 
     const { content } = validated.data;
 
-    
     const chat = await prisma.conversation.findUnique({
       where: {
         id: chatId,
+      },
+      select: {
+        profiles: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
 
@@ -43,28 +47,26 @@ export async function createMessage(
       return { status: "error", error: "Chat not found" };
     }
 
-    if (chat.profile1Id !== profileId && chat.profile2Id !== profileId) {
-      return { status: "error", error: "You are not authorized to send messages to this chat" };
-    }
-
-    if (chat.profile1Id !== chatPartnerId && chat.profile2Id !== chatPartnerId) {
-      return { status: "error", error: "Chat partner not found" };
+    // If the current user is not part of the conversation
+    if (!chat.profiles.some((p) => p.id === profileId)) {
+      return {
+        status: "error",
+        error: "You are not authorized to send messages to this chat",
+      };
     }
 
     const message = await prisma.message.create({
       data: {
         content,
         senderId: profileId,
-        recipientId: chatPartnerId,
         conversationId: chatId,
-      }
+      },
     });
 
-    await pusherServer.trigger(
-      `private-chat-${chatId}`,
-      "new-message",
-      { chatId: chatId, message }
-    );
+    await pusherServer.trigger(`private-chat-${chatId}`, "new-message", {
+      chatId: chatId,
+      message,
+    });
 
     console.log("created message: ", message);
     return { status: "success", data: message };
@@ -83,7 +85,7 @@ export const updateMessagesWithReadStatus = async (
 
   // Find the message IDs first so we don't have to fetch them twice
   const messages = await prisma.message.findMany({
-    where: { conversationId: chatId, recipientId, read: false },
+    where: { conversationId: chatId, read: false },
     select: { id: true },
   });
 
@@ -113,7 +115,7 @@ export async function updateReadStatus(messageId: string) {
       },
     });
 
-    if (!currentProfileId || !message || message.recipientId !== currentProfileId) {
+    if (!currentProfileId || !message || message.senderId === currentProfileId) {
       return null;
     }
 
