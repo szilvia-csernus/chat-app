@@ -2,6 +2,7 @@
 
 import { prisma } from "@/prisma";
 import { getCurrentUserId, authWithError } from "./authActions";
+import { getCurrentProfileId } from "./profileActions";
 
 
 /** Fetches all the members data, inc. name and image except for 
@@ -10,12 +11,13 @@ export async function getMembers() {
   await authWithError();
 
   try {
-    const currentUserId = await getCurrentUserId();
+    const currentProfileId = await getCurrentProfileId();
+    if (!currentProfileId) return null;
 
     return prisma.profile.findMany({
       where: {
         NOT: {
-          userId: currentUserId,
+          id: currentProfileId,
         },
       },
       include: {
@@ -67,13 +69,13 @@ export async function getMemberById(id: string) {
 
 /** Fetches the current member's data. */
 export async function getCurrentMember() {
-    const currentUserId = await getCurrentUserId();
-    if (!currentUserId) return null;
+    const currentProfileId = await getCurrentProfileId();
+    if (!currentProfileId) return null;
 
   try{
     const profile = await prisma.profile.findUnique({
       where: {
-        userId: currentUserId,
+        id: currentProfileId,
       },
       include: {
         user: {

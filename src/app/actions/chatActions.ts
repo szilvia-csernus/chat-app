@@ -3,6 +3,7 @@
 import { prisma } from "@/prisma";
 import { redirect } from "next/navigation";
 import { authWithError, getCurrentUserId } from "./authActions";
+import { getCurrentProfile, getCurrentProfileId } from "./profileActions";
 
 /** Fetches the list of ChatPartners for the Members page,
  * in order to decide if current user has ever chatted with
@@ -12,13 +13,9 @@ export async function getChatPartners() {
   if (!currentUserId) return null;
 
   try {
-    const profile = await prisma.profile.findUnique({
-      where: {
-        userId: currentUserId,
-      },
-    });
+    const profileId = await getCurrentProfileId();
 
-    if (!profile) {
+    if (!profileId) {
       return null;
     }
 
@@ -26,7 +23,7 @@ export async function getChatPartners() {
       where: {
         profiles: {
           some: {
-            id: profile.id,
+            id: profileId,
           },
         },
       },
@@ -55,13 +52,9 @@ export async function getChatPartner(chatId: string) {
   if (!currentUserId) return null;
 
   try {
-    const currentProfile = await prisma.profile.findUnique({
-      where: {
-        userId: currentUserId,
-      },
-    });
+    const currentProfileId = await getCurrentProfileId();
 
-    if (!currentProfile) {
+    if (!currentProfileId) {
       return null;
     }
 
@@ -73,7 +66,7 @@ export async function getChatPartner(chatId: string) {
         profiles: {
           where: {
             id: {
-              not: currentProfile.id,
+              not: currentProfileId,
             },
           },
           select: {
@@ -89,7 +82,7 @@ export async function getChatPartner(chatId: string) {
       },
     });
 
-    const chatPartner = chat?.profiles.find((p) => p.id !== currentProfile.id) || null;
+    const chatPartner = chat?.profiles.find((p) => p.id !== currentProfileId) || null;
     if (!chatPartner) {
       return null;
     }
@@ -128,13 +121,9 @@ export async function getRecentChats() {
   if (!currentUserId) return null;
 
   try {
-    const profile = await prisma.profile.findUnique({
-      where: {
-        userId: currentUserId,
-      },
-    });
+    const profileId = await getCurrentProfileId();
 
-    if (!profile) {
+    if (!profileId) {
       return null;
     }
 
@@ -142,7 +131,7 @@ export async function getRecentChats() {
       where: {
         profiles: {
           some: {
-            id: profile.id,
+            id: profileId,
           },
         },
       },
@@ -176,7 +165,7 @@ export async function getRecentChats() {
               where: {
                 AND: {
                   senderId: {
-                    not: profile.id,
+                    not: profileId,
                   },
                   read: false,
                 },
@@ -197,13 +186,9 @@ export async function getChat(chatId: string) {
   if (!currentUserId) return null;
 
   try {
-    const profile = await prisma.profile.findUnique({
-      where: {
-        userId: currentUserId,
-      },
-    });
+    const profileId = await getCurrentProfileId();
 
-    if (!profile) {
+    if (!profileId) {
       return redirect("/profile/complete-profile");
     }
 
@@ -221,9 +206,18 @@ export async function getChat(chatId: string) {
     });
 
     // If the chat doesn't exist or the current user is not a participant
-    if (!chat || !chat.profiles.some((p) => p.id === profile.id)) {
+    if (!chat || !chat.profiles.some((p) => p.id === profileId)) {
       return null;
     }
+
+    await prisma.profile.update({
+      where: {
+        id: profileId,
+      },
+      data: {
+        lastActiveConversationId: chatId,
+      },
+    })
 
     return prisma.conversation.findUnique({
       where: {
@@ -260,18 +254,22 @@ export async function getChat(chatId: string) {
   }
 }
 
+/** Fetches current member's last chatId */
+export async function getLastChatId() {
+  const currentProfile = await getCurrentProfile();
+  if (!currentProfile) return null;
+
+  return currentProfile.lastActiveConversationId;
+}
+
 /** Creates a chat between current user and another member */
 export async function createChat(memberId: string) {
   try {
     const currentUserId = await getCurrentUserId();
     if (!currentUserId) return redirect("/login");
 
-    const currentMember = await prisma.profile.findUnique({
-      where: {
-        userId: currentUserId,
-      },
-    });
-    if (!currentMember) {
+    const currentProfileId = await getCurrentProfileId();
+    if (!currentProfileId) {
       return redirect("/profile/complete-profile");
     }
 
@@ -286,7 +284,7 @@ export async function createChat(memberId: string) {
     return prisma.conversation.create({
       data: {
         profiles: {
-          connect: [{ id: currentMember.id }, { id: chatPartner.id }],
+          connect: [{ id: currentProfileId }, { id: chatPartner.id }],
         },
       },
     });
