@@ -1,7 +1,6 @@
 "use server";
 
 import { prisma } from "@/prisma";
-import { auth } from "@/auth";
 import {
   photoSchema,
 } from "@/lib/schemas/completeProfileSchema";
