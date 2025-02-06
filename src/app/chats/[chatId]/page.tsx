@@ -23,7 +23,7 @@ export default async function ChatPage({
   if (!currentMember) return null; // layout.tsx handles the redirect
 
   // Update the messages in the database to be marked as read
-  await updateMessagesWithReadStatus(params.chatId, currentMember.id);
+  await updateMessagesWithReadStatus(params.chatId);
 
   const chat = await getChat(params.chatId);
 

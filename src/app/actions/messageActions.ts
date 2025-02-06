@@ -79,7 +79,7 @@ export async function createMessage(
 /** Updates all messages with a read:true status in a given
  * chat for a given recipient. */
 export const updateMessagesWithReadStatus = async (
-  chatId: string, recipientId: string
+  chatId: string
 ) => {
   await authWithError();
 
