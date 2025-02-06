@@ -16,10 +16,7 @@ export default function RecentChatsList({ currentMemberId }: Props) {
   return (
     <ul className="flex flex-col gap-1 w-full ">
       {recentChats.map((rc) => {
-        const chatPartner =
-          currentMemberId === rc.participant1.id
-            ? rc.participant2
-            : rc.participant1;
+        const chatPartner = rc.participants.filter((p) => p.id !== currentMemberId)[0];
         const msgCount = currentChat?.id === rc.id ? 0 : rc.unreadMessageCount;
         return (
           <li key={rc.id}>

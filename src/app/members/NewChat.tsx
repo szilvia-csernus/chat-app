@@ -13,17 +13,20 @@ import { createChat } from "@/app/actions/chatActions";
 import { Member } from "@/types";
 import { useAppDispatch } from "@/redux-store/hooks";
 import { addChatPartner } from "@/redux-store/features/chatPartnersSlice";
+import { addRecentChat } from "@/redux-store/features/recentChatsSlice";
 
 type NewChatProps = {
   member: Member;
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
+  currentMember: Member;
 };
 
 export default function NewChat({
   member,
   isOpen,
   onOpenChange,
+  currentMember
 }: NewChatProps) {
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -39,6 +42,14 @@ export default function NewChat({
         chatPartner: member,
       })
     );
+    dispatch(
+      addRecentChat({
+        id: newChat.id,
+        participants: [member, currentMember],
+        lastMessage: "",
+        unreadMessageCount: 0
+      })
+    )
     router.push(`/chats/${newChat.id}`);
     onClose();
   };

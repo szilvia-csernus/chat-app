@@ -1,6 +1,15 @@
-import { ChatPartner, CPData, RCData, RecentChat, Chat, CData } from "@/types";
+import { ChatPartner, CPData, RCData, RecentChat, Chat, CData, ChatProfile, Member } from "@/types";
 import { Message } from "@prisma/client";
 import { serializeDate } from "@/lib/serialize";
+
+
+export function mapChatProfileToMemberType(profile: ChatProfile): Member {
+  return {
+    id: profile.id,
+    name: profile.user.name || "",
+    image: profile.user.image || "",
+  }
+}
 
 export function mapMessageToSerializedMessage(message: Message) {
   return {
@@ -12,57 +21,45 @@ export function mapMessageToSerializedMessage(message: Message) {
   };
 }
 
-export function mapCPDataToChatPartnerType(
+function mapCPDataToChatPartnerType(currentProfileId: string, chatData: CPData): ChatPartner | null {
+
+  const profile = chatData.profiles.filter(p => p.id !== currentProfileId)[0];
+  if (!profile) return null;
+  return {
+    chatPartner: mapChatProfileToMemberType(profile),
+    chatId: chatData.id,
+  }
+}
+
+export function mapCPDataListToChatPartnerList(
   currentProfileId: string | null,
   chatPartnersData: CPData[] | null
 ): ChatPartner[] {
   if (!currentProfileId || !chatPartnersData) return [];
 
-  return chatPartnersData.map((cp) => {
-    if (cp.profile1.id === currentProfileId) {
-      return {
-        chatId: cp.id,
-        chatPartner: {
-          id: cp.profile2.id,
-          name: cp.profile2.user.name || "",
-          image: cp.profile2.user.image || "",
-        },
-      };
-    } else {
-      return {
-        chatId: cp.id,
-        chatPartner: {
-          id: cp.profile1.id,
-          name: cp.profile1.user.name || "",
-          image: cp.profile1.user.image || "",
-        },
-      };
-    }
-  });
+  const chatPartnersList = chatPartnersData.map((cp) =>
+    mapCPDataToChatPartnerType(currentProfileId, cp)
+  ); 
+
+  return chatPartnersList.filter(cp => cp !== null);
+  
 }
 
-export function mapRCDataToRecentChatsType(
+function mapRCDataToRecentChatsType(rcData: RCData): RecentChat {
+  return {
+    id: rcData.id,
+    participants: rcData.profiles.map(mapChatProfileToMemberType),
+    lastMessage: rcData.messages[0]?.content || "",
+    unreadMessageCount: rcData._count.messages,
+  }
+}
+
+export function mapRCDataListToRecentChatsList(
   rcData: RCData[] | null
 ): RecentChat[] {
-  if (!rcData) return [];
+  if (!rcData) return []
 
-  return rcData.map((chat) => {
-    return {
-      id: chat.id,
-      participant1: {
-        id: chat.profile1.id,
-        name: chat.profile1.user.name || "",
-        image: chat.profile1.user.image || "",
-      },
-      participant2: {
-        id: chat.profile2.id,
-        name: chat.profile2.user.name || "",
-        image: chat.profile2.user.image || "",
-      },
-      lastMessage: chat.messages[0]?.content || "",
-      unreadMessageCount: chat._count.messages,
-    };
-  });
+  return rcData.map((chat) => mapRCDataToRecentChatsType(chat));
 }
 
 export function mapChatDataToChatType(chatData: CData | null): Chat | null {
@@ -70,16 +67,7 @@ export function mapChatDataToChatType(chatData: CData | null): Chat | null {
 
   return {
     id: chatData.id,
-    participant1: {
-      id: chatData.profile1Id,
-      name: chatData.profile1.user.name || "",
-      image: chatData.profile1.user.image || "",
-    },
-    participant2: {
-      id: chatData.profile2Id,
-      name: chatData.profile2.user.name || "",
-      image: chatData.profile2.user.image || "",
-    },
+    participants: chatData.profiles.map(mapChatProfileToMemberType),
     messages: chatData.messages.map((message) => ({
       ...message,
       createdAt: serializeDate(message.createdAt),
