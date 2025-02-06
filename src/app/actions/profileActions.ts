@@ -21,9 +21,12 @@ export async function getCurrentProfileId() {
   if (!currentUserId) return null;
 
   try {
-    const profile = await prisma.profile.findUnique({
+    const profile = await prisma.profile.update({
       where: {
         userId: currentUserId,
+      },
+      data: {
+        lastActive: new Date(),
       },
     });
     if (!profile) {
@@ -31,8 +34,8 @@ export async function getCurrentProfileId() {
     }
     return profile.id;
   } catch (error) {
-    console.log(error)
-    return null
+    console.log(error);
+    return null;
   }
 }
 
@@ -42,10 +45,13 @@ export async function getCurrentProfile() {
   if (!currentUserId) return null;
 
   try {
-    const profile = await prisma.profile.findUnique({
+    const profile = await prisma.profile.update({
       where: {
         userId: currentUserId,
       },
+      data: {
+        lastActive: new Date(),
+      }
     });
     if (!profile) {
       return null;
