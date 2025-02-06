@@ -31,10 +31,10 @@ export default function MainNav({ currentProfileId, userName, photoUrl }: MainNa
   
   const allUnreadMessageCount = useAppSelector(selectAllUnreadMessageCount);
 
-  if (currentProfileId) {
-    usePresenceChannel(currentProfileId);
-    usePrivateChatChannels(currentProfileId);
-  }
+
+  usePresenceChannel(currentProfileId);
+  usePrivateChatChannels(currentProfileId);
+  
 
   const menuItems = [
     { href: "/members", label: "Members" },
