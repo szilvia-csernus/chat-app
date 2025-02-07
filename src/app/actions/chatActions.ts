@@ -185,6 +185,8 @@ export async function getChat(chatId: string) {
   const currentUserId = await getCurrentUserId();
   if (!currentUserId) return null;
 
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+  
   try {
     const profileId = await getCurrentProfileId();
 

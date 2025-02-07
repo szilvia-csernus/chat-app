@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/prisma";
-import { getCurrentUserId, authWithError } from "./authActions";
+import { authWithError } from "./authActions";
 import { getCurrentProfileId } from "./profileActions";
 
 
@@ -9,6 +9,8 @@ import { getCurrentProfileId } from "./profileActions";
  * the current user. */
 export async function getMembers() {
   await authWithError();
+  
+  await new Promise((resolve) => setTimeout(resolve, 3000));
 
   try {
     const currentProfileId = await getCurrentProfileId();
