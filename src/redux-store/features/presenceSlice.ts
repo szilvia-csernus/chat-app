@@ -24,12 +24,16 @@ const presenceSlice = createSlice({
       state.membersOnline = action.payload;
     },
   },
-    selectors: {
+  selectors: {
     selectMembersOnline: (PresenceState) => PresenceState.membersOnline,
   },
 });
 
 export const { addMember, removeMember, setPresentMembers } = presenceSlice.actions;
 export const { selectMembersOnline } = presenceSlice.selectors;
+
+export const selectMemberOnlineStatus =
+  (memberId: string) => (state: { presence: PresenceState }) =>
+    state.presence.membersOnline.includes(memberId);
 
 export default presenceSlice.reducer;
