@@ -13,11 +13,7 @@ import {
 import { handleFormServerErrors } from "@/lib/utils";
 
 
-type Props = {
-  chatPartnerId: string;
-};
-
-export default function ChatForm({ chatPartnerId }: Props) {
+export default function ChatForm() {
   const params = useParams<{ chatId: string }>();
   const chatId = params.chatId;
   const {
