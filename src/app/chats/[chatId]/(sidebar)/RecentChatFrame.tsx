@@ -18,8 +18,9 @@ export default function RecentChatFrame({
   const params = useParams();
   const currentChatId = params.chatId;
 
-  const additionalStyles = currentChatId === chatId
-      ? "border-1 border-slate-400 rounded-2xl bg-white"
+  const additionalStyles =
+    currentChatId === chatId
+      ? "border-1 border-slate-400 rounded-2xl bg-white dark:bg-gray-800 "
       : "";
 
   return (
