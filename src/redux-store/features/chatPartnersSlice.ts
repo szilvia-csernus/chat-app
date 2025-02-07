@@ -36,4 +36,8 @@ export const { setChatPartners, addChatPartner, removeChatPartner } =
 
 export const { selectAllChatPartners } = chatPartnersSlice.selectors;
 
+export const selectChatPartnerById = (memberId: string) => (state: { chatPartners: ChatPartnersState }) => {
+  return state.chatPartners.chatPartners.find((cp) => cp.chatPartner.id === memberId);
+}
+
 export default chatPartnersSlice.reducer;
