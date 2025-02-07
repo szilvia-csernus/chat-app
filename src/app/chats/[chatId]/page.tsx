@@ -5,7 +5,6 @@ import { mapChatDataToChatType } from "@/lib/maps";
 import { getCurrentMember } from "@/app/actions/memberActions";
 import { updateMessagesWithReadStatus } from "@/app/actions/messageActions";
 import { authWithRedirect } from "@/app/actions/authActions";
-import React from "react";
 import { Card } from "@heroui/card";
 import ChatThread from "./(main)/ChatThread";
 import ChatForm from "./(main)/ChatForm";
@@ -26,29 +25,25 @@ export default async function ChatPage({
   await updateMessagesWithReadStatus(params.chatId);
 
   const chat = await getChat(params.chatId);
-
   if (!chat) return notFound();
   const initialChat = mapChatDataToChatType(chat);
 
   const chatPartner = await getChatPartner(chat.id);
-
   if (!chatPartner) return notFound();
 
   return (
-    <>
-      <Card className="w-full h-[85vh] p-5 overflow-auto py-3 border-1 border-gray-300 bg-background">
-        <div className="flex flex-col justify-between">
-          <ChatThread
-            currentMember={currentMember}
-            chatPartner={chatPartner}
-            initialChat={initialChat}
-          />
+    <Card className="h-[85vh] p-5 overflow-auto py-3 border-1 border-gray-300 bg-background">
+      <div className="flex flex-col justify-between">
+        <ChatThread
+          currentMember={currentMember}
+          chatPartner={chatPartner}
+          initialChat={initialChat}
+        />
 
-          <div className="flex items-center space-x-2">
-            <ChatForm chatPartnerId={chatPartner.id} />
-          </div>
+        <div className="flex items-center space-x-2">
+          <ChatForm />
         </div>
-      </Card>
-    </>
+      </div>
+    </Card>
   );
 }
