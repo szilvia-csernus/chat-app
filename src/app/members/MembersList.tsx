@@ -1,9 +1,4 @@
-"use client";
-
 import MemberCard from "./MemberCard";
-import { selectAllChatPartners } from "@/redux-store/features/chatPartnersSlice";
-import { selectMembersOnline } from "@/redux-store/features/presenceSlice";
-import { useAppSelector } from "@/redux-store/hooks";
 import { Member } from "@/types";
 
 
@@ -12,34 +7,25 @@ type MembersListProps = {
   currentMember: Member;
 };
 
-export default function MembersList({ members, currentMember }: MembersListProps) {
-  const membersOnline = useAppSelector(selectMembersOnline);
-  const chatPartners = useAppSelector(selectAllChatPartners);
-  console.log("members:", members);
-  console.log("membersOnline:", membersOnline);
+export default function MembersList({
+  members,
+  currentMember,
+}: MembersListProps) {
+  
+  console.log("Executing MemberList on the server")
 
   return (
-    <>
+    <div className="mt-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-8 text-primary">
       {members &&
         members.map((member) => {
-          const online = membersOnline.includes(member.id);
-          console.log("online", online);
-          const chatPartner = chatPartners.find(
-            (cp) => cp.chatPartner.id === member.id
-          );
-          const chatting = !!chatPartner;
-          const chatId = chatPartner?.chatId;
           return (
             <MemberCard
               key={member.id}
               member={member}
-              online={online}
-              chatting={chatting}
-              chatId={chatId}
               currentMember={currentMember}
             />
-          );
+          )
         })}
-    </>
-  );
+    </div>
+  )
 }
