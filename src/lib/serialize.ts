@@ -1,6 +1,6 @@
 // Serialization of data is required by redux
 
-import { SerializedMessage } from "@/types";
+import { ChatProfile, Member, SerializedMessage } from "@/types";
 import { Message } from "@prisma/client";
 import { formatShortDateTime } from "./utils";
 
@@ -16,5 +16,14 @@ export function serializeMessage(message: Message): SerializedMessage {
     createdAt: serializeDate(message.createdAt),
     senderId: message.senderId,
     read: message.read,
+  };
+}
+
+export function serializeChatProfile(profile: ChatProfile): Member {
+  return {
+    id: profile.id,
+    name: profile.user.name || "",
+    image: profile.user.image || "",
+    lastActive: serializeDate(profile.lastActive),
   };
 }
