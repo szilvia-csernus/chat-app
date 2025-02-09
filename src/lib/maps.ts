@@ -1,24 +1,9 @@
 import { ChatPartner, CPData, RCData, RecentChat, Chat, CData, ChatProfile, Member } from "@/types";
-import { Message } from "@prisma/client";
-import { serializeDate } from "@/lib/serialize";
+import { serializeDate, serializeChatProfile } from "@/lib/serialize";
 
 
-export function mapChatProfileToMemberType(profile: ChatProfile): Member {
-  return {
-    id: profile.id,
-    name: profile.user.name || "",
-    image: profile.user.image || "",
-  }
-}
-
-export function mapMessageToSerializedMessage(message: Message) {
-  return {
-    id: message.id,
-    content: message.content,
-    createdAt: serializeDate(message.createdAt),
-    senderId: message.senderId,
-    read: message.read,
-  };
+function mapChatProfileToMemberType(profile: ChatProfile): Member {
+  return serializeChatProfile(profile)
 }
 
 function mapCPDataToChatPartnerType(currentProfileId: string, chatData: CPData): ChatPartner | null {

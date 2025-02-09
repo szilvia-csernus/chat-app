@@ -6,7 +6,6 @@ import { getCurrentUser } from "./actions/authActions";
 import { getPhotoByUserId } from "./actions/photoActions";
 import { getChatPartners, getRecentChats } from "./actions/chatActions";
 import { getCurrentProfileId } from "@/app/actions/profileActions";
-import { mapCPDataListToChatPartnerList, mapRCDataListToRecentChatsList } from "@/lib/maps";
 
 export const metadata: Metadata = {
   title: "Chat App",
@@ -32,25 +31,21 @@ export default async function RootLayout({
 
   const currentProfileId = await getCurrentProfileId();
 
-  const chatPartnersData = await getChatPartners();
-  const chatPartners = mapCPDataListToChatPartnerList(
-    currentProfileId,
-    chatPartnersData
-  );
-
-  const recentChatsData = await getRecentChats();
-  const recentChats = mapRCDataListToRecentChatsList(recentChatsData);
+  const chatPartners = await getChatPartners() || [];
+  
+  const recentChats = await getRecentChats() || [];
 
 
   return (
-    <html lang="en">
-      <body className="font-body h-auto">
-        <Providers
-          recentChats={recentChats}
-          chatPartners={chatPartners}
-        >
-          <MainNav currentProfileId={currentProfileId} userName={userName} photoUrl={photoUrl} />
-          <main className="container mx-auto p-4">
+    <html lang="en" className="h-full overflow-scroll scrollbar-hide">
+      <body className="font-body h-full">
+        <Providers recentChats={recentChats} chatPartners={chatPartners}>
+          <MainNav
+            currentProfileId={currentProfileId}
+            userName={userName}
+            photoUrl={photoUrl}
+          />
+          <main className="container mx-auto px-2">
             {children}
           </main>
         </Providers>

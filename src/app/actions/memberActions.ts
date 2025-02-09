@@ -3,6 +3,7 @@
 import { prisma } from "@/prisma";
 import { authWithError } from "./authActions";
 import { getCurrentProfileId } from "./profileActions";
+import { formatShortDateTime } from "@/lib/utils";
 
 
 /** Fetches all the members data, inc. name and image except for 
@@ -16,7 +17,7 @@ export async function getMembers() {
     const currentProfileId = await getCurrentProfileId();
     if (!currentProfileId) return null;
 
-    return prisma.profile.findMany({
+    const profiles = prisma.profile.findMany({
       where: {
         NOT: {
           id: currentProfileId,
@@ -31,6 +32,14 @@ export async function getMembers() {
         },
       }
     });
+    return (await profiles).map(profile => {
+      return {
+        id: profile.id,
+        name: profile.user.name || "",
+        image: profile.user.image || "",
+        lastActive: formatShortDateTime(profile.lastActive),
+      };
+    })
   } catch (error) {
     console.log(error);
     return null;
@@ -62,6 +71,7 @@ export async function getMemberById(id: string) {
       id: profile.id,
       name: profile.user.name || "",
       image: profile.user.image || "",
+      lastActive: formatShortDateTime(profile.lastActive)
     };
   } catch (error) {
     console.log(error);
@@ -95,6 +105,7 @@ export async function getCurrentMember() {
       id: profile.id,
       name: profile.user.name || '',
       image: profile.user.image || '',
+      lastActive: formatShortDateTime(profile.lastActive)
     }
   } catch (error) {
     console.log(error)

@@ -1,7 +1,5 @@
 import { notFound } from "next/navigation";
 import { getChat, getChatPartner } from "@/app/actions/chatActions";
-
-import { mapChatDataToChatType } from "@/lib/maps";
 import { getCurrentMember } from "@/app/actions/memberActions";
 import { updateMessagesWithReadStatus } from "@/app/actions/messageActions";
 import { authWithRedirect } from "@/app/actions/authActions";
@@ -26,23 +24,24 @@ export default async function ChatPage({
 
   const chat = await getChat(params.chatId);
   if (!chat) return notFound();
-  const initialChat = mapChatDataToChatType(chat);
 
   const chatPartner = await getChatPartner(chat.id);
   if (!chatPartner) return notFound();
 
   return (
-    <Card className="h-[85vh] p-5 overflow-auto py-3 border-1 border-gray-300 bg-background">
-      <div className="flex flex-col justify-between">
+    <Card className="w-full h-[85vh] px-3 py-1 border-1 border-gray-300 bg-background relative">
+      <div className="space-x-2 absolute bottom-0 right-3 left-3">
+        <ChatForm />
+      </div>
+      <div className="flex flex-col h-full mb-16 overflow-scroll scrollbar-hide">
         <ChatThread
           currentMember={currentMember}
           chatPartner={chatPartner}
-          initialChat={initialChat}
+          initialChat={chat}
         />
-
-        <div className="flex items-center space-x-2">
-          <ChatForm />
-        </div>
+      </div>
+      <div className="space-x-2 absolute bottom-0 right-3 left-3">
+        <ChatForm />
       </div>
     </Card>
   );

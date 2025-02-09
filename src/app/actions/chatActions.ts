@@ -4,6 +4,8 @@ import { prisma } from "@/prisma";
 import { redirect } from "next/navigation";
 import { authWithError, getCurrentUserId } from "./authActions";
 import { getCurrentProfile, getCurrentProfileId } from "./profileActions";
+import { formatShortDateTime } from "@/lib/utils";
+import { mapChatDataToChatType, mapCPDataListToChatPartnerList, mapRCDataListToRecentChatsList } from "@/lib/maps";
 
 /** Fetches the list of ChatPartners for the Members page,
  * in order to decide if current user has ever chatted with
@@ -19,7 +21,7 @@ export async function getChatPartners() {
       return null;
     }
 
-    return prisma.conversation.findMany({
+    const conversations = await prisma.conversation.findMany({
       where: {
         profiles: {
           some: {
@@ -31,6 +33,7 @@ export async function getChatPartners() {
         profiles: {
           select: {
             id: true,
+            lastActive: true,
             user: {
               select: {
                 name: true,
@@ -41,6 +44,12 @@ export async function getChatPartners() {
         },
       },
     });
+
+    return mapCPDataListToChatPartnerList(
+        profileId,
+        conversations
+      );
+
   } catch (error) {
     throw error;
   }
@@ -71,6 +80,7 @@ export async function getChatPartner(chatId: string) {
           },
           select: {
             id: true,
+            lastActive: true,
             user: {
               select: {
                 name: true,
@@ -109,6 +119,7 @@ export async function getChatPartner(chatId: string) {
       id: chatPartner.id,
       name: chatPartnerProfile.user.name || "",
       image: chatPartnerProfile.user.image || "",
+      lastActive: formatShortDateTime(chatPartnerProfile.lastActive),
     }
   } catch (error) {
     throw error;
@@ -127,7 +138,7 @@ export async function getRecentChats() {
       return null;
     }
 
-    return prisma.conversation.findMany({
+    const conversations = await prisma.conversation.findMany({
       where: {
         profiles: {
           some: {
@@ -139,6 +150,7 @@ export async function getRecentChats() {
         profiles: {
           select: {
             id: true,
+            lastActive: true,
             user: {
               select: {
                 name: true,
@@ -175,6 +187,9 @@ export async function getRecentChats() {
         },
       },
     });
+
+    return mapRCDataListToRecentChatsList(conversations)
+
   } catch (error) {
     throw error;
   }
@@ -186,7 +201,7 @@ export async function getChat(chatId: string) {
   if (!currentUserId) return null;
 
   await new Promise((resolve) => setTimeout(resolve, 3000));
-  
+
   try {
     const profileId = await getCurrentProfileId();
 
@@ -221,7 +236,7 @@ export async function getChat(chatId: string) {
       },
     })
 
-    return prisma.conversation.findUnique({
+    const conversations = await prisma.conversation.findUnique({
       where: {
         id: chatId,
       },
@@ -229,6 +244,7 @@ export async function getChat(chatId: string) {
         profiles: {
           select: {
             id: true,
+            lastActive: true,
             user: {
               select: {
                 name: true,
@@ -251,6 +267,9 @@ export async function getChat(chatId: string) {
         },
       },
     });
+
+    return mapChatDataToChatType(conversations)
+    
   } catch (error) {
     throw error;
   }
