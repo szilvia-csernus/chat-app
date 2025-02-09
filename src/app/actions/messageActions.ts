@@ -5,9 +5,9 @@ import { ActionResult } from "@/types";
 import { getCurrentProfileId } from "./profileActions";
 import { prisma } from "@/prisma";
 import { Message } from "@prisma/client";
-
 import { pusherServer } from "@/lib/pusher";
 import { authWithError } from "./authActions";
+import { serializeMessage } from "@/lib/serialize";
 
 
 /** Creates a message in the given chat. */
@@ -63,12 +63,13 @@ export async function createMessage(
       },
     });
 
+    const serializedMessage = serializeMessage(message)
+
     await pusherServer.trigger(`private-chat-${chatId}`, "new-message", {
       chatId: chatId,
-      message,
+      message: serializedMessage,
     });
 
-    console.log("created message: ", message);
     return { status: "success", data: message };
   } catch (error) {
     console.error(error);

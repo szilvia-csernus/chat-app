@@ -104,10 +104,9 @@ export const usePrivateChatChannels = (currentMemberId: string | null) => {
         console.log("Subscribed to channel", `private-chat-${chat.id}`);
         channel.bind(
           "new-message",
-          (data: { chatId: string; message: Message }) => {
-            const serializedMessage = serializeMessage(data.message);
-            console.log("New message received", data.chatId, serializedMessage);
-            handleNewMessage(data.chatId, serializedMessage);
+          (data: { chatId: string; message: SerializedMessage }) => {
+            console.log("New message received", data.chatId, data.message);
+            handleNewMessage(data.chatId, data.message);
           }
         );
         channel.bind("message-read", (data: { messageId: string }) => {
