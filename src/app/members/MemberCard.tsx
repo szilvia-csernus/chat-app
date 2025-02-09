@@ -7,24 +7,27 @@ import { useRouter } from "next/navigation";
 import NewChat from "./NewChat";
 import { useDisclosure } from "@heroui/react";
 import { Member } from "@/types";
+import { useAppSelector } from "@/redux-store/hooks";
+import { selectMemberOnlineStatus } from "@/redux-store/features/presenceSlice";
+import { selectChatPartnerById } from "@/redux-store/features/chatPartnersSlice";
 
 export type MemberCardProps = {
   member: Member;
-  online: boolean;
-  chatting: boolean;
-  chatId: string | undefined;
   currentMember: Member;
 };
 
 export default function MemberCard({
   member,
-  online,
-  chatting,
-  chatId,
   currentMember,
 }: MemberCardProps) {
   const router = useRouter();
 
+  const online = useAppSelector(selectMemberOnlineStatus(member.id));
+  const chatPartner = useAppSelector(selectChatPartnerById(member.id));
+  const chatting = !!chatPartner;
+  const chatId = chatPartner?.chatId;
+
+  // modal properties
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const onClickHandler = () => {
@@ -46,21 +49,20 @@ export default function MemberCard({
         />
       )}
       <Card fullWidth>
-        <MemberImage
-          memberImage={member.image}
-          memberName={member.name}
-        />
-        {online && (
-          <div className="absolute top-2 left-3 z-20">
-            <PresenceDot outlineColor="white" />
-          </div>
-        )}
+        <div>
+          <MemberImage memberImage={member.image} memberName={member.name} />
+          {online && (
+            <div className="absolute top-2 left-3 z-20">
+              <PresenceDot outlineColor="white" />
+            </div>
+          )}
 
-        <CardFooter className="flex justify-start bg-dark-gradient overflow-hidden absolute bottom-0 z-10">
-          <div className="flex flex-col text-white">
-            <span className="">{member.name}</span>
-          </div>
-        </CardFooter>
+          <CardFooter className="flex justify-start bg-dark-gradient overflow-hidden absolute bottom-0 z-10">
+            <div className="flex flex-col text-white">
+              <span className="">{member.name}</span>
+            </div>
+          </CardFooter>
+        </div>
       </Card>
     </div>
   );
