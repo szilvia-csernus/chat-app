@@ -11,12 +11,14 @@ type ChatProfile = {
     name: string | null;
     image: string | null;
   };
+  lastActive: Date;
 };
 
 type Member = {
   id: string;
   name: string;
   image: string;
+  lastActive: string;
 }
 
 type SerializedMessage = {
