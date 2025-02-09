@@ -20,7 +20,7 @@ export default function RecentChatFrame({
 
   const additionalStyles =
     currentChatId === chatId
-      ? "border-1 border-slate-400 rounded-2xl bg-white dark:bg-gray-800 "
+      ? "border-1 border-slate-400 rounded-2xl bg-white dark:bg-gray-800"
       : "";
 
   return (

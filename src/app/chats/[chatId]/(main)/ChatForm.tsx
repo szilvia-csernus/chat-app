@@ -40,11 +40,8 @@ export default function ChatForm() {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="w-full flex flex-col gap-3"
-    >
-      <div className="flex items-center gap-2">
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
+      <div className="flex items-center gap-2 w-full">
         <Input
           fullWidth
           radius="lg"
@@ -62,7 +59,7 @@ export default function ChatForm() {
           isDisabled={!isValid || isSubmitting}
           className="text-white"
         >
-          <HiPaperAirplane size={18}  />
+          <HiPaperAirplane size={18} />
         </Button>
       </div>
       <div className="flex flex-col">
