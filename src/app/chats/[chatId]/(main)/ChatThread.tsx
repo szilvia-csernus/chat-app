@@ -33,7 +33,7 @@ export default function ChatThread({ currentMember, chatPartner, initialChat }: 
     if (currentChat) {
       // The user is currently viewing the chat, so reset the unread count
       // in the redux store. For the database, the read status is updated
-      // in the backand in page.tsx
+      // in the backend in page.tsx
       dispatch(updateUnreadCount({chatId: currentChat.id, count: 0}));
       dispatch(setAllUnreadMessageCount());
     }
@@ -70,10 +70,14 @@ export default function ChatThread({ currentMember, chatPartner, initialChat }: 
   } else {
     chatThread = (
       <li key={0} className="my-4 pl-1">
-        Start chatting with {chatPartner.name}.
+        Start chatting with {chatPartner.name}
       </li>
     );
   }
 
-  return <ul className="flex flex-col">{chatThread}</ul>;
+  return (
+    <ul className="flex flex-col items-center">
+      {chatThread}
+    </ul>
+  );
 }

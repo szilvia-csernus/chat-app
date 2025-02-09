@@ -39,7 +39,7 @@ export default function MessageBox({
     <PresenceAvatar
       src={sender.image || "/images/user.png"}
       online={online}
-      className="self-end"
+      className="self-end mx-1"
     />
   );
 

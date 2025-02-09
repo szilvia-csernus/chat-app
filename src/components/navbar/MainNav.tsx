@@ -55,6 +55,7 @@ export default function MainNav({ currentProfileId, userName, photoUrl }: MainNa
       <NavbarContent className="sm:hidden" justify="start">
         <NavbarMenuToggle
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+          className="text-white"
         />
       </NavbarContent>
       <NavbarBrand as={Link} href="/">
@@ -64,7 +65,7 @@ export default function MainNav({ currentProfileId, userName, photoUrl }: MainNa
           <span className="text-accent">APP</span>
         </div>
       </NavbarBrand>
-      <NavbarMenu className="top-20 z-40 h-auto bg-gradient-to-r from-slate-700 to-teal-700 text-foreground">
+      <NavbarMenu className="top-20 z-40 h-auto bg-gradient-to-r from-slate-700 to-teal-700 text-white">
         {menuItems.map((item, index) => (
           <NavbarMenuItem key={index}>
             <Link href={item.href} onClick={() => setIsMenuOpen(false)}>

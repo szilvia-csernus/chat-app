@@ -25,7 +25,7 @@ export default function Sidebar ({ currentMemberId }: Props) {
         />
         
       </CardBody>
-      <CardFooter className="flex flex-col justify-end">
+      <CardFooter className="flex flex-col justify-end pb-3">
         <Button
           onPress={() => router.back()}
           color="secondary"
