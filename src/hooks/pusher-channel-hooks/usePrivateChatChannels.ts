@@ -3,7 +3,6 @@
 import { useEffect, useRef } from "react";
 import { Channel } from "pusher-js";
 import { pusherClient } from "@/lib/pusher";
-import { Message } from "@prisma/client";
 import { useCallback } from "react";
 import { updateReadStatus } from "@/app/actions/messageActions";
 import { getUnreadMessageCount } from "@/app/actions/chatActions";
@@ -19,8 +18,7 @@ import {
   updateMessageReadStatus,
 } from "@/redux-store/features/currentChatSlice";
 import { SerializedMessage } from "@/types";
-import { serializeMessage } from "@/lib/serialize";
-import { useParams, } from "next/navigation";
+import { useParams } from "next/navigation";
 
 
 export const usePrivateChatChannels = (currentMemberId: string | null) => {
