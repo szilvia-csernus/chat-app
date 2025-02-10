@@ -14,6 +14,17 @@ import {
 } from "@/lib/schemas/editProfileSchema";
 import { getCurrentUserId } from "./authActions";
 
+export async function updateProfileLastActive(profileId: string) {
+  return prisma.profile.update({
+    where: {
+      id: profileId,
+    },
+    data: {
+      lastActive: new Date(),
+    },
+
+  });
+}
 
 /** Returns the authenticated user's profile Id */
 export async function getCurrentProfileId() {
@@ -21,12 +32,9 @@ export async function getCurrentProfileId() {
   if (!currentUserId) return null;
 
   try {
-    const profile = await prisma.profile.update({
+    const profile = await prisma.profile.findUnique({
       where: {
         userId: currentUserId,
-      },
-      data: {
-        lastActive: new Date(),
       },
     });
     if (!profile) {
@@ -45,13 +53,10 @@ export async function getCurrentProfile() {
   if (!currentUserId) return null;
 
   try {
-    const profile = await prisma.profile.update({
+    const profile = await prisma.profile.findUnique({
       where: {
         userId: currentUserId,
       },
-      data: {
-        lastActive: new Date(),
-      }
     });
     if (!profile) {
       return null;
@@ -90,11 +95,13 @@ export async function completeProfile(
               country: data.country,
               gender: data.gender,
               dateOfBirth: new Date(data.dateOfBirth),
+              lastActive: new Date(),
             },
             update: {
               country: data.country,
               gender: data.gender,
               dateOfBirth: new Date(data.dateOfBirth),
+              lastActive: new Date(),
             },
           },
         },
@@ -154,6 +161,7 @@ export async function editProfileDetails(
         profile: {
           update: {
             country: data.country,
+            lastActive: new Date(),
           },
         },
       },
