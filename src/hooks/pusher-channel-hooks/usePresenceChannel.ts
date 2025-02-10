@@ -5,13 +5,20 @@ import { Channel, Members } from "pusher-js";
 import { pusherClient } from "@/lib/pusher";
 import{ useVisibilityChange}  from "../misc-hooks/useVisibilityChange";
 import { setPresentMembers, addMember, removeMember } from "@/redux-store/features/presenceSlice";
-import { useAppDispatch } from "@/redux-store/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
+import { selectCurrentChat } from "@/redux-store/features/currentChatSlice";
+import { formatShortDateTime } from "@/lib/utils";
+import { updateProfileLastActive } from "@/app/actions/profileActions";
+import { updateChatPartnerLastActive } from "@/redux-store/features/chatPartnersSlice";
 
 export const usePresenceChannel = (currentProfileId: string | null) => {
   const dispatch = useAppDispatch();
 
   // Ref is used to prevent the creation of multiple channels when the component re-renders
   const channelRef = useRef<Channel | null>(null);
+
+  const currentChat = useAppSelector(selectCurrentChat);
+  console.log("Current chat in usePresenceChannel", currentChat);
   
   const handleSetMembers = useCallback(
     (memberIds: string[]) => {
@@ -28,8 +35,17 @@ export const usePresenceChannel = (currentProfileId: string | null) => {
   );
 
   const handleRemoveMember = useCallback(
-    (memberId: string) => {
+    async (memberId: string) => {
       dispatch(removeMember(memberId));
+      await updateProfileLastActive(memberId);
+      // Current chat's chat partner
+      const chatPartner = currentChat?.participants?.find(p => p.id !== currentProfileId);
+      console.log("Chat partner in usePresenceChannel", chatPartner);
+      if (chatPartner?.id === memberId) {
+        const date = formatShortDateTime(new Date());
+        console.log("Updating chat partner last active", memberId, date);
+        dispatch(updateChatPartnerLastActive({chatPartnerId: memberId, lastActive: date}));
+      }
     },
     [removeMember]
   );
