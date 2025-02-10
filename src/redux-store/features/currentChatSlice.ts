@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Chat, SerializedMessage } from "@/types";
 
-
 type CurrentChatState = {
   currentChat: Chat | null;
 };
@@ -14,7 +13,7 @@ const currentChatSlice = createSlice({
   name: "currentChat",
   initialState,
   reducers: {
-    setCurrentChat(state, action: PayloadAction<Chat>) {
+    setCurrentChat(state, action: PayloadAction<Chat | null>) {
       state.currentChat = action.payload;
     },
     addMessage(state, action: PayloadAction<SerializedMessage>) {
@@ -29,10 +28,7 @@ const currentChatSlice = createSlice({
             message.id === action.payload ? { ...message, read: true } : message
         );
       }
-    },
-    resetCurrentChat(state) {
-      state.currentChat = null;
-    },
+    }
   },
   selectors: {
     selectCurrentChat: (currentChatState) => currentChatState.currentChat,
@@ -43,7 +39,6 @@ export const {
   setCurrentChat,
   addMessage,
   updateMessageReadStatus,
-  resetCurrentChat,
 } = currentChatSlice.actions;
 
 export const { selectCurrentChat } = currentChatSlice.selectors;
