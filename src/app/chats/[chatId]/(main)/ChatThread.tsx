@@ -76,7 +76,7 @@ export default function ChatThread({ currentMember, chatPartner, initialChat }: 
   }
 
   return (
-    <ul className="flex flex-col items-center">
+    <ul className="flex flex-col">
       {chatThread}
     </ul>
   );

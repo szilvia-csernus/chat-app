@@ -6,6 +6,7 @@ import { authWithRedirect } from "@/app/actions/authActions";
 import { Card } from "@heroui/card";
 import ChatThread from "./(main)/ChatThread";
 import ChatForm from "./(main)/ChatForm";
+import CurrentChatPartner from "./(main)/CurrentChatPartner";
 
 export const dynamic = "force-dynamic";
 
@@ -29,18 +30,18 @@ export default async function ChatPage({
   if (!chatPartner) return notFound();
 
   return (
-    <Card className="w-full h-[85vh] px-3 py-1 border-1 border-gray-300 bg-background relative">
-      <div className="space-x-2 absolute bottom-0 right-3 left-3">
-        <ChatForm />
+    <Card className="w-full h-[85vh] border-1 border-gray-300 bg-background relative">
+      <div className="sticky space-x-2">
+        <CurrentChatPartner chatPartnerId={chatPartner.id} />
       </div>
-      <div className="flex flex-col h-full mb-16 overflow-scroll scrollbar-hide">
+      <div className="flex flex-col h-full my-2 overflow-scroll scrollbar-hide">
         <ChatThread
           currentMember={currentMember}
           chatPartner={chatPartner}
           initialChat={chat}
         />
       </div>
-      <div className="space-x-2 absolute bottom-0 right-3 left-3">
+      <div className="sticky mx-2">
         <ChatForm />
       </div>
     </Card>
