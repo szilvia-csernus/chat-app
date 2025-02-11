@@ -47,7 +47,7 @@ export default function MainNav({ currentProfileId, userName, photoUrl }: MainNa
       isMenuOpen={isMenuOpen}
       onMenuOpenChange={setIsMenuOpen}
       maxWidth="2xl"
-      className="bg-gradient-to-r from-slate-700 to-teal-700 p-2"
+      className="bg-gradient-to-r from-slate-700 to-teal-700 p-2 w-full max-w-3xl mx-auto"
       classNames={{
         item: ["text-m", "text-white", "data-[active=true]:text-orange-300"],
       }}
