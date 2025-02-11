@@ -47,8 +47,11 @@ export default async function RootLayout({
     : null;
 
   return (
-    <html lang="en" className="h-full overflow-scroll scrollbar-hide">
-      <body className="font-body h-full">
+    <html
+      lang="en"
+      className="h-full overflow-scroll scrollbar-hide"
+    >
+      <body className="font-body h-full bg-zig-zag">
         <Providers
           recentChats={recentChats}
           chatPartners={chatPartners}
@@ -59,7 +62,9 @@ export default async function RootLayout({
             userName={userName}
             photoUrl={photoUrl}
           />
-          <main className="container mx-auto px-2">{children}</main>
+          <main className="h-full mx-auto w-full max-w-md sm:max-w-3xl">
+            <div className="place-items-center">{children}</div>
+          </main>
         </Providers>
       </body>
     </html>
