@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Card, CardBody, CardFooter, Divider, Button, Skeleton } from "@heroui/react";
+import { Card, CardBody, CardFooter, Button } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import RecentChatsList from "./RecentChatsList";
 
@@ -10,20 +10,19 @@ type Props = {
   currentMemberId: string;
 };
 
-export default function Sidebar ({ currentMemberId }: Props) {
+export default function SidebarDesktop({ currentMemberId }: Props) {
   const router = useRouter();
 
   return (
-    <Card className="w-full items-center h-full border-1 border-gray-300 bg-background">
-      <CardBody className="flex flex-col h-full items-center ">
-        <div className="text-2xl font-bold mt-4 flex flex-row gap-2">
+    <Card
+      radius="none"
+      className="w-full items-center h-full border-1 border-slate-300 dark:border-slate-500 bg-background"
+    >
+      <CardBody className="flex flex-col h-full items-center p-0">
+        <div className="w-full text-xl font-bold pt-4 pb-2 flex justify-center border-b-1 border-slate-300 dark:border-slate-500 text-slate-600 dark:text-slate-200">
           <span>Your Chats</span>
         </div>
-        <Divider className="mt-3 mb-5 bg-accent" />
-        <RecentChatsList
-          currentMemberId={currentMemberId}
-        />
-        
+        <RecentChatsList currentMemberId={currentMemberId} />
       </CardBody>
       <CardFooter className="flex flex-col justify-end pb-3">
         <Button

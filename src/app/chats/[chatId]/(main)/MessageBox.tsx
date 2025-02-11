@@ -44,21 +44,21 @@ export default function MessageBox({
   );
 
   const messageContentClasses = clsx(
-    "flex flex-col px-2 py-1 border-1 border-slate-300",
+    'flex flex-col px-2 py-1 border-1 border-slate-300 dark:border-slate-500',
     {
-      "rounded-l-2xl rounded-tr-2xl bg-green-100": isCurrentMemberSender,
-      "rounded-r-2xl rounded-tl-2xl bg-white":
+      'rounded-l-2xl rounded-tr-2xl bg-cyan-50': isCurrentMemberSender,
+      'rounded-r-2xl rounded-tl-2xl bg-white dark:bg-gray-800 text-gray-800 dark:text-white':
         !isCurrentMemberSender,
     }
   );
 
   const rendermessageHeader = () => (
-    <div className={clsx('flex items-center w-full mt-1 text-secondary', {
+    <div className={clsx('flex items-center w-full mt-1 text-secondary dark:text-gray-200', {
       'justify-end': isCurrentMemberSender,
     })}>
       
       <div className='flex'>
-        <span className='text-xs font-semibold '>{sender.name}</span>
+        <span className='text-xs font-semibold '>{isCurrentMemberSender ? "You" : sender.name}</span>
         <span className='text-xs ml-2 '>{message.createdAt}</span>
       </div>
     </div>
@@ -69,7 +69,7 @@ export default function MessageBox({
     <div className="flex flex-col">
       <div className={messageContentClasses}>
         {rendermessageHeader()}
-        <p className="text-sm py-3 text-gray-900">{message.content}</p>
+        <p className="text-sm py-3">{message.content}</p>
       </div>
       {read && message.senderId === currentMember.id ? (
         <div className="text-xs text-gray-400 text-italic">Seen &#10003;</div>
