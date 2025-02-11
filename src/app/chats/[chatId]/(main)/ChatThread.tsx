@@ -6,10 +6,12 @@ import MessageBox from "./MessageBox";
 
 import { selectMembersOnline } from "@/redux-store/features/presenceSlice";
 import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
-import { setAllUnreadMessageCount, updateUnreadCount } from "@/redux-store/features/recentChatsSlice";
+import {
+  setAllUnreadMessageCount,
+  updateUnreadCount,
+} from "@/redux-store/features/recentChatsSlice";
 import { selectCurrentChat } from "@/redux-store/features/currentChatSlice";
 import { setCurrentChat } from "@/redux-store/features/currentChatSlice";
-
 
 type Props = {
   currentMember: Member;
@@ -17,9 +19,13 @@ type Props = {
   initialChat: Chat | null;
 };
 
-export default function ChatThread({ currentMember, chatPartner, initialChat }: Props) {
+export default function ChatThread({
+  currentMember,
+  chatPartner,
+  initialChat,
+}: Props) {
   const dispatch = useAppDispatch();
-  
+
   const currentChat = useAppSelector(selectCurrentChat);
   const membersOnline = useAppSelector(selectMembersOnline);
 
@@ -34,7 +40,7 @@ export default function ChatThread({ currentMember, chatPartner, initialChat }: 
       // The user is currently viewing the chat, so reset the unread count
       // in the redux store. For the database, the read status is updated
       // in the backend in page.tsx
-      dispatch(updateUnreadCount({chatId: currentChat.id, count: 0}));
+      dispatch(updateUnreadCount({ chatId: currentChat.id, count: 0 }));
       dispatch(setAllUnreadMessageCount());
     }
   });
@@ -75,9 +81,5 @@ export default function ChatThread({ currentMember, chatPartner, initialChat }: 
     );
   }
 
-  return (
-    <ul className="flex flex-col">
-      {chatThread}
-    </ul>
-  );
+  return <ul className="flex flex-col px-1 py-2">{chatThread}</ul>;
 }
