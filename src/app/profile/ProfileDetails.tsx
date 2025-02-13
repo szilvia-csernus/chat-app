@@ -10,35 +10,48 @@ type ProfileDetailsProps = {
   profile: Profile | null;
 };
 
-export default function ProfileDetails({ session, userName, profile }: ProfileDetailsProps) {
+export default function ProfileDetails({
+  session,
+  userName,
+  profile,
+}: ProfileDetailsProps) {
   return (
-    <div className="border p-5 rounded-lg border-[#999]">
-      <div className="mb-2">
-        <h1 className="text-2xl mb-4 font-semibold">Personal Details</h1>
-        <p className="text-medium font-normal">Name: {userName}</p>
-        <p className="text-medium font-normal">
+    <div className="flex flex-col justify-between items-center gap-4 text-md">
+      <div className="sm:hidden">*</div>
+      <h1 className="text-xl font-bold">Personal Details</h1>
+      <div className="flex flex-col gap-1 ml-3">
+        <p className="font-bold">
+          Name: <span className="font-normal">{userName}</span>
+        </p>
+        <p className="font-bold">
           Country:{" "}
-          {profile ? (
-            profile.country
-          ) : (
-            <span className="text-warning">missing</span>
-          )}
+          <span className="font-normal">
+            {profile ? (
+              profile.country
+            ) : (
+              <span className="text-warning">missing</span>
+            )}
+          </span>
         </p>
-        <p className="text-medium font-normal">
+        <p className="font-bold">
           Gender:{" "}
-          {profile ? (
-            profile.gender
-          ) : (
-            <span className="text-warning">missing</span>
-          )}
+          <span className="font-normal">
+            {profile ? (
+              profile.gender
+            ) : (
+              <span className="text-warning">missing</span>
+            )}
+          </span>
         </p>
-        <p className="text-medium font-normal">
+        <p className="font-bold">
           Date of Birth:{" "}
-          {profile && profile.dateOfBirth ? (
-            new Date(profile.dateOfBirth).toDateString()
-          ) : (
-            <span className="text-warning">missing</span>
-          )}
+          <span className="font-normal">
+            {profile && profile.dateOfBirth ? (
+              new Date(profile.dateOfBirth).toDateString()
+            ) : (
+              <span className="text-warning">missing</span>
+            )}
+          </span>
         </p>
       </div>
 
