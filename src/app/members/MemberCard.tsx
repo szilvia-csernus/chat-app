@@ -53,11 +53,20 @@ export default function MemberCard({
           <MemberImage memberImage={member.image} memberName={member.name} />
           {online && (
             <div className="absolute top-2 left-3 z-20">
-              <PresenceDot outlineColor="white" />
+              <div className="border-1 border-white p-[5px] rounded-2xl bg-teal-500 animate-pulse text-xs text-white">
+                online
+              </div>
+            </div>
+          )}
+          {!online && (
+            <div className="absolute top-2 left-3 z-20">
+              <div className="border-1 border-white p-[5px] rounded-2xl bg-gray-500 text-xs text-white">
+                offline
+              </div>
             </div>
           )}
 
-          <CardFooter className="flex justify-start bg-dark-gradient overflow-hidden absolute bottom-0 z-10">
+          <CardFooter className="flex justify-start bg-dark-gradient overflow-hidden absolute bottom-0 z-10 pb-1 pt-12">
             <div className="flex flex-col text-white">
               <span className="">{member.name}</span>
             </div>

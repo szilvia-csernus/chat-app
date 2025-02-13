@@ -15,6 +15,8 @@ export default async function MembersPage() {
   if (!currentMember) return notFound();
 
   return (
+    <div className="w-full h-full p-5 border-1 border-slate-300 dark:border-slate-500 bg-zig-zag">
       <MembersList members={members} currentMember={currentMember} />
-  )
+    </div>
+  );
 }
