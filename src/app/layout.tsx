@@ -10,15 +10,17 @@ import {
   getRecentChats,
 } from "./actions/chatActions";
 import {
-  getCurrentProfile,
-  getCurrentProfileId,
+  getCurrentProfile
 } from "@/app/actions/profileActions";
+import { nunito } from "@/app/fonts";
+
 
 export const metadata: Metadata = {
   title: "Chat App",
   description:
     "An app for chatting through the web. Built with Next.js, Prisma, and NextAuth.",
 };
+
 
 export default async function RootLayout({
   children,
@@ -49,9 +51,9 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className="h-full overflow-scroll scrollbar-hide"
+      className={`${nunito.className} h-full overflow-scroll scrollbar-hide`}
     >
-      <body className="font-body h-full bg-zig-zag">
+      <body className="font-body h-full bg-background">
         <Providers
           recentChats={recentChats}
           chatPartners={chatPartners}
@@ -62,7 +64,7 @@ export default async function RootLayout({
             userName={userName}
             photoUrl={photoUrl}
           />
-          <main className="h-full mx-auto w-full max-w-md sm:max-w-3xl">
+          <main className="h-full mx-auto w-full max-w-md sm:max-w-4xl">
             <div className="place-items-center">{children}</div>
           </main>
         </Providers>
