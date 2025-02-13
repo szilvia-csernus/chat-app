@@ -21,12 +21,12 @@ export default function NavLink({ href, label, badge, onClick }: NavLinkProps) {
         as={Link}
         href={href}
         onClick={onClick}
-        
+        className="text-md uppercase"
       >
         {label}
       </NavbarItem>
       {badge && (
-        <div className="absolute top-[2px] right-[-25px] bg-accent rounded-full text-slate-700 font-semibold text-xs w-5 h-5 flex items-center justify-center">
+        <div className="absolute top-[2px] right-[-25px] bg-accent rounded-full text-slate-700 font-bold text-xs w-5 h-5 flex items-center justify-center">
           {badge}
         </div>
       )}
