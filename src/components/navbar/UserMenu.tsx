@@ -32,13 +32,14 @@ export default function UserMenu({ userName, photoUrl }: UserMenuProps) {
         variant="flat"
         aria-label="User actions menu"
         className="text-foreground"
+        disabledKeys={["username"]}
       >
         <DropdownItem
           key="username"
           showDivider
           isReadOnly
           as="span"
-          className="h-14 flex flex-row"
+          className="h-10 flex flex-row"
           aria-label="username"
         >
           Signed in as {userName}
