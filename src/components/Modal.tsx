@@ -37,14 +37,25 @@ export default function AppModal({
               <ModalHeader className="flex flex-col gap-1">
                 {modalTitle}
               </ModalHeader>
-              <ModalBody>
-                {modalBody}
-              </ModalBody>
+              <ModalBody>{modalBody}</ModalBody>
               <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose} onClick={onCancelFn}>
+                <Button
+                  color="danger"
+                  variant="light"
+                  onPress={() => {
+                    onClose();
+                    onCancelFn();
+                  }}
+                >
                   Cancel
                 </Button>
-                <Button color="primary" onPress={onClose} onClick={onSuccessFn}>
+                <Button
+                  color="primary"
+                  onPress={() => {
+                    onClose();
+                    onSuccessFn();
+                  }}
+                >
                   {onSuccessBtnText}
                 </Button>
               </ModalFooter>
