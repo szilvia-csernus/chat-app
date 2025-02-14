@@ -64,7 +64,7 @@ export default async function RootLayout({
             userName={userName}
             photoUrl={photoUrl}
           />
-          <main className="h-full mx-auto w-full max-w-md sm:max-w-4xl">
+          <main className="h-full mx-auto w-full sm:max-w-4xl">
             <div className="place-items-center">{children}</div>
           </main>
         </Providers>
