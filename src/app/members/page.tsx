@@ -2,6 +2,7 @@ import { getCurrentMember, getMembers } from '@/app/actions/memberActions';
 import MembersList from './MembersList';
 import { authWithRedirect } from '../actions/authActions';
 import { notFound } from 'next/navigation';
+import Footer from '@/components/Footer';
 
 
 export const dynamic = "force-dynamic";
@@ -15,8 +16,9 @@ export default async function MembersPage() {
   if (!currentMember) return notFound();
 
   return (
-    <div className="w-full h-full p-5 border-1 border-slate-300 dark:border-slate-500 bg-zig-zag">
+    <div className="w-full h-full min-h-[calc(100dvh-80px)] flex flex-col justify-strech">
       <MembersList members={members} currentMember={currentMember} />
+      <Footer />
     </div>
   );
 }
