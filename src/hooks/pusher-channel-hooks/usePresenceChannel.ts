@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import { Channel, Members } from "pusher-js";
 import { pusherClient } from "@/lib/pusher";
-import{ useVisibilityChange}  from "../misc-hooks/useVisibilityChange";
+import { useVisibilityChange}  from "../misc-hooks/useVisibilityChange";
 import { setPresentMembers, addMember, removeMember } from "@/redux-store/features/presenceSlice";
 import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
 import { selectCurrentChat } from "@/redux-store/features/currentChatSlice";
@@ -18,7 +18,6 @@ export const usePresenceChannel = (currentProfileId: string | null) => {
   const channelRef = useRef<Channel | null>(null);
 
   const currentChat = useAppSelector(selectCurrentChat);
-  console.log("Current chat in usePresenceChannel", currentChat);
   
   const handleSetMembers = useCallback(
     (memberIds: string[]) => {
