@@ -1,6 +1,7 @@
 import { heroui } from "@heroui/react";
 import type { Config } from "tailwindcss";
 
+
 const config: Config = {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -9,14 +10,12 @@ const config: Config = {
     "./node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    fontFamily: {
-      title: ['"Oswald"', "sans-serif"],
-      body: ['"Nunito"', "sans-serif"],
-    },
     extend: {
+      // fontFamily: {
+      //   nunito: ["var(--font-nunito)", "sans-serif"], // doesn't work
+      // },
       backgroundImage: {
-        "dark-gradient":
-          "linear-gradient(to top, rgba(0,0,0,0.8), transparent)",
+        "dark-gradient": "linear-gradient(to top, rgba(0,0,0,1), transparent)",
       },
       colors: {
         background: "var(--background)",
