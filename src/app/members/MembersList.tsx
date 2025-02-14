@@ -13,7 +13,7 @@ export default function MembersList({
   console.log("Executing MemberList on the server");
 
   return (
-    <div className="h-dvh grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-8 text-primary">
+    <div className="flex-grow h-full overflow-scroll scrollbar-hide scroll-smooth p-5 border-1 border-slate-300 dark:border-slate-500 bg-zig-zag grid grid-cols-2 min-[500px]:grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-8 text-primary">
       {members &&
         members.map((member) => {
           return (
