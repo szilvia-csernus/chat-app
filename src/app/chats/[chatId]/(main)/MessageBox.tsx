@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import PresenceAvatar from "@/components/PresenceAvatar";
 import { Member, SerializedMessage } from "@/types";
@@ -22,7 +22,6 @@ export default function MessageBox({
   isCurrentMemberSender,
   isChatPartnerOnline,
 }: MessageBoxProps) {
-
   const sender = isCurrentMemberSender ? currentMember : chatPartner;
   const online = isCurrentMemberSender ? true : isChatPartnerOnline;
 
@@ -32,8 +31,7 @@ export default function MessageBox({
     if (messageEndRef.current) {
       messageEndRef.current.scrollIntoView({ behavior: "auto" });
     }
-  }
-  , [messageEndRef]);
+  }, [messageEndRef]);
 
   const renderAvatar = () => (
     <PresenceAvatar
@@ -44,26 +42,31 @@ export default function MessageBox({
   );
 
   const messageContentClasses = clsx(
-    'flex flex-col px-2 py-1 border-1 border-slate-300 dark:border-slate-500',
+    "flex flex-col px-2 py-1 border-1 border-slate-300 dark:border-slate-500",
     {
-      'rounded-l-2xl rounded-tr-2xl bg-cyan-50': isCurrentMemberSender,
-      'rounded-r-2xl rounded-tl-2xl bg-white dark:bg-gray-800 text-gray-800 dark:text-white':
+      "rounded-l-2xl rounded-tr-2xl bg-cyan-50": isCurrentMemberSender,
+      "rounded-r-2xl rounded-tl-2xl bg-white dark:bg-gray-800 text-gray-800 dark:text-white":
         !isCurrentMemberSender,
     }
   );
 
   const rendermessageHeader = () => (
-    <div className={clsx('flex items-center w-full mt-1 text-secondary dark:text-gray-200', {
-      'justify-end': isCurrentMemberSender,
-    })}>
-      
-      <div className='flex'>
-        <span className='text-xs font-semibold '>{isCurrentMemberSender ? "You" : sender.name}</span>
-        <span className='text-xs ml-2 '>{message.createdAt}</span>
+    <div
+      className={clsx(
+        "flex items-center w-full mt-1 text-secondary dark:text-gray-200",
+        {
+          "justify-end": isCurrentMemberSender,
+        }
+      )}
+    >
+      <div className="flex">
+        <span className="text-xs font-bold ">
+          {isCurrentMemberSender ? "You" : sender.name}
+        </span>
+        <span className="text-xs ml-2 ">{message.createdAt}</span>
       </div>
     </div>
-
-  )
+  );
 
   const renderMessageContent = () => (
     <div className="flex flex-col">
@@ -78,7 +81,6 @@ export default function MessageBox({
       )}
     </div>
   );
-
 
   return (
     <div className="grid grid-rows-1">

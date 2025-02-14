@@ -24,7 +24,7 @@ export default function Chat({
   return (
     <Card
       radius="none"
-      className="w-full h-[calc(100dvh-80px)] m-0 border-1 border-slate-300 dark:border-slate-500 bg-zig-zag sm:bg-none relative"
+      className="w-full h-[calc(100dvh-80px)] m-0 border-1 border-slate-300 dark:border-slate-500 bg-zig-zag relative"
     >
       <div className="sticky space-x-2">
         <CurrentChatPartner

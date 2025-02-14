@@ -16,7 +16,7 @@ export default function SidebarDesktop({ currentMemberId }: Props) {
   return (
     <Card
       radius="none"
-      className="w-full items-center h-full border-1 border-slate-300 dark:border-slate-500 bg-background"
+      className="w-full items-center h-full border-1 border-slate-300 dark:border-slate-500 bg-zig-zag"
     >
       <CardBody className="flex flex-col h-full items-center p-0">
         <div className="w-full text-xl font-bold pt-4 pb-2 flex justify-center border-b-1 border-slate-300 dark:border-slate-500 text-slate-600 dark:text-slate-200">
