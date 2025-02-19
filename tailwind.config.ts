@@ -41,7 +41,7 @@ const config: Config = {
         dark: {
           colors: {
             primary: "#64748b",
-            secondary: "#0f766e",
+            secondary: "#5f88cc",
             default: "#ededed", // foreground
           },
         },
