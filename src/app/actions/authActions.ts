@@ -84,7 +84,14 @@ export async function deleteUser(userId: string) {
 
     const profileId = profile.id;
 
-    // Mark conversations inactive
+    // Delete already inactive conversations
+    await prisma.conversation.deleteMany({
+      where: { profiles: { some: { id: profileId } }, inactive: true },
+    });
+
+    console.log("Inactive conversations deleted");
+
+    // Mark rest of conversations inactive
     await prisma.conversation.updateMany({
       where: { profiles: { some: { id: profileId } } },
       data: { inactive: true },
@@ -114,10 +121,6 @@ export async function deleteUser(userId: string) {
 
     console.log("User photo deleted");
 
-    await signOutUser();
-
-    console.log("User signed out");
-
     // Delete the user account
     await prisma.user.delete({
       where: { id: userId },
@@ -125,18 +128,28 @@ export async function deleteUser(userId: string) {
 
     console.log("User deleted");
 
-    // Delete profile records and mark profile as deleted
-    await prisma.profile.update({
-      where: { id: profileId },
-      data: {
-        country: "",
-        gender: "",
-        deleted: true,
-      },
+    // Delete profile record if they have no conversations
+    const profileConversations = await prisma.conversation.findMany({
+      where: { profiles: { some: { id: profileId } } },
     });
+    if (profileConversations.length === 0) {
+      await prisma.profile.delete({
+        where: { id: profileId },
+      });
+      console.log("Profile deleted");
+    } else {
+      // Delete profile records and mark profile as deleted
+      await prisma.profile.update({
+        where: { id: profileId },
+        data: {
+          country: "",
+          gender: "",
+          deleted: true,
+        },
+      });
+      console.log("Profile data deleted");
+    }
 
-    console.log("Profile deleted");
-    
   } catch (error) {
     console.error(error);
     throw new Error("Error deleting user");
