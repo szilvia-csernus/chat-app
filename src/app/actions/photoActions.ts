@@ -9,7 +9,7 @@ import { UploadApiResponse } from "cloudinary";
 import { unstable_cache as nextCache, revalidateTag } from "next/cache";
 import { authWithError, getCurrentUserId } from "./authActions";  
 
-/** Fetches the photo for a given user (internal function) */
+/** Fetches the photo for a given user */
 async function getPhotoByUserIdFn(userId: string) {
   return prisma.photo.findFirst({
     where: { userId },
