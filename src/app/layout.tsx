@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Providers from "@/components/Providers";
 import MainNav from "@/components/navbar/MainNav";
@@ -20,6 +20,12 @@ export const metadata: Metadata = {
   description:
     "An app for chatting through the web. Built with Next.js, Prisma, and NextAuth.",
 };
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1.0,
+  maximumScale: 1.0
+}
 
 
 export default async function RootLayout({
@@ -51,7 +57,7 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className={`${nunito.className} h-full overflow-scroll scrollbar-hide`}
+      className={`${nunito.className} h-full overflow-y-scroll overflow-x-hidden scrollbar-hide`}
     >
       <body className="font-body h-full bg-background">
         <Providers
