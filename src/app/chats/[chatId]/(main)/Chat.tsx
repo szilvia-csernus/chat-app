@@ -24,7 +24,7 @@ export default function Chat({
   return (
     <Card
       radius="none"
-      className="w-full h-[calc(100dvh-80px)] m-0 border-1 border-slate-300 dark:border-slate-500 bg-zig-zag relative"
+      className="h-[calc(100dvh-80px)] m-0 border-1 border-slate-300 dark:border-slate-800 bg-zig-zag relative"
     >
       <div className="sticky space-x-2">
         <CurrentChatPartner
@@ -33,7 +33,7 @@ export default function Chat({
           setIsSidebarOpen={setIsSidebarOpen}
         />
       </div>
-      <div className="flex flex-col h-svh overflow-scroll scrollbar-hide scroll-smooth">
+      <div className="flex flex-col-reverse h-svh overflow-scroll scrollbar-hide scroll-smooth">
         <ChatThread
           currentMember={currentMember}
           chatPartner={chatPartner}
@@ -41,7 +41,12 @@ export default function Chat({
         />
       </div>
       <div className="sticky px-2">
-        <ChatForm />
+        {initialChat?.inactive && (
+          <div className="bg-gray-300 dark:bg-gray-700 p-2 rounded-md text-center mb-2">
+            This chat is inactive.
+          </div>
+        )}
+        {!initialChat?.inactive && <ChatForm />}
       </div>
     </Card>
   );
