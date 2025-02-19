@@ -32,10 +32,16 @@ export default function CurrentChatPartner({
 
   return (
     <div className="m-auto border-b-1 border-slate-300 dark:border-slate-500  bg-white dark:bg-gray-800 flex items-center">
-      <IoIosArrowBack className="sm:hidden ml-2" size={30} onClick={() => setIsSidebarOpen(!isSidebarOpen)} />
+      <IoIosArrowBack
+        className="sm:hidden ml-2 text-slate-500  dark:text-slate-400"
+        size={30}
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+      />
       <div className="m-2 rounded-full border-1 border-slate-500 overflow-hidden">
         <MemberImage
-          memberImage={chatPartner.image ? chatPartner.image : ""}
+          memberImage={
+            chatPartner.image ? chatPartner.image : "/images/user.png"
+          }
           memberName={chatPartner.name ? chatPartner.name : ""}
           width={35}
           height={35}
