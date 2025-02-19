@@ -5,41 +5,39 @@ import { authWithError } from "./authActions";
 import { getCurrentProfileId } from "./profileActions";
 import { formatShortDateTime } from "@/lib/utils";
 
-
-/** Fetches all the members data, inc. name and image except for 
+/** Fetches all the members data, inc. name and image except for
  * the current user. */
 export async function getMembers() {
   await authWithError();
-  
+
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
   try {
     const currentProfileId = await getCurrentProfileId();
     if (!currentProfileId) return null;
 
-    const profiles = prisma.profile.findMany({
+    const profiles = await prisma.profile.findMany({
       where: {
-        NOT: {
-          id: currentProfileId,
-        },
+        deleted: false,
       },
       include: {
         user: {
           select: {
             name: true,
-            image: true
-          }
+            image: true,
+          },
         },
-      }
+      },
     });
-    return (await profiles).map(profile => {
+    return (profiles).map((profile) => {
       return {
         id: profile.id,
-        name: profile.user.name || "",
-        image: profile.user.image || "",
+        name: profile.user?.name || "",
+        image: profile.user?.image || null,
         lastActive: formatShortDateTime(profile.lastActive),
+        deleted: profile.deleted,
       };
-    })
+    });
   } catch (error) {
     console.log(error);
     return null;
@@ -69,9 +67,10 @@ export async function getMemberById(id: string) {
     }
     return {
       id: profile.id,
-      name: profile.user.name || "",
-      image: profile.user.image || "",
-      lastActive: formatShortDateTime(profile.lastActive)
+      name: profile.user?.name || "",
+      image: profile.user?.image || null,
+      lastActive: formatShortDateTime(profile.lastActive),
+      deleted: profile.deleted,
     };
   } catch (error) {
     console.log(error);
@@ -81,10 +80,10 @@ export async function getMemberById(id: string) {
 
 /** Fetches the current member's data. */
 export async function getCurrentMember() {
-    const currentProfileId = await getCurrentProfileId();
-    if (!currentProfileId) return null;
+  const currentProfileId = await getCurrentProfileId();
+  if (!currentProfileId) return null;
 
-  try{
+  try {
     const profile = await prisma.profile.findUnique({
       where: {
         id: currentProfileId,
@@ -103,12 +102,13 @@ export async function getCurrentMember() {
     }
     return {
       id: profile.id,
-      name: profile.user.name || '',
-      image: profile.user.image || '',
-      lastActive: formatShortDateTime(profile.lastActive)
-    }
+      name: profile.user?.name || "",
+      image: profile.user?.image || null,
+      lastActive: formatShortDateTime(profile.lastActive),
+      deleted: profile.deleted,
+    };
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return null;
   }
 }
