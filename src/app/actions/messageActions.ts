@@ -35,6 +35,7 @@ export async function createMessage(
         id: chatId,
       },
       select: {
+        inactive: true,
         profiles: {
           select: {
             id: true,
@@ -45,6 +46,10 @@ export async function createMessage(
 
     if (!chat) {
       return { status: "error", error: "Chat not found" };
+    }
+
+    if (chat.inactive) {
+      return { status: "error", error: "Chat is inactive" };
     }
 
     // If the current user is not part of the conversation
