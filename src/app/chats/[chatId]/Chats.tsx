@@ -29,7 +29,7 @@ export default function Chats({
   }, [isSidebarOpen]);
 
   return (
-    <div className="w-full h-full sm:grid sm:grid-cols-12 sm:gap-1 mx-0 my-0 sm:my-1 relative">
+    <div className=" w-full h-full sm:grid sm:grid-cols-12 sm:gap-1 mx-0 my-0 sm:my-1 relative">
       {isSidebarOpen && (
         <div
           className={`absolute left-0 right-0 top-0 bottom-0 z-30 bg-inherit min-w-md sm:hidden ${additionalStyles}`}
