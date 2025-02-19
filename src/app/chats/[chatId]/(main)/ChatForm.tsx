@@ -4,14 +4,11 @@ import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { messageSchema, MessageSchema } from "@/lib/schemas/messageSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Input } from "@heroui/react";
+import { Button, Textarea } from "@heroui/react";
 import { HiPaperAirplane } from "react-icons/hi2";
 import { useParams } from "next/navigation";
-import {
-  createMessage,
-} from "@/app/actions/messageActions";
+import { createMessage } from "@/app/actions/messageActions";
 import { handleFormServerErrors } from "@/lib/utils";
-
 
 export default function ChatForm() {
   const params = useParams<{ chatId: string }>();
@@ -23,7 +20,10 @@ export default function ChatForm() {
     setError,
     setFocus,
     formState: { isSubmitting, isValid, errors },
-  } = useForm<MessageSchema>({ resolver: zodResolver(messageSchema) });
+  } = useForm<MessageSchema>({
+    resolver: zodResolver(messageSchema),
+    mode: "onTouched",
+  });
 
   useEffect(() => {
     setFocus("content");
@@ -40,27 +40,35 @@ export default function ChatForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      autoComplete="none"
+      className="flex flex-col gap-3"
+    >
       <div className="flex items-center gap-2 w-full">
-        <Input
-          fullWidth
+        <Textarea
+          minRows={1}
+          maxRows={10}
           radius="lg"
           placeholder="Type your message here..."
           {...register("content")}
           isInvalid={!!errors.content}
           errorMessage={errors.content?.message}
+          className="whitespace-pre-line"
         />
-        <Button
-          type="submit"
-          isIconOnly
-          color="secondary"
-          radius="full"
-          isLoading={isSubmitting}
-          isDisabled={!isValid || isSubmitting}
-          className="text-white"
-        >
-          <HiPaperAirplane size={18} />
-        </Button>
+        {isValid && (
+          <Button
+            type="submit"
+            isIconOnly
+            color="secondary"
+            radius="full"
+            isLoading={isSubmitting}
+            isDisabled={!isValid && !isSubmitting}
+            className="text-white"
+          >
+            <HiPaperAirplane size={18} />
+          </Button>
+        )}
       </div>
       <div className="flex flex-col">
         {errors.root?.serverError && (
