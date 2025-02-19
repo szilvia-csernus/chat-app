@@ -15,6 +15,7 @@ import {
 import { getCurrentUserId } from "./authActions";
 
 export async function updateProfileLastActive(profileId: string) {
+  
   return prisma.profile.update({
     where: {
       id: profileId,
@@ -57,6 +58,14 @@ export async function getCurrentProfile() {
       where: {
         userId: currentUserId,
       },
+      include: {
+        user: {
+          select: {
+            name: true,
+            image: true,
+          },
+        }
+      }
     });
     if (!profile) {
       return null;
