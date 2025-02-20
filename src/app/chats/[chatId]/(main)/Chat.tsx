@@ -43,7 +43,7 @@ export default function Chat({
       <div className="sticky px-2">
         {initialChat?.inactive && (
           <div className="bg-gray-300 dark:bg-gray-700 p-2 rounded-md text-center mb-2">
-            This chat is inactive.
+            This chat is inactive. Your chat partner has deleted their account.
           </div>
         )}
         {!initialChat?.inactive && <ChatForm />}
