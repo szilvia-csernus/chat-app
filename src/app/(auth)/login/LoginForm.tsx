@@ -16,7 +16,7 @@ export default function LoginForm() {
         <p className="text-sm">Choose a login method below to get started.</p>
       }
       body={
-        <div className="flex flex-col gap-4">
+        <div className="h-full flex flex-col gap-4">
           <SocialLogins />
         </div>
       }
