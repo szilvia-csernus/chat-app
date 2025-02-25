@@ -26,7 +26,7 @@ export default function RecentChatFrame({ chatId, children, isSidebarOpen, setIs
 
   return (
     <Link
-      className={`relative flex flex-row items-center w-full cursor-pointer border-b-1 border-slate-300 dark:border-slate-500  ${additionalStyles}`}
+      className={`relative flex flex-row justify-between items-center w-full cursor-pointer border-b-1 border-slate-300 dark:border-slate-500  ${additionalStyles}`}
       href={`/chats/${chatId}`}
       onClick={clickHandler}
     >
