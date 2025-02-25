@@ -1,9 +1,7 @@
-import { getCurrentProfile } from "@/app/actions/profileActions";
 import Footer from "@/components/Footer";
 import { HiOutlineChatBubbleLeftRight } from "react-icons/hi2";
 
 export default async function Home() {
-  const currentProfile = await getCurrentProfile();
 
   return (
     <div className="h-full min-h-[calc(100dvh-80px)] flex flex-col justify-stretch">
@@ -15,7 +13,7 @@ export default async function Home() {
 
         <p>Simply sign in and start chatting with anyone you find here!</p>
         <p>
-          Please note, this project was created as a coding exercise to
+          Please note, this project was created as a mere coding exercise to
           demonstrate basic messaging functionality in the browser. Therefore,
           do not rely on this app for important conversations and be considerate
           when contacting people you do not personally know.
