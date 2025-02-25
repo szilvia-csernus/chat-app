@@ -14,16 +14,18 @@ export function serializeMessage(message: Message): SerializedMessage {
     id: message.id,
     content: message.content,
     createdAt: serializeDate(message.createdAt),
-    senderId: message.senderId,
+    senderId: message.senderId || null,
     read: message.read,
+    deleted: message.deleted
   };
 }
 
 export function serializeChatProfile(profile: ChatProfile): Member {
   return {
     id: profile.id,
-    name: profile.user.name || "",
-    image: profile.user.image || "",
+    name: profile.user?.name || "",
+    image: profile.user?.image || null,
     lastActive: serializeDate(profile.lastActive),
+    deleted: profile.deleted
   };
 }
