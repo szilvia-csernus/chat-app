@@ -34,7 +34,7 @@ export default {
         jwt_token.token.provider = jwt_token.account?.provider;
         jwt_token.token.picture =
           jwt_token.profile?.picture || jwt_token.user.image;
-        jwt_token.token.name = jwt_token.profile?.name;
+        jwt_token.token.name = jwt_token.profile?.name.split(" ")[0];
       }
       // console.log("jwt token", jwt_token.token);
       // return value will be passed to the session callback as 'token'.
