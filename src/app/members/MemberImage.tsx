@@ -35,7 +35,6 @@ const MemberImage: React.FC<MemberImageProps> = ({ memberName, memberImage, widt
       isZoomed
       alt={memberName || "Image of member"}
       width={width || 300}
-      height={height || 300}
       src={memberImage || "/images/user.png"}
       className={className || "aspect-square object-cover"}
     />
