@@ -7,13 +7,11 @@ import { Member, Chat as ChatType } from "@/types";
 import Chat from "./(main)/Chat";
 
 type Props = {
-  currentMember: Member;
   chatPartner: Member;
   initialChat: ChatType;
 };
 
 export default function Chats({
-  currentMember,
   chatPartner,
   initialChat,
 }: Props) {
@@ -35,19 +33,17 @@ export default function Chats({
           className={`absolute left-0 right-0 top-0 bottom-0 z-30 bg-inherit min-w-md sm:hidden ${additionalStyles}`}
         >
           <SidebarMobile
-            currentMemberId={currentMember.id}
             isSidebarOpen={isSidebarOpen}
             setIsSidebarOpen={setIsSidebarOpen}
           />
         </div>
       )}
       <div className="hidden sm:flex sm:col-span-5">
-        <SidebarDesktop currentMemberId={currentMember.id} />
+        <SidebarDesktop />
       </div>
       <div className="w-full sm:col-span-7 relative">
         <Chat
           chatPartner={chatPartner}
-          currentMember={currentMember}
           initialChat={initialChat}
           isSidebarOpen={isSidebarOpen}
           setIsSidebarOpen={setIsSidebarOpen}
