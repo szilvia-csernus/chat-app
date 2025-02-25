@@ -11,13 +11,22 @@ import {
 import { Avatar } from "@heroui/avatar";
 import Link from "next/link";
 import { signOutUser } from "@/app/actions/authActions";
+import { useRouter } from "next/navigation";
 
 type UserMenuProps = {
   userName: string;
   photoUrl: string;
 };
 
+
+
 export default function UserMenu({ userName, photoUrl }: UserMenuProps) {
+  const router = useRouter();
+
+  const handleProfileClick = () => {
+    router.push("/profile");
+  };
+  
   return (
     <Dropdown placement="bottom-end" className="shadow-sm shadow-foreground">
       <DropdownTrigger>
@@ -44,10 +53,13 @@ export default function UserMenu({ userName, photoUrl }: UserMenuProps) {
         >
           Signed in as {userName}
         </DropdownItem>
-        <DropdownItem key="profile" color="secondary" textValue="Profile">
-          <Link href="/profile">
-            <div className="w-full h-full">Profile</div>
-          </Link>
+        <DropdownItem
+          key="profile"
+          color="secondary"
+          textValue="Profile"
+          onPress={handleProfileClick}
+        >
+          Profile
         </DropdownItem>
         <DropdownItem
           key="signout"
