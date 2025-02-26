@@ -7,7 +7,7 @@ import EditProfileImage from "./EditProfileImage";
 
 type ProfileImageProps = {
   session: Session | null;
-  photoUrl: string | null;
+  photoUrl: string;
 };
 
 export default function ProfileImage({ session, photoUrl }: ProfileImageProps) {
@@ -23,9 +23,8 @@ export default function ProfileImage({ session, photoUrl }: ProfileImageProps) {
       <div className="w-48 flex flex-col">
         <Image
           alt="Profile"
-          src={photoUrl ?? "/images/user.png"}
+          src={photoUrl || "/images/user.png"}
           width={180}
-          height={180}
           className="aspect-square object-cover my-2"
         />
       </div>
