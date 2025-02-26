@@ -30,7 +30,7 @@ export default function CardWrapper({
   footer,
 }: CardWrapperProps) {
   return (
-    <Card className="min-w-80 w-full max-w-md mx-auto mt-10 p-5 bg-background border-1 border-gray-400 shadow shadow-gray-400 gap-4 flex flex-col items-center justify-center">
+    <Card radius="none" className="min-w-80 w-full max-w-md mx-auto p-5 bg-inherit gap-4 flex flex-col items-center justify-center shadow-none">
       <CardHeader className="flex flex-col items-center justify-center mt-2">
         <div className="flex flex-col gap-5 items-center">
           <div className="flex flex-row items-center gap-3">
@@ -44,7 +44,7 @@ export default function CardWrapper({
       <CardFooter className="w-auto">
         {action && (
           <Button
-            onClick={action}
+            onPress={action}
             fullWidth
             size="lg"
             color="secondary"
