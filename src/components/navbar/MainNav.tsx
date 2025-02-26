@@ -15,10 +15,9 @@ import { FiUser } from "react-icons/fi";
 import UserMenu from "./UserMenu";
 import NavLink from "./NavLink";
 import { HiOutlineChatBubbleLeftRight } from "react-icons/hi2";
-import { usePresenceChannel } from "@/hooks/pusher-channel-hooks/usePresenceChannel";
 import { useAppSelector } from "@/redux-store/hooks";
 import { selectAllUnreadMessageCount } from "@/redux-store/features/recentChatsSlice";
-import { usePrivateChatChannels } from "@/hooks/pusher-channel-hooks/usePrivateChatChannels";
+
 
 type MainNavProps = {
   currentProfileId: string | null;
@@ -35,8 +34,6 @@ export default function MainNav({
 
   const allUnreadMessageCount = useAppSelector(selectAllUnreadMessageCount);
 
-  usePresenceChannel(currentProfileId);
-  usePrivateChatChannels(currentProfileId);
 
   const menuItems = [
     { href: "/members", label: "Members" },
@@ -48,7 +45,7 @@ export default function MainNav({
       isMenuOpen={isMenuOpen}
       onMenuOpenChange={setIsMenuOpen}
       maxWidth="2xl"
-      className="bg-gradient-to-r from-slate-700 to-teal-700 p-2 w-full max-w-4xl mx-auto"
+      className="bg-gradient-to-r from-slate-700 to-teal-700 p-2 w-full max-w-4xl mx-auto overflow-hidden scrollbar-hide"
       classNames={{
         item: ["text-m", "text-white", "data-[active=true]:text-orange-300"],
       }}
@@ -71,16 +68,20 @@ export default function MainNav({
       </NavbarBrand>
       {/* Mobile Menu */}
       {currentProfileId && (
-        <NavbarMenu className="top-20 z-40 h-auto bg-gradient-to-r from-slate-700 to-teal-700 text-white">
+        <NavbarMenu className="top-20 z-40 h-auto bg-gradient-to-r from-slate-700 to-teal-700 text-white overflow-y-hidden scrollbar-hide">
           {menuItems.map((item, index) => (
             <NavbarMenuItem
               key={index}
               className="mx-auto my-3 uppercase text-center"
             >
               <div className="mb-6 text-center">*</div>
-              <Link href={item.href} onClick={() => setIsMenuOpen(false)}>
-                {item.label}
-              </Link>
+              <NavLink
+                key={index}
+                href={item.href}
+                label={item.label}
+                badge={item.badge ? item.badge : null}
+                onClick={() => setIsMenuOpen(false)}
+              />
             </NavbarMenuItem>
           ))}
           <div className="my-4 text-center">*</div>
