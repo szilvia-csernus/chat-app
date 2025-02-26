@@ -2,17 +2,14 @@
 
 import { deleteImageFromCloudinary } from "@/app/actions/photoActions";
 import ImageUploadButton from "@/components/ImageUploadButton";
+import { PhotoSchema } from "@/lib/schemas/completeProfileSchema";
 import { Image } from "@heroui/react";
 import { CloudinaryUploadWidgetResults } from "next-cloudinary";
-import { useRouter } from "next/navigation";
-import { UseFormSetValue } from "react-hook-form";
+import { UseFormSetValue, UseFormGetValues } from "react-hook-form";
 
 type ProfileImageUploadProps = {
-  setValue: UseFormSetValue<{
-    imageUrl: string;
-    cloudinaryImageId: string;
-  }>;
-  getValues: (key: string) => string;
+  setValue: UseFormSetValue<PhotoSchema>;
+  getValues: UseFormGetValues<PhotoSchema>;
   uploadedImage?: string | null;
   setUploadedImage: (url: string | null) => void;
   uploadDisabled?: boolean;
@@ -25,7 +22,6 @@ export default function ProfileImageUpload({
   setUploadedImage,
   uploadDisabled,
 }: ProfileImageUploadProps) {
-  const router = useRouter();
 
   const onUploadImage = async (result: CloudinaryUploadWidgetResults) => {
     if (result.info && typeof result.info === "object") {
