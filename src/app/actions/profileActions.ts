@@ -13,18 +13,34 @@ import {
   EditProfileSchema,
 } from "@/lib/schemas/editProfileSchema";
 import { getCurrentUserId } from "./authActions";
+import { getMembers, getMemberIdsServerFn, triggerUpdateAboutNewMember } from "./memberActions";
+import { formatShortDateTime } from "@/lib/utils";
 
-export async function updateProfileLastActive(profileId: string) {
-  
-  return prisma.profile.update({
-    where: {
-      id: profileId,
-    },
-    data: {
-      lastActive: new Date(),
-    },
 
-  });
+export async function updateProfileLastActive(profileId: string | null) {
+  if (!profileId) return null;
+  try {
+    const profile = await prisma.profile.findUnique({
+      where: { id: profileId },
+    });
+
+    if (!profile) {
+      console.log(`Profile with id ${profileId} not found`);
+      return null;
+    }
+
+    return prisma.profile.update({
+      where: {
+        id: profileId,
+      },
+      data: {
+        lastActive: new Date(),
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
 }
 
 /** Returns the authenticated user's profile Id */
@@ -48,6 +64,7 @@ export async function getCurrentProfileId() {
   }
 }
 
+
 /** Returns the authenticated user's profile */
 export async function getCurrentProfile() {
   const currentUserId = await getCurrentUserId();
@@ -64,16 +81,16 @@ export async function getCurrentProfile() {
             name: true,
             image: true,
           },
-        }
-      }
+        },
+      },
     });
     if (!profile) {
       return null;
     }
     return profile;
   } catch (error) {
-    console.log(error)
-    return null
+    console.log(error);
+    return null;
   }
 }
 
@@ -128,6 +145,13 @@ export async function completeProfile(
         },
       },
       include: {
+        profile: {
+          select: {
+            id: true,
+            lastActive: true,
+            deleted: true,
+          },
+        },
         accounts: {
           select: {
             provider: true,
@@ -136,12 +160,30 @@ export async function completeProfile(
       },
     });
 
-    revalidateTag("user");
-    revalidateTag("user-profile");
     revalidateTag("user-photo");
-    revalidateTag("members");
+    revalidateTag("all-members");
 
-    return { status: "success", data: user.accounts[0].provider };
+    const memberIds = await getMemberIdsServerFn();
+    const newMemberId = user.profile?.id;
+    if (memberIds && newMemberId) {
+      memberIds.forEach(async (data: {id: string}) => {
+        if (data.id !== newMemberId) {
+          console.log("profileActions: Triggering update for member after new signup", data.id, user.profile?.id);
+          await triggerUpdateAboutNewMember({
+          profileId: data.id,
+          newMember: {
+            id: newMemberId,
+            name: user.name || "",
+            image: user.image,
+            lastActive: formatShortDateTime(user.profile?.lastActive || new Date()),
+            deleted: user.profile?.deleted || false,
+            online: true,
+          }
+        });}
+      })
+    }
+
+    return { status: "success", data: user.profile?.id || "" };
   } catch (error) {
     console.error(error);
     return { status: "error", error: "An unknown error occured" };
