@@ -2,133 +2,128 @@
 
 import { prisma } from "@/prisma";
 import { redirect } from "next/navigation";
-import { authWithError, getCurrentUserId } from "./authActions";
+import { authWithError, getCurrentUser, getCurrentUserId } from "./authActions";
 import { getCurrentProfile, getCurrentProfileId } from "./profileActions";
 import { formatShortDateTime } from "@/lib/utils";
-import { mapChatDataToChatType, mapCPDataListToChatPartnerList, mapRCDataListToRecentChatsList } from "@/lib/maps";
 import { pusherServer } from "@/lib/pusher";
 
-/** Fetches the list of ChatPartners for the Members page,
- * in order to decide if current user has ever chatted with
- * the given member. */
-export async function getChatPartners() {
-  const currentUserId = await getCurrentUserId();
-  if (!currentUserId) return null;
+// /** Fetches the list of ChatPartners for the Members page,
+//  * in order to decide if current user has ever chatted with
+//  * the given member. */
+// export async function getChatPartners() {
+//   const currentUserId = await getCurrentUserId();
+//   if (!currentUserId) return null;
 
-  try {
-    const profileId = await getCurrentProfileId();
+//   try {
+//     const profileId = await getCurrentProfileId();
 
-    if (!profileId) {
-      return null;
-    }
+//     if (!profileId) {
+//       return null;
+//     }
 
-    const conversations = await prisma.conversation.findMany({
-      where: {
-        profiles: {
-          some: {
-            id: profileId,
-          },
-        },
-      },
-      include: {
-        profiles: {
-          select: {
-            id: true,
-            lastActive: true,
-            deleted: true,
-            user: {
-              select: {
-                name: true,
-                image: true,
-              },
-            },
-          },
-        },
-      },
-    });
+//     const conversations = await prisma.conversation.findMany({
+//       where: {
+//         profiles: {
+//           some: {
+//             id: profileId,
+//           },
+//         },
+//       },
+//       include: {
+//         profiles: {
+//           select: {
+//             id: true,
+//             lastActive: true,
+//             deleted: true,
+//             user: {
+//               select: {
+//                 name: true,
+//                 image: true,
+//               },
+//             },
+//           },
+//         },
+//       },
+//     });
 
-    return mapCPDataListToChatPartnerList(
-        profileId,
-        conversations
-      );
+//     return mapCPDataListToChatPartnerList(profileId, conversations);
+//   } catch (error) {
+//     throw error;
+//   }
+// }
 
-  } catch (error) {
-    throw error;
-  }
-}
+// /** Fetches current user's chat partner for a given chat */
+// export async function getChatPartner(chatId: string) {
+//   const currentUserId = await getCurrentUserId();
+//   if (!currentUserId) return null;
 
-/** Fetches current user's chat partner for a given chat */
-export async function getChatPartner(chatId: string) {
-  const currentUserId = await getCurrentUserId();
-  if (!currentUserId) return null;
+//   try {
+//     const currentProfileId = await getCurrentProfileId();
 
-  try {
-    const currentProfileId = await getCurrentProfileId();
+//     if (!currentProfileId) {
+//       return null;
+//     }
 
-    if (!currentProfileId) {
-      return null;
-    }
+//     const chat = await prisma.conversation.findFirst({
+//       where: {
+//         id: chatId,
+//       },
+//       select: {
+//         profiles: {
+//           where: {
+//             id: {
+//               not: currentProfileId,
+//             },
+//           },
+//           select: {
+//             id: true,
+//             lastActive: true,
+//             deleted: true,
+//             user: {
+//               select: {
+//                 name: true,
+//                 image: true,
+//               },
+//             },
+//           },
+//         },
+//       },
+//     });
 
-    const chat = await prisma.conversation.findFirst({
-      where: {
-        id: chatId,
-      },
-      select: {
-        profiles: {
-          where: {
-            id: {
-              not: currentProfileId,
-            },
-          },
-          select: {
-            id: true,
-            lastActive: true,
-            deleted: true,
-            user: {
-              select: {
-                name: true,
-                image: true,
-              },
-            },
-          },
-        },
-      },
-    });
+//     const chatPartner = chat?.profiles.find((p) => p.id !== currentProfileId) || null;
+//     if (!chatPartner) {
+//       return null;
+//     }
 
-    const chatPartner = chat?.profiles.find((p) => p.id !== currentProfileId) || null;
-    if (!chatPartner) {
-      return null;
-    }
+//     const chatPartnerProfile = await prisma.profile.findUnique({
+//       where: {
+//         id: chatPartner.id,
+//       },
+//       include: {
+//         user: {
+//           select: {
+//             name: true,
+//             image: true,
+//           },
+//         },
+//       },
+//     });
 
-    const chatPartnerProfile = await prisma.profile.findUnique({
-      where: {
-        id: chatPartner.id,
-      },
-      include: {
-        user: {
-          select: {
-            name: true,
-            image: true,
-          },
-        },
-      },
-    });
+//     if (!chatPartnerProfile) {
+//       return null;
+//     }
 
-    if (!chatPartnerProfile) {
-      return null;
-    }
-
-    return {
-      id: chatPartner.id,
-      name: chatPartnerProfile.user?.name || "",
-      image: chatPartnerProfile.user?.image || null,
-      lastActive: formatShortDateTime(chatPartnerProfile.lastActive),
-      deleted: chatPartnerProfile.deleted,
-    }
-  } catch (error) {
-    throw error;
-  }
-}
+//     return {
+//       id: chatPartner.id,
+//       name: chatPartnerProfile.user?.name || "",
+//       image: chatPartnerProfile.user?.image || null,
+//       lastActive: formatShortDateTime(chatPartnerProfile.lastActive),
+//       deleted: chatPartnerProfile.deleted,
+//     }
+//   } catch (error) {
+//     throw error;
+//   }
+// }
 
 /** Fetches the list of recent chats for the "Your Chats" sidebar. */
 export async function getRecentChats() {
@@ -152,16 +147,13 @@ export async function getRecentChats() {
       },
       include: {
         profiles: {
+          where: {
+            id: {
+              not: profileId,
+            },
+          },
           select: {
             id: true,
-            lastActive: true,
-            deleted: true,
-            user: {
-              select: {
-                name: true,
-                image: true,
-              },
-            },
           },
         },
         messages: {
@@ -171,7 +163,7 @@ export async function getRecentChats() {
             createdAt: true,
             senderId: true,
             read: true,
-            deleted: true
+            deleted: true,
           },
           orderBy: {
             createdAt: "desc",
@@ -195,8 +187,8 @@ export async function getRecentChats() {
       },
     });
 
-    return mapRCDataListToRecentChatsList(conversations)
-
+    return conversations
+    ;
   } catch (error) {
     throw error;
   }
@@ -211,11 +203,8 @@ export async function getChat(chatId: string) {
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
   try {
-    const profileId = await getCurrentProfileId();
-
-    if (!profileId) {
-      return redirect("/profile/complete-profile");
-    }
+    const currentProfileId = await getCurrentProfileId();
+    if (!currentProfileId) return redirect("/profile/complete-profile");
 
     const chat = await prisma.conversation.findUnique({
       where: {
@@ -231,35 +220,34 @@ export async function getChat(chatId: string) {
     });
 
     // If the chat doesn't exist or the current user is not a participant
-    if (!chat || !chat.profiles.some((p) => p.id === profileId)) {
+    if (!chat || !chat.profiles.some((p) => p.id === currentProfileId)) {
       return null;
     }
 
+    // Update the last active chat id for the current user
     await prisma.profile.update({
       where: {
-        id: profileId,
+        id: currentProfileId,
       },
       data: {
         lastActiveConversationId: chatId,
       },
-    })
+    });
 
-    const conversations = await prisma.conversation.findUnique({
+    // Fetch the chat data
+    const conversation = await prisma.conversation.findUnique({
       where: {
         id: chatId,
       },
       include: {
         profiles: {
+          where: {
+            id: {
+              not: currentProfileId,
+            },
+          },
           select: {
             id: true,
-            lastActive: true,
-            deleted: true,
-            user: {
-              select: {
-                name: true,
-                image: true,
-              },
-            },
           },
         },
         messages: {
@@ -275,11 +263,24 @@ export async function getChat(chatId: string) {
             createdAt: "asc",
           },
         },
+        _count: {
+          select: {
+            messages: {
+              where: {
+                AND: {
+                  senderId: {
+                    not: currentProfileId,
+                  },
+                  read: false,
+                },
+              },
+            },
+          },
+        },
       },
     });
 
-    return mapChatDataToChatType(conversations)
-
+    return conversation;
   } catch (error) {
     throw error;
   }
@@ -317,13 +318,12 @@ export async function getLastChatId() {
 /** Creates a chat between current user and another member */
 export async function createChat(memberId: string) {
   try {
-    const currentUserId = await getCurrentUserId();
-    if (!currentUserId) return redirect("/login");
-
-    const currentProfile = await getCurrentProfile();
-    if (!currentProfile) {
+    const currentUser = await getCurrentUser();
+    if (!currentUser) return redirect("/login");
+    
+    const currentProfileId = await getCurrentProfileId();
+    if (!currentProfileId)
       return redirect("/profile/complete-profile");
-    }
 
     const chatPartner = await prisma.profile.findUnique({
       where: {
@@ -336,7 +336,7 @@ export async function createChat(memberId: string) {
             image: true,
           },
         },
-      }
+      },
     });
 
     if (!chatPartner || chatPartner.deleted) {
@@ -349,7 +349,7 @@ export async function createChat(memberId: string) {
         profiles: {
           every: {
             id: {
-              in: [currentProfile.id, memberId],
+              in: [currentProfileId, memberId],
             },
           },
         },
@@ -361,47 +361,35 @@ export async function createChat(memberId: string) {
     }
 
     console.log(
-      "Creating new chat with profiles:",
-      currentProfile.id,
+      "Server: Creating new chat with profiles:",
+      currentProfileId,
       chatPartner.id
     );
 
     const newChat = await prisma.conversation.create({
       data: {
         profiles: {
-          connect: [{ id: currentProfile.id }, { id: chatPartner.id }],
+          connect: [{ id: currentProfileId }, { id: chatPartner.id }],
         },
       },
     });
 
     // Notify the other member of the new chat
-    const newRecentChat = {
+    const newChatData = {
       id: newChat.id,
-      participants: [
-        {
-          id: currentProfile.id,
-          name: currentProfile.user?.name || "",
-          image: currentProfile.user?.image || null,
-          lastActive: new Date(),
-          deleted: false,
-        },
-        {
-          id: chatPartner.id,
-          name: chatPartner.user?.name || "",
-          image: chatPartner.user?.image || null,
-          lastActive: chatPartner.lastActive,
-          deleted: chatPartner.deleted,
-        },
-      ],
-      lastMessage: "",
+      chatPartnerId: chatPartner.id,
+      messges: {},
+      messageIds: [],
       unreadMessageCount: 0,
       inactive: false,
     };
 
-    await pusherServer.trigger(`private-${memberId}`, "new-chat", newRecentChat);
+    await pusherServer.trigger(`private-${memberId}`, "new-chat", {
+      newChat: newChatData,
+      chatPartnerId: currentProfileId,
+    });
 
-    return newChat;
-
+    return newChatData;
   } catch (error) {
     console.log(error);
     throw error;
