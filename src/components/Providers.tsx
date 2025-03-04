@@ -1,6 +1,6 @@
 "use client";
 
-import { Chat, ChatPartner, RecentChat } from "@/types";
+import { ChatData, ChatsData, CurrentMember, Member, RawChatData } from "@/types";
 import { HeroUIProvider } from "@heroui/react";
 import React, { ReactNode } from "react";
 import { useRouter } from "next/navigation";
@@ -8,29 +8,26 @@ import StoreProvider from "./StoreProvider";
 
 type Props = {
   children: ReactNode;
-  recentChats: RecentChat[];
-  chatPartners: ChatPartner[];
-  currentChat: Chat | null;
+  currentMember: CurrentMember | null;
+  recentChats: RawChatData[] | null;
+  currentChat: RawChatData | null;
 };
 
 export default function Providers({
   children,
+  currentMember,
   recentChats,
-  chatPartners,
-  currentChat
+  currentChat,
 }: Props) {
-
   const router = useRouter();
-  
+
   return (
     <StoreProvider
+      currentMember={currentMember}
       recentChats={recentChats}
-      chatPartners={chatPartners}
       currentChat={currentChat}
     >
-      <HeroUIProvider navigate={router.push}>
-        {children}
-      </HeroUIProvider>
+      <HeroUIProvider navigate={router.push}>{children}</HeroUIProvider>
     </StoreProvider>
   );
 }
