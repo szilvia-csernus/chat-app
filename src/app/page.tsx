@@ -7,20 +7,26 @@ export default async function Home() {
     <div className="h-full min-h-[calc(100dvh-80px)] flex flex-col justify-stretch">
       <div className="flex-grow w-full md:my-2 py-12 px-5 text-center text-slate-600 dark:text-slate-300 md:border-1 border-slate-300 dark:border-slate-500 bg-zig-zag flex flex-col gap-7 items-center">
         <h1 className="font-bold text-xl mb-2">
-          Welcome to <span className="text-white wide-text-shadow">Chat</span>
-          <span className="text-[#fb9f3c] dark:text-accent">APP</span>!
+          Welcome to{" "}
+          <span className="text-teal-400 dark:text-teal-200 text-shadow">
+            Chat
+          </span>
+          <span className="text-[#fb9f3c] dark:text-accent text-shadow">
+            APP
+          </span>
+          !
         </h1>
 
         <p>Simply sign in and start chatting with anyone you find here!</p>
         <p>
-          Please note, this project was created as a mere coding exercise to
-          demonstrate basic messaging functionality in the browser. Therefore,
-          do not rely on this app for important conversations and be considerate
+          Please note that this project was created as a coding exercise to
+          demonstrate basic messaging functionality in the browser. As such, it
+          is not intended for important conversations. Please be considerate
           when contacting people you do not personally know.
         </p>
         <p>
-          Any abusive or inappropriate behavior will result in a ban. Please be
-          kind and professional.
+          Any abusive or inappropriate behavior will result in a ban. We
+          encourage everyone to be kind and professional.
         </p>
 
         <div className="flex-grow flex flex-col justify-center items-center">
