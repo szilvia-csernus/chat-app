@@ -1,30 +1,31 @@
 "use client";
 
 import PresenceAvatar from "@/components/PresenceAvatar";
-import { Member, SerializedMessage } from "@/types";
+import { useAppSelector } from "@/redux-store/hooks";
+import { CurrentMember, Member } from "@/types";
 import clsx from "clsx";
 import { useEffect, useRef } from "react";
+import { selectMemberOnlineStatus } from "@/redux-store/features/membersSlice";
+import { selectMessageById } from "@/redux-store/features/messagesSlice";
 
 type MessageBoxProps = {
-  message: SerializedMessage;
-  read: boolean;
-  currentMember: Member;
+  messageId: string;
+  currentMember: CurrentMember;
   chatPartner: Member;
-  isCurrentMemberSender: boolean;
-  isChatPartnerOnline: boolean;
 };
 
 export default function MessageBox({
-  message,
-  read,
+  messageId,
   currentMember,
   chatPartner,
-  isCurrentMemberSender,
-  isChatPartnerOnline,
-}: MessageBoxProps) {
-  const sender = isCurrentMemberSender ? currentMember : chatPartner;
-  const online = isCurrentMemberSender ? true : isChatPartnerOnline;
 
+}: MessageBoxProps) {
+  const message = useAppSelector(state => selectMessageById(state, messageId)
+  );
+  const isCurrentMemberSender = message.senderId === currentMember.id;
+  const sender = isCurrentMemberSender ? currentMember : chatPartner;
+  const chatPartnerOnline = useAppSelector(state => selectMemberOnlineStatus(state, chatPartner.id));
+  
   const messageEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -36,8 +37,10 @@ export default function MessageBox({
   const renderAvatar = () => (
     <PresenceAvatar
       src={sender.image || "/images/user.png"}
-      online={online}
+      online={chatPartnerOnline || false}
+      deleted={sender.deleted}
       className="self-end mx-1"
+      own={isCurrentMemberSender}
     />
   );
 
@@ -47,6 +50,7 @@ export default function MessageBox({
       "rounded-l-2xl rounded-tr-2xl bg-cyan-50 dark:bg-cyan-800 text-slate-800 dark:text-white": isCurrentMemberSender,
       "rounded-r-2xl rounded-tl-2xl bg-white dark:bg-gray-800":
         !isCurrentMemberSender,
+      "bg-gray-200 dark:bg-gray-700": message?.deleted,
     }
   );
 
@@ -63,7 +67,7 @@ export default function MessageBox({
         <span className="text-xs font-bold ">
           {isCurrentMemberSender ? "You" : sender.name}
         </span>
-        <span className="text-xs ml-2 ">{message.createdAt}</span>
+        <span className="text-xs ml-2 ">{message?.createdAt}</span>
       </div>
     </div>
   );
@@ -72,12 +76,16 @@ export default function MessageBox({
     <div className="flex flex-col">
       <div className={messageContentClasses}>
         {rendermessageHeader()}
-        <p className="text-sm py-3 text-gray-800 dark:text-white">
-          {message.content}
+        <p
+          className={clsx("text-sm py-3 text-gray-800 dark:text-white whitespace-pre-line", {
+           "italic text-gray-500 dark:text-gray-400" : message?.deleted }
+          )}
+        >
+          {message?.content}
         </p>
       </div>
-      {read && message.senderId === currentMember.id ? (
-        <div className="text-xs text-gray-400 text-italic">Seen &#10003;</div>
+      {message?.read && message.senderId === currentMember.id ? (
+        <div className="text-xs text-gray-400 italic">Seen &#10003;</div>
       ) : (
         <div></div>
       )}
@@ -85,21 +93,25 @@ export default function MessageBox({
   );
 
   return (
-    <div className="grid grid-rows-1">
-      <div
-        className={clsx(
-          "flex gap-2 mb-3",
-          {
-            "justify-end text-right": isCurrentMemberSender,
-          },
-          { "justyfy-start": !isCurrentMemberSender }
-        )}
-      >
-        {!isCurrentMemberSender && renderAvatar()}
-        {renderMessageContent()}
-        {isCurrentMemberSender && renderAvatar()}
-      </div>
-      <div ref={messageEndRef} />
-    </div>
+    <>
+      {message && (
+        <div className="grid grid-rows-1">
+          <div
+            className={clsx(
+              "flex gap-2 mb-3",
+              {
+                "justify-end text-right": isCurrentMemberSender,
+              },
+              { "justyfy-start": !isCurrentMemberSender }
+            )}
+          >
+            {!isCurrentMemberSender && renderAvatar()}
+            {renderMessageContent()}
+            {isCurrentMemberSender && renderAvatar()}
+          </div>
+          <div ref={messageEndRef} />
+        </div>
+      )}
+    </>
   );
 }
