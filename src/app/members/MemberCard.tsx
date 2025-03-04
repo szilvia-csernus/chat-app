@@ -2,37 +2,58 @@
 
 import { Card, CardFooter } from "@heroui/card";
 import MemberImage from "./MemberImage";
-import PresenceDot from "@/components/PresenceDot";
 import { useRouter } from "next/navigation";
 import NewChat from "./NewChat";
 import { useDisclosure } from "@heroui/react";
-import { Member } from "@/types";
 import { useAppSelector } from "@/redux-store/hooks";
-import { selectMemberOnlineStatus } from "@/redux-store/features/presenceSlice";
-import { selectChatPartnerById } from "@/redux-store/features/chatPartnersSlice";
+import { selectCurrentMember, selectCurrentMemberId } from "@/redux-store/features/currentMemberSlice";
+import { selectMemberById, selectMemberOnlineStatus } from "@/redux-store/features/membersSlice";
+import { CurrentMember, Member } from "@/types";
 
 export type MemberCardProps = {
-  member: Member;
-  currentMember: Member;
+  memberId: string;
 };
 
 export default function MemberCard({
-  member,
-  currentMember,
+  memberId,
 }: MemberCardProps) {
   const router = useRouter();
 
-  const online = useAppSelector(selectMemberOnlineStatus(member.id));
-  const chatPartner = useAppSelector(selectChatPartnerById(member.id));
-  const chatting = !!chatPartner;
-  const chatId = chatPartner?.chatId;
+  // when member is the currentMember, somehow the member is not found
+  const currentMemberId = useAppSelector(selectCurrentMemberId);
+  let member: Member | null = null;
+  if (currentMemberId === memberId !== null) {
+    const currentMember = useAppSelector(selectCurrentMember);
+    if (currentMember) {
+      member = {
+        id: currentMember.id,
+        name: currentMember.name,
+        image: currentMember.image,
+        lastActive: currentMember.lastActive,
+        deleted: currentMember.deleted,
+        chatting: null,
+        online: currentMember.online,
+      };
+    }
+  } else {
+    member = useAppSelector(state => selectMemberById(state, memberId));
+  }
+
+  const online = useAppSelector((state) =>
+      selectMemberOnlineStatus(state, memberId)
+    );
+  const chatIdIfChatting = member && member.chatting;
+
+  const memberImageUrl = member && member.image ? member.image : "/images/user.png";
 
   // modal properties
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const onClickHandler = () => {
-    if (chatting) {
-      router.push(`/chats/${chatId}`);
+    if (chatIdIfChatting) {
+      router.push(`/chats/${chatIdIfChatting}`);
+    } else if (currentMemberId === memberId) {
+      router.push(`/profile`)
     } else {
       onOpen();
     }
@@ -40,35 +61,41 @@ export default function MemberCard({
 
   return (
     <div onClick={onClickHandler}>
-      {isOpen && (
+      {member && isOpen && currentMemberId && (
         <NewChat
           member={member}
           isOpen={isOpen}
           onOpenChange={onOpenChange}
-          currentMember={currentMember}
         />
       )}
       <Card fullWidth>
         <div>
-          <MemberImage memberImage={member.image} memberName={member.name} />
-          {online && (
-            <div className="absolute top-2 left-3 z-20">
-              <div className="border-1 border-white p-[5px] rounded-2xl bg-teal-500 animate-pulse text-xs text-white">
-                online
+          <MemberImage memberImage={memberImageUrl} memberName={member ? member.name : ""} />
+          {currentMemberId === memberId && (
+            <div className="absolute top-2 left-2 z-20">
+              <div className="border-1 border-white p-1 rounded-2xl bg-[#fb9f3c] text-xs text-white">
+                YOU
               </div>
             </div>
           )}
-          {!online && (
+          {currentMemberId !== memberId && online && (
+            <div className="absolute top-2 left-3 z-20">
+              <div className="border-1 border-white p-[5px] rounded-2xl bg-teal-500 animate-pulse text-xs text-white">
+                active
+              </div>
+            </div>
+          )}
+          {currentMemberId !== memberId && !online && (
             <div className="absolute top-2 left-3 z-20">
               <div className="border-1 border-white p-[5px] rounded-2xl bg-gray-500 text-xs text-white">
-                offline
+                inactive
               </div>
             </div>
           )}
 
           <CardFooter className="flex justify-start bg-dark-gradient overflow-hidden absolute bottom-0 z-10 pb-1 pt-12">
             <div className="flex flex-col text-white">
-              <span className="">{member.name}</span>
+              <span className="">{member ? member.name : ""}</span>
             </div>
           </CardFooter>
         </div>
