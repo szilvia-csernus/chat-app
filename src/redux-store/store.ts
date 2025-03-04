@@ -1,17 +1,17 @@
-import { configureStore } from "@reduxjs/toolkit";
-import currentChatReducer from "./features/currentChatSlice";
-import presenceReducer from "./features/presenceSlice";
-import recentChatsReducer from "./features/recentChatsSlice";
-import chatPartnersReducer from "./features/chatPartnersSlice";
+import { configureStore, ThunkAction, UnknownAction} from "@reduxjs/toolkit";
+import membersReducer from "./features/membersSlice";
+import currentMemberReducer from "./features/currentMemberSlice";
+import chatsReducer from "./features/chatsSlice";
+import messagesReducer from "./features/messagesSlice";
 
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
-    currentChat: currentChatReducer,
-    presence: presenceReducer,
-    recentChats: recentChatsReducer,
-    chatPartners: chatPartnersReducer,
+      currentMember: currentMemberReducer,
+      members: membersReducer,
+      chats: chatsReducer,
+      messages: messagesReducer
   },
   });
 };
@@ -21,3 +21,10 @@ export type AppStore = ReturnType<typeof makeStore>
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<AppStore['getState']>
 export type AppDispatch = AppStore['dispatch']
+
+export type AppThunk<ReturnType = void> = ThunkAction<
+  ReturnType,
+  RootState,
+  unknown,
+  UnknownAction
+>;
