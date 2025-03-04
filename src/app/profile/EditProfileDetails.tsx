@@ -47,8 +47,9 @@ export default function EditProfileDetails({
 
   const router = useRouter();
 
-  function onCancel() {
+  function onCancel(callback: () => void) {
     reset();
+    callback();
   }
 
   const onSubmit = async () => {
@@ -131,8 +132,7 @@ export default function EditProfileDetails({
                       size="lg"
                       color="secondary"
                       className="btn border-medium w-full border-secondary bg-transparent text-foreground"
-                      onPress={onClose}
-                      onClick={onCancel}
+                      onPress={() => onCancel(onClose)}
                     >
                       Cancel
                     </Button>
