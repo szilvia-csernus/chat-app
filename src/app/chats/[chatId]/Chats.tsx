@@ -3,16 +3,14 @@
 import React, { useEffect, useState } from "react";
 import SidebarDesktop from "./(sidebar)/SidebarDesktop";
 import SidebarMobile from "./(sidebar)/SidebarMobile";
-import { Member, Chat as ChatType } from "@/types";
+import { ChatData, RawChatData } from "@/types";
 import Chat from "./(main)/Chat";
 
 type Props = {
-  chatPartner: Member;
-  initialChat: ChatType;
+  initialChat: RawChatData | null;
 };
 
 export default function Chats({
-  chatPartner,
   initialChat,
 }: Props) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -33,7 +31,6 @@ export default function Chats({
           className={`absolute left-0 right-0 top-0 bottom-0 z-30 bg-inherit min-w-md sm:hidden ${additionalStyles}`}
         >
           <SidebarMobile
-            isSidebarOpen={isSidebarOpen}
             setIsSidebarOpen={setIsSidebarOpen}
           />
         </div>
@@ -43,7 +40,6 @@ export default function Chats({
       </div>
       <div className="w-full sm:col-span-7 relative">
         <Chat
-          chatPartner={chatPartner}
           initialChat={initialChat}
           isSidebarOpen={isSidebarOpen}
           setIsSidebarOpen={setIsSidebarOpen}
