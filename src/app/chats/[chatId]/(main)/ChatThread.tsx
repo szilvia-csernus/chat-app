@@ -1,47 +1,36 @@
 "use client";
 
-import { Chat, Member } from "@/types";
 import React, { useEffect } from "react";
 import MessageBox from "./MessageBox";
 
-import { selectMembersOnline } from "@/redux-store/features/presenceSlice";
 import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
+import { selectCurrentMember } from "@/redux-store/features/currentMemberSlice";
+import { notFound } from "next/navigation";
+import { selectMemberById } from "@/redux-store/features/membersSlice";
 import {
-  setAllUnreadMessageCount,
+  selectCurrentChat,
   updateUnreadCount,
-} from "@/redux-store/features/recentChatsSlice";
-import { selectCurrentChat } from "@/redux-store/features/currentChatSlice";
-import { setCurrentChat } from "@/redux-store/features/currentChatSlice";
+} from "@/redux-store/features/chatsSlice";
 
-type Props = {
-  currentMember: Member;
-  chatPartner: Member;
-  initialChat: Chat | null;
-};
-
-export default function ChatThread({
-  currentMember,
-  chatPartner,
-  initialChat,
-}: Props) {
+export default function ChatThread() {
   const dispatch = useAppDispatch();
 
   const currentChat = useAppSelector(selectCurrentChat);
-  const membersOnline = useAppSelector(selectMembersOnline);
-
-  useEffect(() => {
-    if (initialChat) {
-      dispatch(setCurrentChat(initialChat));
-    }
-  }, [initialChat, setCurrentChat]);
+  const currentMember = useAppSelector(selectCurrentMember);
+  const chatPartnerId = currentChat && currentChat.chatPartnerId;
+  if (!chatPartnerId) return notFound();
+  const chatPartner = useAppSelector((state) =>
+    selectMemberById(state, chatPartnerId)
+  );
+  if (!chatPartner) return notFound();
 
   useEffect(() => {
     if (currentChat) {
-      // The user is currently viewing the chat, so reset the unread count
-      // in the redux store. For the database, the read status is updated
-      // in the backend in page.tsx
+      // The user just opened this chat, meaning they seen all previously
+      // unread messages, so reset the unread count in the redux store.
+      // For the database, the read status is updated in the backend in
+      // page.tsx
       dispatch(updateUnreadCount({ chatId: currentChat.id, count: 0 }));
-      dispatch(setAllUnreadMessageCount());
     }
   });
 
@@ -49,28 +38,20 @@ export default function ChatThread({
   if (
     currentMember &&
     currentChat &&
-    currentChat.messages &&
-    currentChat.messages.length > 0
+    currentChat.messageIds &&
+    currentChat.messageIds.length > 0
   ) {
     chatThread = (
       <>
-        {currentChat.messages.map((message): React.JSX.Element => {
-          const isCurrentMemberSender = message.senderId === currentMember.id;
-          const isChatPartnerOnline =
-            message.senderId && membersOnline.includes(message.senderId);
-          return (
-            <li key={message.id}>
-              <MessageBox
-                message={message}
-                read={message.read}
-                currentMember={currentMember}
-                chatPartner={chatPartner}
-                isCurrentMemberSender={isCurrentMemberSender}
-                isChatPartnerOnline={!!isChatPartnerOnline}
-              />
-            </li>
-          );
-        })}
+        {currentChat.messageIds.map((id) => (
+          <li key={id}>
+            <MessageBox
+              messageId={id}
+              currentMember={currentMember}
+              chatPartner={chatPartner}
+            />
+          </li>
+        ))}
       </>
     );
   } else {
