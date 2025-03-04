@@ -91,7 +91,7 @@ export const updateMessagesWithReadStatus = async (
 
   // Find the message IDs first so we don't have to fetch them twice
   const messages = await prisma.message.findMany({
-    where: { conversationId: chatId, read: false },
+    where: { conversationId: chatId, deleted: false, read: false },
     select: { id: true },
   });
 
@@ -99,7 +99,7 @@ export const updateMessagesWithReadStatus = async (
 
   // Update the messages to set read status
   await prisma.message.updateMany({
-    where: { id: { in: messageIds } },
+    where: { id: { in: messageIds }, deleted: false },
     data: { read: true },
   });
 
@@ -118,6 +118,7 @@ export async function updateReadStatus(messageId: string) {
     const message = await prisma.message.findUnique({
       where: {
         id: messageId,
+        deleted: false,
       },
     });
 
@@ -128,6 +129,7 @@ export async function updateReadStatus(messageId: string) {
     await prisma.message.update({
       where: {
         id: messageId,
+        deleted: false,
       },
       data: {
         read: true,
