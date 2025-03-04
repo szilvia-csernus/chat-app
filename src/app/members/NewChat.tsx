@@ -12,21 +12,18 @@ import { useRouter } from "next/navigation";
 import { createChat } from "@/app/actions/chatActions";
 import { Member } from "@/types";
 import { useAppDispatch } from "@/redux-store/hooks";
-import { addChatPartner } from "@/redux-store/features/chatPartnersSlice";
-import { addRecentChat } from "@/redux-store/features/recentChatsSlice";
+import { addNewChat } from "@/redux-store/features/chatsSlice";
 
 type NewChatProps = {
   member: Member;
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
-  currentMember: Member;
 };
 
 export default function NewChat({
   member,
   isOpen,
   onOpenChange,
-  currentMember
 }: NewChatProps) {
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -37,17 +34,12 @@ export default function NewChat({
       throw new Error("Failed to create new chat");
     }
     dispatch(
-      addChatPartner({
-        chatId: newChat.id,
-        chatPartner: member,
-      })
-    );
-    dispatch(
-      addRecentChat({
+      addNewChat({
         id: newChat.id,
-        participants: [member, currentMember],
-        lastMessage: "",
-        unreadMessageCount: 0
+        chatPartnerId: member.id,
+        messageIds: [],
+        unreadMessageCount: 0,
+        inactive: false,
       })
     )
     router.push(`/chats/${newChat.id}`);
@@ -70,41 +62,72 @@ export default function NewChat({
         isOpen={isOpen}
         onOpenChange={onOpenChange}
       >
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader>Start New Chat?</ModalHeader>
+        {!member.deleted && (
+          <ModalContent>
+            {(onClose) => (
+              <>
+                <ModalHeader>Start New Chat?</ModalHeader>
 
-              <ModalBody>
-                <div className="space-y-4 flex justify-center">
-                  Would you like to start a new chat with {member.name}?
-                </div>
-              </ModalBody>
-              <ModalFooter>
-                <div className="flex items-center justify-between gap-5">
-                  <Button
-                    type="button"
-                    size="lg"
-                    color="secondary"
-                    className="btn border-medium w-full border-secondary bg-transparent text-foreground"
-                    onPress={onClose}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="submit"
-                    size="lg"
-                    color="secondary"
-                    className="btn w-full btn-secondary text-white"
-                    onPress={() => newChatHandler(onClose)}
-                  >
-                    Start Chat
-                  </Button>
-                </div>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
+                <ModalBody>
+                  <div className="space-y-4 flex justify-center">
+                    Would you like to start a new chat with {member.name}?
+                  </div>
+                </ModalBody>
+                <ModalFooter>
+                  <div className="flex items-center justify-between gap-5">
+                    <Button
+                      type="button"
+                      size="lg"
+                      color="secondary"
+                      className="btn border-medium w-full border-secondary bg-transparent text-foreground"
+                      onPress={onClose}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      size="lg"
+                      color="secondary"
+                      className="btn w-full btn-secondary text-white"
+                      onPress={() => newChatHandler(onClose)}
+                    >
+                      Start Chat
+                    </Button>
+                  </div>
+                </ModalFooter>
+              </>
+            )}
+          </ModalContent>
+        )}
+        {member.deleted && (
+          <ModalContent>
+            {(onClose) => (
+              <>
+                <ModalHeader>Member Deleted</ModalHeader>
+
+                <ModalBody>
+                  <div className="space-y-4 flex justify-center">
+                    It looks like this member has been deleted from our database. You can't start a chat with them.
+                  </div>
+                </ModalBody>
+                <ModalFooter>
+                  <div className="flex items-center">
+                    <Button
+                      type="button"
+                      size="lg"
+                      color="secondary"
+                      className="btn border-medium w-full border-secondary bg-transparent text-foreground"
+                      onPress={onClose}
+                    >
+                      OK
+                    </Button>
+                    
+                  </div>
+                </ModalFooter>
+              </>
+            )}
+          </ModalContent>
+        )}
       </Modal>
     </>
   );
