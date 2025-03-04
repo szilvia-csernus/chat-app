@@ -1,5 +1,5 @@
 import React from "react";
-import ProfileForm from "./CompleteProfileForm";
+import CompleteProfileForm from "./CompleteProfileForm";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
@@ -13,7 +13,7 @@ export default async function CompleteProfilePage() {
   
   return (
     <div className="flex items-center justify-center vertical-center">
-      <ProfileForm session={session} />
+      <CompleteProfileForm session={session} />
     </div>
   );
 }
