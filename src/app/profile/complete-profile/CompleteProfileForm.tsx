@@ -17,6 +17,10 @@ import ProfileFormFirstStep from "./ProfileFormFirstStep";
 import ProfileFormSecondStep from "./ProfileFormSecondStep";
 import { completeProfile } from "@/app/actions/profileActions";
 import { Session } from "next-auth";
+import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
+import { fetchAllMembers, setMembers } from "@/redux-store/features/membersSlice";
+import { getMembers, triggerUpdateAboutNewMember } from "@/app/actions/memberActions";
+import { fetchCurrentMember } from "@/redux-store/features/currentMemberSlice";
 
 const stepSchemas = [profileSchema, photoSchema];
 
@@ -29,7 +33,9 @@ export default function CompleteProfileForm({
 }: CompleteProfileFormProps) {
   const [activeStep, setActiveStep] = useState(0);
   const currentValidationSchema = stepSchemas[activeStep];
+  const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
   const router = useRouter();
+  const dispatch = useAppDispatch();
 
   const methods = useForm<CompleteProfileSchema>({
     resolver: zodResolver(currentValidationSchema), // Commenting out this line will turn off client-side validation (to test server-side validation)
@@ -43,11 +49,18 @@ export default function CompleteProfileForm({
     formState: { errors, isValid, isSubmitting },
   } = methods;
 
+
   const onSubmit = async () => {
     const result = await completeProfile(getValues());
 
+    // const members = await getMembers();
+    // dispatch(setMembers(members || []));
+    
+    // dispatch(fetchAllMembers());
+    dispatch(fetchCurrentMember);
+
     if (result.status === "success") {
-      router.replace("/profile");
+      router.replace("/members");
     } else {
       // Handle server errors by Zod
       if (Array.isArray(result.error)) {
@@ -72,7 +85,7 @@ export default function CompleteProfileForm({
       case 0:
         return <ProfileFormFirstStep session={session} />;
       case 1:
-        return <ProfileFormSecondStep session={session} />;
+        return <ProfileFormSecondStep session={session} setIsSubmitDisabled={setIsSubmitDisabled} />;
       default:
         return <p>Unknown step</p>;
     }
@@ -91,7 +104,7 @@ export default function CompleteProfileForm({
   };
 
   return (
-    <Card className="min-w-80 w-full max-w-md mx-auto p-5 bg-background shadow shadow-foreground gap-4">
+    <Card radius="none" className="min-w-80 w-full max-w-md mx-auto p-5 gap-4 bg-inherit shadow-none">
       <CardHeader className="flex flex-col items-center justify-center">
         <div className="flex flex-col gap-4 items-center ">
           <div className="flex flex-row items-center gap-3">
@@ -119,7 +132,7 @@ export default function CompleteProfileForm({
               <div className="flex flex-row items-center gap-6">
                 {activeStep !== 0 && (
                   <Button
-                    onClick={onBack}
+                    onPress={onBack}
                     fullWidth
                     size="lg"
                     className="bg-slate-500 text-white rounded-lg"
@@ -129,7 +142,7 @@ export default function CompleteProfileForm({
                 )}
                 <Button
                   isLoading={isSubmitting}
-                  isDisabled={!isValid}
+                  isDisabled={!isValid || isSubmitDisabled}
                   fullWidth
                   size="lg"
                   color="secondary"
