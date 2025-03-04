@@ -1,33 +1,26 @@
 import React from "react";
 import RecentChat from "./RecentChat";
 import { useAppSelector } from "@/redux-store/hooks";
-import { selectRecentChats } from "@/redux-store/features/recentChatsSlice";
-import { selectCurrentChat } from "@/redux-store/features/currentChatSlice";
+// import { selectRecentChats } from "@/redux-store/features/recentChatsSlice";
+// import { selectCurrentChat } from "@/redux-store/features/currentChatSlice";
+import { selectMemberById } from "@/redux-store/features/membersSlice";
+import { selectChatIds, selectChats, selectCurrentChatId } from "@/redux-store/features/chatsSlice";
 
 
 type Props = {
-  currentMemberId: string;
-  isSidebarOpen?: boolean;
   setIsSidebarOpen?: (isOpen: boolean) => void;
 };
 
-export default function RecentChatsList({ currentMemberId, isSidebarOpen, setIsSidebarOpen }: Props) {
-  const recentChats = useAppSelector(selectRecentChats);
-  const currentChat = useAppSelector(selectCurrentChat);
+export default function RecentChatsList({ setIsSidebarOpen }: Props) {
+  const chatIds = useAppSelector(selectChatIds); 
 
   return (
-    <ul className="flex flex-col w-full">
-      {recentChats.map((rc) => {
-        const chatPartner = rc.participants.filter((p) => p.id !== currentMemberId)[0];
-        const msgCount = currentChat?.id === rc.id ? 0 : rc.unreadMessageCount;
+    <ul className="flex flex-col w-full overflow-hidden scrollbar-hide">
+      {chatIds.map((id) => {
         return (
-          <li key={rc.id}>
+          <li key={id}>
             <RecentChat
-              chatId={rc.id}
-              chatPartner={chatPartner}
-              lastMessage={rc.lastMessage}
-              unreadMessageCount={msgCount}
-              isSidebarOpen={isSidebarOpen}
+              chatId={id}
               setIsSidebarOpen={setIsSidebarOpen}
             />
           </li>
