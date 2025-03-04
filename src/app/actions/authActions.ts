@@ -4,6 +4,8 @@ import { auth, signOut } from "@/auth";
 import { prisma } from "@/prisma";
 import { redirect } from "next/navigation";
 import { deleteImageFromCloudinary } from "./photoActions";
+import { pusherServer } from "@/lib/pusher";
+import { revalidateTag } from "next/cache";
 
 /** Authentication function that returns null if
  * user is authenticated, otherwise redirects to login */
@@ -31,6 +33,16 @@ export async function authWithError() {
   } catch (error) {
     throw new Error("User not authenticated");
   }
+}
+
+/** Authentication function that returns true if
+ * user is authenticated, otherwise return false */
+export async function isAuthenticated() {
+  const session = await auth();
+  if (session?.user?.id) {
+    return true;
+  }
+  return false;
 }
 
 /** Fetches the authenticated user's id */
@@ -84,6 +96,17 @@ export async function deleteUser(userId: string) {
 
     const profileId = profile.id;
 
+    // Mark user's messages as deleted
+    const messages = await prisma.message.updateMany({
+      where: { senderId: profileId },
+      data: { content: "Deleted message", deleted: true },
+    });
+
+    const messageIds = Object.keys(messages);
+    
+    console.log("Messages marked as deleted", messageIds);
+
+
     // Delete already inactive conversations
     await prisma.conversation.deleteMany({
       where: { profiles: { some: { id: profileId } }, inactive: true },
@@ -99,13 +122,30 @@ export async function deleteUser(userId: string) {
 
     console.log("Conversations marked as inactive");
 
-    // Mark messages as deleted
-    await prisma.message.updateMany({
-      where: { senderId: profileId },
-      data: { content: "Deleted message", deleted: true },
+    // Select these inactivated chats and chat partners
+    const inactiveConversations = await prisma.conversation.findMany({
+      where: {
+        inactive: true,
+      },
+      include: {
+        profiles: {
+          where: {
+            NOT: {
+              id: profileId,
+            },
+          },
+          select: {
+            id: true,
+          },
+        },
+      },
     });
 
-    console.log("Messages marked as deleted");
+    // Trigger chat partners' browsers to update inactivated chats and deleted user profile
+    inactiveConversations.forEach(async (chat) => {
+      const chatPartnerId = chat.profiles[0].id;
+      pusherServer.trigger(`private-${chatPartnerId}`, "chat-inactive",  {chatId: chat.id, messageIds: messageIds});
+    });
 
     // Find the user's photo
     const userPhoto = await prisma.photo.findFirst({
@@ -128,28 +168,37 @@ export async function deleteUser(userId: string) {
 
     console.log("User deleted");
 
-    // Delete profile record if they have no conversations
-    const profileConversations = await prisma.conversation.findMany({
-      where: { profiles: { some: { id: profileId } } },
-    });
-    if (profileConversations.length === 0) {
-      await prisma.profile.delete({
-        where: { id: profileId },
-      });
-      console.log("Profile deleted");
-    } else {
-      // Delete profile records and mark profile as deleted
-      await prisma.profile.update({
-        where: { id: profileId },
-        data: {
-          country: "",
-          gender: "",
-          deleted: true,
-        },
-      });
-      console.log("Profile data deleted");
-    }
+    // This should not be executed here as we'll need the profile ID to sign out the user in the client
+    // side to clear the session!!
+    // // Delete profile record if they have no conversations
+    // await prisma.profile.delete({
+    //   where: {
+    //     id: profileId,
+    //     conversations: {
+    //       every: {
+    //         inactive: true,
+    //       }
+    //     }
+    //   },
+    // });
 
+    // Delete profile records and mark profile as deleted
+    await prisma.profile.update({
+      where: { id: profileId },
+      data: {
+        country: "",
+        gender: "",
+        deleted: true,
+      },
+    });
+    console.log("Profile data deleted");
+
+    // Trigger presence channel to remove user from online list
+    pusherServer.trigger("presence-chat-app", "remove_member",  profileId);
+
+    revalidateTag("all-members");
+
+    return profileId;
   } catch (error) {
     console.error(error);
     throw new Error("Error deleting user");
