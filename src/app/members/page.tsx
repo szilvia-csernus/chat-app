@@ -1,8 +1,9 @@
-import { getCurrentMember, getMembers } from '@/app/actions/memberActions';
 import MembersList from './MembersList';
 import { authWithRedirect } from '../actions/authActions';
-import { notFound } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import Footer from '@/components/Footer';
+import { getCurrentProfile } from '../actions/profileActions';
+import { mapProfileDataToCurrentMember } from '@/lib/maps';
 
 
 export const dynamic = "force-dynamic";
@@ -10,14 +11,13 @@ export const dynamic = "force-dynamic";
 export default async function MembersPage() {
   await authWithRedirect();
 
-  const members = await getMembers();
-
-  const currentMember = await getCurrentMember();
-  if (!currentMember) return notFound();
+  const currentProfile = await getCurrentProfile();
+  const currentMember = currentProfile && mapProfileDataToCurrentMember(currentProfile);
+  if (!currentMember) return redirect("/profile/complete-profile")
 
   return (
     <div className="w-full h-full min-h-[calc(100dvh-80px)] flex flex-col justify-strech">
-      <MembersList members={members} currentMember={currentMember} />
+      <MembersList currentMember={currentMember}  />
       <Footer />
     </div>
   );
