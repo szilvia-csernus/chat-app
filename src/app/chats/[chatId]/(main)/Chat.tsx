@@ -1,26 +1,44 @@
 "use client";
 
+import { useRef } from "react";
 import { Card } from "@heroui/card";
 import ChatThread from "./ChatThread";
 import ChatForm from "./ChatForm";
 import CurrentChatPartner from "./CurrentChatPartner";
-import { Chat as ChatType, Member } from "@/types";
+import { ChatData, Member, RawChatData } from "@/types";
+import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
+import { selectCurrentMember } from "@/redux-store/features/currentMemberSlice";
+// import { setCurrentChat } from "@/redux-store/features/currentChatSlice";
+import { notFound } from "next/navigation";
+import { setCurrentChat } from "@/redux-store/features/chatsSlice";
+import { mapRawChatDataListToChatsAndMessages, mapRawChatDataToChatAndMessages } from "@/lib/maps";
+import { setMessages } from "@/redux-store/features/messagesSlice";
 
 type Props = {
-  chatPartner: Member;
-  currentMember: Member;
-  initialChat: ChatType | null;
+  initialChat: RawChatData | null;
   isSidebarOpen: boolean;
   setIsSidebarOpen: (isOpen: boolean) => void;
 };
 
 export default function Chat({
-  chatPartner,
-  currentMember,
   initialChat,
   isSidebarOpen,
   setIsSidebarOpen,
 }: Props) {
+  const dispatch = useAppDispatch();
+
+
+  const initialized = useRef(false);
+  if (!initialized.current && initialChat) {
+    const result = mapRawChatDataToChatAndMessages(initialChat);
+    if (result) {
+      const { chat, messages } = result;
+      dispatch(setCurrentChat(chat));
+      dispatch(setMessages(messages));
+      initialized.current = true;
+    }
+  }
+
   return (
     <Card
       radius="none"
@@ -28,21 +46,16 @@ export default function Chat({
     >
       <div className="sticky space-x-2">
         <CurrentChatPartner
-          chatPartnerId={chatPartner.id}
           isSidebarOpen={isSidebarOpen}
           setIsSidebarOpen={setIsSidebarOpen}
         />
       </div>
       <div className="flex flex-col-reverse h-svh overflow-scroll scrollbar-hide scroll-smooth">
-        <ChatThread
-          currentMember={currentMember}
-          chatPartner={chatPartner}
-          initialChat={initialChat}
-        />
+        <ChatThread />
       </div>
-      <div className="sticky px-2">
+      <div className="sticky mb-3">
         {initialChat?.inactive && (
-          <div className="bg-gray-300 dark:bg-gray-700 p-2 rounded-md text-center mb-2">
+          <div className="bg-gray-300 dark:bg-gray-700 px-2 py-3 text-center text-sm">
             This chat is inactive. Your chat partner has deleted their account.
           </div>
         )}
