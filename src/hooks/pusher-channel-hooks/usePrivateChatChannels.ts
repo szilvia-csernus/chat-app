@@ -1,41 +1,48 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Channel } from "pusher-js";
 import { pusherClient } from "@/lib/pusher";
 import { useCallback } from "react";
 import { updateReadStatus } from "@/app/actions/messageActions";
 import { getUnreadMessageCount } from "@/app/actions/chatActions";
-import {
-  addLastMessageToRecentChat,
-  selectRecentChats,
-  setAllUnreadMessageCount,
-  updateUnreadCount,
-} from "@/redux-store/features/recentChatsSlice";
-import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
-import {
-  addMessage,
-  updateMessageReadStatus,
-} from "@/redux-store/features/currentChatSlice";
-import { SerializedMessage } from "@/types";
+import { CurrentMember, SerializedMessage} from "@/types";
 import { useParams } from "next/navigation";
+import { AppStore } from "@/redux-store/store";
+import { addMessageId, updateUnreadCount } from "@/redux-store/features/chatsSlice";
+import { addNewMessage, updateMessageReadStatus } from "@/redux-store/features/messagesSlice";
 
+type Props = {
+  store: AppStore;
+  currentMember: CurrentMember | null;
+}
 
-export const usePrivateChatChannels = (currentMemberId: string | null) => {
+export const usePrivateChatChannels = ({ store, currentMember }: Props) => {
+  console.log("usePrivateChatChannels is running");
+
   // Ref is used to prevent the creation of multiple channels when the component re-renders
-  const channelRefs = useRef<{ [key: string]: Channel | null }>({});
-  const dispatch = useAppDispatch();
+  const chatChannelRefs = useRef<{ [key: string]: Channel | null }>({});
 
-  // storing the active chat in a ref to be used in the handleNewMessage function
+  // storing the active chatid in a ref to be used in the handleNewMessage function
   // which otherwise would not have access to it when
   // triggered by the channel event
   const currentChatRef = useRef(<string | null>null);
   const params = useParams<{ chatId: string }>();
   currentChatRef.current = params.chatId;
-  console.log("Active chat in usePrivateChatChannels", currentChatRef.current);
+  // console.log("Active chat in usePrivateChatChannels", currentChatRef.current);
   
-  const recentChats = useAppSelector(selectRecentChats);
+  const currentMemberId = currentMember?.id;
+  
+  const chats = store.getState().chats.chats;
+  const [chatIds, setChatIds] = useState<string[]>([]);
 
+  useEffect(() => {
+    setChatIds(Object.keys(chats));
+  }, [chats]);
+  
+
+  console.log("Chats in usePrivateChatChannels", chats);
+  console.log("Chat IDs in usePrivateChatChannels", chatIds);
 
   const handleNewMessage = useCallback(
     async (chatId: string, message: SerializedMessage) => {
@@ -44,14 +51,12 @@ export const usePrivateChatChannels = (currentMemberId: string | null) => {
       // on either or both the sender and receiver side
       if (currentChatRef.current === chatId) {
         console.log(
-          "Supposed to add message to active chat",
+          "Adding message to active chat...",
           currentChatRef.current
         );
-        dispatch(addMessage(message));
+        store.dispatch(addNewMessage(message));
+        store.dispatch(addMessageId({ chatId, messageId: message.id }));
       }
-      dispatch(
-        addLastMessageToRecentChat({ chatId, content: message.content })
-      );
 
       // Receiver side: if the message is not for the active chat,
       // update the unread count for that chat
@@ -60,8 +65,7 @@ export const usePrivateChatChannels = (currentMemberId: string | null) => {
         message.senderId !== currentMemberId
       ) {
         const unreadCount = await getUnreadMessageCount(chatId);
-        dispatch(updateUnreadCount({ chatId, count: unreadCount }));
-        dispatch(setAllUnreadMessageCount());
+         store.dispatch(updateUnreadCount({ chatId, count: unreadCount }));
       }
 
       // Receiver side: if the message is for the active chat,
@@ -70,65 +74,64 @@ export const usePrivateChatChannels = (currentMemberId: string | null) => {
         currentChatRef.current === chatId &&
         message.senderId !== currentMemberId
       ) {
-        console.log("New message received for chat: ", chatId, message);
-        console.log("Active chat is: ", currentChatRef.current);
+        // console.log("New message received for chat: ", chatId, message);
+        // console.log("Active chat is: ", currentChatRef.current);
         await updateReadStatus(message.id);
       }
     },
     [
       currentMemberId,
-      addMessage,
+      addNewMessage,
+      addMessageId,
       updateUnreadCount,
-      setAllUnreadMessageCount,
       currentChatRef.current
     ]
   );
 
   const handleMessageRead = useCallback(
     (messageId: string) => {
-      dispatch(updateMessageReadStatus(messageId));
-      dispatch(setAllUnreadMessageCount());
+       store.dispatch(updateMessageReadStatus(messageId));
     },
-    [updateMessageReadStatus, setAllUnreadMessageCount]
+    [updateMessageReadStatus]
   );
 
   useEffect(() => {
-    console.log("useEffect triggered with chats:", recentChats);
+      if (!currentMemberId) return;
 
     // Subscribe to channels for each chat
-    recentChats.forEach((chat) => {
-      if (!channelRefs.current[chat.id]) {
-        const channel = pusherClient.subscribe(`private-chat-${chat.id}`);
-        console.log("Subscribed to channel", `private-chat-${chat.id}`);
+    chatIds.forEach((id) => {
+      if (!chatChannelRefs.current[id]) {
+        const channel = pusherClient.subscribe(`private-chat-${id}`);
+        console.log("usePrivateChatChannel: Subscribed to chat channel", `private-chat-${id}`);
+       
         channel.bind(
           "new-message",
           (data: { chatId: string; message: SerializedMessage }) => {
-            console.log("New message received", data.chatId, data.message);
+            // console.log("New message received", data.chatId, data.message);
             handleNewMessage(data.chatId, data.message);
           }
         );
         channel.bind("message-read", (data: { messageId: string }) => {
-          console.log("Message read event received", data);
+          // console.log("Message read event received", data);
           handleMessageRead(data.messageId);
         });
-        channelRefs.current[chat.id] = channel;
-        console.log(channelRefs.current);
+        chatChannelRefs.current[id] = channel;
+        console.log(chatChannelRefs.current);
       }
     });
     // Cleanup function to unsubscribe from channels
     return () => {
-      recentChats.forEach((chat) => {
-        const channel = channelRefs.current[chat.id];
+      chatIds.forEach((id) => {
+        const channel = chatChannelRefs.current[id];
         if (channel) {
-          console.log("Unsubscribed from channel", `private-chat-${chat.id}`);
-          channel.unbind("new-message");
-          channel.unbind("message-read");
-          pusherClient.unsubscribe(`private-chat-${chat.id}`);
-          channelRefs.current[chat.id] = null;
+          console.log("Unsubscribed from channel", `private-chat-${id}`);
+          channel.unbind();
+          pusherClient.unsubscribe(`private-chat-${id}`);
+          chatChannelRefs.current[id] = null;
         }
       });
     };
-  }, [recentChats.length]);
+  }, [currentMemberId, chatIds.length]);
 
-  return channelRefs.current;
+  return chatChannelRefs.current;
 };
