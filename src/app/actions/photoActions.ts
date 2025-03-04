@@ -91,7 +91,11 @@ export async function uploadImageToCloudinaryFromUrl(
 ): Promise<UploadApiResponse> {
   await authWithError();
 
-  const result = await cloudinary.v2.uploader.upload(imageUrl);
+  const result = await cloudinary.v2.uploader.upload(imageUrl, {
+    signatureEndpoint: "/api/sign-image",
+    uploadPreset: "chat-app",
+    asset_folder: "chat-app",
+  });
   console.log(result);
   return result;
 }
