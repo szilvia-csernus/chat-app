@@ -6,19 +6,37 @@ import { getCurrentUser } from "./actions/authActions";
 import { getPhotoByUserId } from "./actions/photoActions";
 import {
   getChat,
-  getChatPartners,
   getRecentChats,
 } from "./actions/chatActions";
-import {
-  getCurrentProfile
-} from "@/app/actions/profileActions";
+// import {
+//   getCurrentProfile
+// } from "@/app/actions/profileActions";
 import { nunito } from "@/app/fonts";
+import { getCurrentProfile } from "./actions/profileActions";
+import { mapProfileDataToCurrentMember } from "@/lib/maps";
 
 
 export const metadata: Metadata = {
   title: "Chat App",
   description:
-    "An app for chatting through the web. Built with Next.js, Prisma, and NextAuth.",
+    "An app for chatting through the web. Built with Next.js, Prisma, Pusher, NextAuth and more.",
+  // The openGraph property controls the appearance of the page when shared on social media.
+  openGraph: {
+    title: "Chat APP",
+    description: "Start chatting today!",
+    url: "https://szilvia-csernus.co.uk/chat-app",
+    siteName: "ChatAPP",
+    images: [
+      {
+        url: "https://szilvia-csernus.co.uk/chat-app/logo.png",
+        width: 512,
+        height: 512,
+        alt: "Logo",
+      },
+    ],
+    type: "website",
+    locale: "en_US",
+  },
 };
 
 export const viewport: Viewport = {
@@ -45,13 +63,16 @@ export default async function RootLayout({
   const photoUrl = userPhoto ? userPhoto.imageUrl : "/images/user.png";
 
   const currentProfile = await getCurrentProfile();
+  const currentMember = currentProfile && mapProfileDataToCurrentMember(currentProfile);
 
-  const chatPartners = (await getChatPartners()) || [];
+  console.log("currentMember", currentMember);
 
-  const recentChats = (await getRecentChats()) || [];
+  const recentChats = await getRecentChats();
 
-  const currentChat = currentProfile?.lastActiveConversationId
-    ? await getChat(currentProfile.lastActiveConversationId)
+  console.log("recentChats", recentChats);
+
+  const currentChat = currentMember?.lastActiveConversationId
+    ? await getChat(currentMember.lastActiveConversationId)
     : null;
 
   return (
@@ -61,12 +82,12 @@ export default async function RootLayout({
     >
       <body className="font-body h-full bg-background">
         <Providers
+          currentMember={currentMember}
           recentChats={recentChats}
-          chatPartners={chatPartners}
           currentChat={currentChat}
         >
           <MainNav
-            currentProfileId={currentProfile?.id || null}
+            currentMemberId={currentMember?.id || null}
             userName={userName}
             photoUrl={photoUrl}
           />
