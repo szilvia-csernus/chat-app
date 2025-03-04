@@ -1,9 +1,3 @@
-// Bug!!: If user starts editing the image but then closes the window, the image is not cleared from Cloudinary.
-// The image clears up well if the user uses the Cancel button to abort the operation,
-// because the onCancel() function is called and the image is deleted from Cloudinary.
-// The bug is present because I don't have access to the 'Close' button in the Modal component, so I can't call the onCancel() function.
-// The onClose() function runs no matter how the modal was closed, so modifying the onClose() function to call the onCancel() function is not a solution.
-
 "use client";
 
 import { Button, Checkbox, Image, Input } from "@heroui/react";
@@ -81,12 +75,12 @@ export default function EditProfileImage({
     setIsSocialImageSelected(false);
   }
 
-  const onCancel = async () => {
+  const onCancel = async (callback: () => void) => {
     if (getValues("cloudinaryImageId").length > 0) {
       await deleteImageFromCloudinary(getValues("cloudinaryImageId"));
     }
     resetAll();
-    onClose();
+    callback();
   };
 
   const onSocialImageSelect = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -234,7 +228,7 @@ export default function EditProfileImage({
                       size="lg"
                       color="secondary"
                       className="btn border-medium w-full border-secondary bg-transparent text-foreground"
-                      onClick={onCancel}
+                      onPress={() => onCancel(onClose)}
                     >
                       Cancel
                     </Button>
