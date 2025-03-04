@@ -6,15 +6,18 @@ import ProfileImageUpload from "../ProfileImageUpload";
 import {
   deleteImageFromCloudinary,
   uploadImageToCloudinaryFromUrl,
-} from "@/app/actions/profileActions";
+} from "@/app/actions/photoActions";
 import DividerOR from "@/components/dividerOR";
+import { PhotoSchema } from "@/lib/schemas/completeProfileSchema";
 
 type ProfileFormSecondStepProps = {
   session: Session | null;
+  setIsSubmitDisabled: (value: boolean) => void;
 };
 
 export default function ProfileFormSecondStep({
   session,
+  setIsSubmitDisabled,
 }: ProfileFormSecondStepProps) {
   const {
     register,
@@ -22,22 +25,27 @@ export default function ProfileFormSecondStep({
     getValues,
     trigger,
     formState: { errors },
-  } = useFormContext();
+  } = useFormContext<PhotoSchema>();
   const sessionImage = session?.user.image;
 
   // State to manage the upload button - active when social image is not selected
   const [isUploadDisabled, setIsUploadDisabled] = useState(false);
+
+  
 
   // State to show the preview of the uploaded image
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
 
   const onSocialImageSelect = async (event: ChangeEvent<HTMLInputElement>) => {
     const isChecked = event.target.checked;
+    
+    setIsSubmitDisabled(true);
+    setIsUploadDisabled(true);
 
     if (isChecked) {
       try {
         // Clear the previous image if any
-        const cloudinarycloudinaryImageId = getValues("cloudinaryImageId");
+        const cloudinaryImageId = getValues("cloudinaryImageId");
         if (cloudinaryImageId.length > 0) {
           await deleteImageFromCloudinary(cloudinaryImageId);
           setValue("imageUrl", "");
@@ -48,8 +56,8 @@ export default function ProfileFormSecondStep({
         if (result.secure_url && result.public_id) {
           setValue("imageUrl", result.secure_url);
           setValue("cloudinaryImageId", result.public_id);
-          setIsUploadDisabled(true);
           await trigger(); // Trigger validation to update form state
+          setIsUploadDisabled(true);
         }
       } catch (error) {
         console.error(error);
@@ -61,10 +69,13 @@ export default function ProfileFormSecondStep({
         await deleteImageFromCloudinary(cloudinaryImageId);
         setValue("imageUrl", "");
         setValue("cloudinaryImageId", "");
-        setIsUploadDisabled(false);
         await trigger(); // Trigger validation to update form state
+        setIsUploadDisabled(false);
       }
     }
+
+    setIsSubmitDisabled(false);
+
   };
 
   return (

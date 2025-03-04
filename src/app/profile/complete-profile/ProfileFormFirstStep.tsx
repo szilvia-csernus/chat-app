@@ -17,15 +17,14 @@ export default function ProfileFormFirstStep({session}: ProfileFormFirstStepProp
   const genderList = [
     { label: "Male", value: "male" },
     { label: "Female", value: "female" },
-    { label: "Other", value: "other" },
+    { label: "LGBT+", value: "lgbt+" },
     { label: "Prefer not to say", value: "prefer-not-to-say" },
   ];
-  
 
   return (
     <div className="space-y-4">
       <Input
-        label="Name"
+        label="First Name"
         isRequired
         autoComplete="given-name"
         variant="bordered"
