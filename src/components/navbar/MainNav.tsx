@@ -16,17 +16,17 @@ import UserMenu from "./UserMenu";
 import NavLink from "./NavLink";
 import { HiOutlineChatBubbleLeftRight } from "react-icons/hi2";
 import { useAppSelector } from "@/redux-store/hooks";
-import { selectAllUnreadMessageCount } from "@/redux-store/features/recentChatsSlice";
+import { selectAllUnreadMessageCount } from "@/redux-store/features/chatsSlice";
 
 
 type MainNavProps = {
-  currentProfileId: string | null;
+  currentMemberId: string | null;
   userName: string | null;
   photoUrl: string;
 };
 
 export default function MainNav({
-  currentProfileId,
+  currentMemberId,
   userName,
   photoUrl,
 }: MainNavProps) {
@@ -51,7 +51,7 @@ export default function MainNav({
       }}
     >
       <NavbarContent className="sm:hidden" justify="start">
-        {currentProfileId && (
+        {currentMemberId && (
           <NavbarMenuToggle
             aria-label={isMenuOpen ? "Close menu" : "Open menu"}
             className="text-white"
@@ -67,7 +67,7 @@ export default function MainNav({
         </div>
       </NavbarBrand>
       {/* Mobile Menu */}
-      {currentProfileId && (
+      {currentMemberId && (
         <NavbarMenu className="top-20 z-40 h-auto bg-gradient-to-r from-slate-700 to-teal-700 text-white overflow-y-hidden scrollbar-hide">
           {menuItems.map((item, index) => (
             <NavbarMenuItem
@@ -88,7 +88,7 @@ export default function MainNav({
         </NavbarMenu>
       )}
       {/* Desktop Menu */}
-      {currentProfileId && (
+      {currentMemberId && (
         <NavbarContent className="hidden sm:flex gap-6" justify="center">
           {menuItems.map((item, index) => (
             <NavLink
