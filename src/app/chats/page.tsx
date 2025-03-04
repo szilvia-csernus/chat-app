@@ -12,7 +12,7 @@ export default async function ChatsPage() {
 
   if (!lastActiveChat) {
     return (
-      <div className="h-full min-h-[calc(100dvh-80px)] flex flex-col justify-stretch">
+      <div className="w-full h-full min-h-[calc(100dvh-80px)] flex flex-col justify-stretch">
         <div className="flex-grow w-full md:my-2 p-12 text-center text-slate-600 dark:text-slate-300 md:border-1 border-slate-300 dark:border-slate-500 bg-zig-zag flex flex-col gap-7 items-center">
           <h1 className="font-bold text-xl mb-2">No chats to show</h1>
 
