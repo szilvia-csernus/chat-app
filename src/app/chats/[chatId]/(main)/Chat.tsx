@@ -5,13 +5,10 @@ import { Card } from "@heroui/card";
 import ChatThread from "./ChatThread";
 import ChatForm from "./ChatForm";
 import CurrentChatPartner from "./CurrentChatPartner";
-import { ChatData, Member, RawChatData } from "@/types";
-import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
-import { selectCurrentMember } from "@/redux-store/features/currentMemberSlice";
-// import { setCurrentChat } from "@/redux-store/features/currentChatSlice";
-import { notFound } from "next/navigation";
+import { RawChatData } from "@/types";
+import { useAppDispatch } from "@/redux-store/hooks";
 import { setCurrentChat } from "@/redux-store/features/chatsSlice";
-import { mapRawChatDataListToChatsAndMessages, mapRawChatDataToChatAndMessages } from "@/lib/maps";
+import { mapRawChatDataToChatAndMessages } from "@/lib/maps";
 import { setMessages } from "@/redux-store/features/messagesSlice";
 
 type Props = {
