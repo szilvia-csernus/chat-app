@@ -2,7 +2,6 @@
 
 import React from "react";
 import { Card, CardBody } from "@heroui/react";
-import { useRouter } from "next/navigation";
 import RecentChatsList from "./RecentChatsList";
 import { useAppSelector } from "@/redux-store/hooks";
 import { selectCurrentMember } from "@/redux-store/features/currentMemberSlice";
