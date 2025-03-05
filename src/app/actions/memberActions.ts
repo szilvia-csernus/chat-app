@@ -1,9 +1,8 @@
 "use server";
 
 import { prisma } from "@/prisma";
-import { authWithError, isAuthenticated } from "./authActions";
+import { authWithError } from "./authActions";
 import { getCurrentProfileId } from "./profileActions";
-import { formatShortDateTime } from "@/lib/utils";
 import { pusherServer } from "@/lib/pusher";
 import { unstable_cache as nextCache } from "next/cache";
 import { Member } from "@/types";
