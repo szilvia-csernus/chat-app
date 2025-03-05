@@ -1,18 +1,10 @@
 "use client";
 
 import React from "react";
-import PresenceDot from "@/components/PresenceDot";
-import MemberImage from "@/app/members/MemberImage";
-import { Member } from "@/types";
-// import { selectMemberOnlineStatus, selectMembersOnline } from "@/redux-store/features/presenceSlice";
 import { useAppSelector } from "@/redux-store/hooks";
-// import { selectCurrentChat, selectCurrentChatPartnerId } from "@/redux-store/features/currentChatSlice";
-// import { selectChatPartnerById } from "@/redux-store/features/chatPartnersSlice";
 import { IoIosArrowBack } from "react-icons/io";
 import PresenceAvatar from "@/components/PresenceAvatar";
-import { notFound } from "next/navigation";
 import { selectMemberById, selectMemberOnlineStatus } from "@/redux-store/features/membersSlice";
-import { selectCurrentMember } from "@/redux-store/features/currentMemberSlice";
 import { selectCurrentChat } from "@/redux-store/features/chatsSlice";
 
 type Props = {
