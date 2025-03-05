@@ -8,9 +8,6 @@ import {
   getChat,
   getRecentChats,
 } from "./actions/chatActions";
-// import {
-//   getCurrentProfile
-// } from "@/app/actions/profileActions";
 import { nunito } from "@/app/fonts";
 import { getCurrentProfile } from "./actions/profileActions";
 import { mapProfileDataToCurrentMember } from "@/lib/maps";
