@@ -1,8 +1,6 @@
 import React from "react";
 import PresenceDot from "@/components/PresenceDot";
 import MemberImage from "@/app/members/MemberImage";
-import { Member, SerializedMessage } from "@/types";
-// import { selectMembersOnline } from "@/redux-store/features/presenceSlice";
 import RecentChatFrame from "./RecentChatFrame";
 import { useAppSelector } from "@/redux-store/hooks";
 import { IoIosArrowForward } from "react-icons/io";
