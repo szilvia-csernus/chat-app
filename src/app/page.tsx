@@ -8,7 +8,7 @@ export default async function Home() {
       <div className="flex-grow w-full md:my-2 py-12 px-5 text-center text-slate-600 dark:text-slate-300 md:border-1 border-slate-300 dark:border-slate-500 bg-zig-zag flex flex-col gap-7 items-center">
         <h1 className="font-bold text-xl mb-2">
           Welcome to{" "}
-          <span className="text-teal-400 dark:text-teal-200 text-shadow">
+          <span className="text-secondary dark:text-teal-200 text-shadow">
             Chat
           </span>
           <span className="text-[#fb9f3c] dark:text-accent text-shadow">
@@ -32,7 +32,7 @@ export default async function Home() {
         <div className="flex-grow flex flex-col justify-center items-center">
           <HiOutlineChatBubbleLeftRight
             size={40}
-            className="text-teal-400 dark:text-teal-200"
+            className="text-secondary dark:text-teal-200"
           />
           <p className="my-3">Thank you!</p>
         </div>
