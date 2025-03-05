@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import SidebarDesktop from "./(sidebar)/SidebarDesktop";
 import SidebarMobile from "./(sidebar)/SidebarMobile";
-import { ChatData, RawChatData } from "@/types";
+import { RawChatData } from "@/types";
 import Chat from "./(main)/Chat";
 
 type Props = {
