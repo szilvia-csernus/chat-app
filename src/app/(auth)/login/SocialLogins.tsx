@@ -5,7 +5,6 @@ import { Button } from "@heroui/button";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { signIn as socialSignIn } from "next-auth/react";
-import { revalidateTag } from "next/cache";
 import { useRouter } from "next/navigation";
 
 export default function SocialLogins() {
