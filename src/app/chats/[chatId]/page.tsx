@@ -14,8 +14,8 @@ export default async function ChatPage({
 }) {
   await authWithRedirect();
 
-  const searchParams = await params;
-  const chatId = searchParams.chatId;
+  const { chatId } = await params;
+
   console.log("Chat ID", chatId);
 
   const currentProfile = await getCurrentProfile();
