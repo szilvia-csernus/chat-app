@@ -4,7 +4,6 @@ import { prisma } from "@/prisma";
 import { redirect } from "next/navigation";
 import { authWithError, getCurrentUser, getCurrentUserId } from "./authActions";
 import { getCurrentProfile, getCurrentProfileId } from "./profileActions";
-import { formatShortDateTime } from "@/lib/utils";
 import { pusherServer } from "@/lib/pusher";
 
 // /** Fetches the list of ChatPartners for the Members page,
