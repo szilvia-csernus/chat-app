@@ -1,10 +1,7 @@
 import React from "react";
 import RecentChat from "./RecentChat";
 import { useAppSelector } from "@/redux-store/hooks";
-// import { selectRecentChats } from "@/redux-store/features/recentChatsSlice";
-// import { selectCurrentChat } from "@/redux-store/features/currentChatSlice";
-import { selectMemberById } from "@/redux-store/features/membersSlice";
-import { selectChatIds, selectChats, selectCurrentChatId } from "@/redux-store/features/chatsSlice";
+import { selectChatIds } from "@/redux-store/features/chatsSlice";
 
 
 type Props = {
