@@ -13,7 +13,7 @@ import {
   EditProfileSchema,
 } from "@/lib/schemas/editProfileSchema";
 import { getCurrentUserId } from "./authActions";
-import { getMembers, getMemberIdsServerFn, triggerUpdateAboutNewMember } from "./memberActions";
+import { getMemberIdsServerFn, triggerUpdateAboutNewMember } from "./memberActions";
 import { formatShortDateTime } from "@/lib/utils";
 
 
