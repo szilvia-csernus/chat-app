@@ -2,7 +2,7 @@
 
 import { Image } from "@heroui/react";
 import { CldImage } from 'next-cloudinary';
-import React from 'react'
+import React, { type JSX } from 'react';
 
 type MemberImageProps = {
   memberName: string;
