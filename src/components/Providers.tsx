@@ -1,6 +1,6 @@
 "use client";
 
-import { ChatData, ChatsData, CurrentMember, Member, RawChatData } from "@/types";
+import { CurrentMember, RawChatData } from "@/types";
 import { HeroUIProvider } from "@heroui/react";
 import React, { ReactNode } from "react";
 import { useRouter } from "next/navigation";
