@@ -1,4 +1,4 @@
-import { CurrentMember, Member } from "@/types";
+import { CurrentMember } from "@/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppThunk } from "../store";
 import { getCurrentProfile } from "@/app/actions/profileActions";
