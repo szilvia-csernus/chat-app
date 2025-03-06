@@ -52,7 +52,7 @@ export default function ProfileFormFirstStep({session}: ProfileFormFirstStepProp
         onChange={(e) => setValue("gender", e.target.value)}
       >
         {genderList.map((item) => (
-          <SelectItem key={item.value} value={item.value}>
+          <SelectItem key={item.value} data-value={item.value}>
             {item.label}
           </SelectItem>
         ))}
