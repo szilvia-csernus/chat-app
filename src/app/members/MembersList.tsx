@@ -2,7 +2,7 @@
 
 import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
 import MemberCard from "./MemberCard";
-import { CurrentMember, Member } from "@/types";
+import { CurrentMember } from "@/types";
 import { selectExistingMemberIds } from "@/redux-store/features/membersSlice";
 import { setCurrentMember } from "@/redux-store/features/currentMemberSlice";
 import { useEffect } from "react";
