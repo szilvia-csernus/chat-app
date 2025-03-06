@@ -14,7 +14,7 @@ type Props = {
 };
 
 export const usePresenceChannel = ({ store, currentMember }: Props) => {
-  console.log("usePresenceChannel is running")
+  console.log("Presence")
   
   // Ref is used to prevent the creation of multiple channels when the component re-renders
   const presenceChannelRef = useRef<PresenceChannel | null>(null);
