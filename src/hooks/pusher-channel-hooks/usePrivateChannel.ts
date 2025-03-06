@@ -4,20 +4,7 @@ import { useEffect, useRef } from "react";
 import { Channel } from "pusher-js";
 import { pusherClient } from "@/lib/pusher";
 import { useCallback } from "react";
-// import {
-//   addRecentChat,
-//   setAllUnreadMessageCount,
-//   deactivateRecentChat,
-// } from "@/redux-store/features/recentChatsSlice";
-// import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
-// import {
-//   deactivateCurrentChat,
-// } from "@/redux-store/features/currentChatSlice";
 import { ChatData, CurrentMember, Member } from "@/types";
-// import {
-//   addChatPartner,
-//   removeChatPartner,
-// } from "@/redux-store/features/chatPartnersSlice";
 import {
   addMember,
   updateChatting,
@@ -26,7 +13,6 @@ import {
 import { getMembers } from "@/app/actions/memberActions";
 import { AppStore } from "@/redux-store/store";
 import { addNewChat, deactivateChat } from "@/redux-store/features/chatsSlice";
-import { updateMessagesWithReadStatus } from "@/app/actions/messageActions";
 import { updateMessagesWithDeletedStatus } from "@/redux-store/features/messagesSlice";
 
 type Props = {
@@ -35,7 +21,7 @@ type Props = {
 };
 
 export const usePrivateChannel = ({ store, currentMember }: Props) => {
-  console.log("usePrivateChannel is running");
+  console.log("Private");
   
   // Ref is used to prevent the creation of multiple channels when the component re-renders
   const privateChannelRef = useRef<Channel | null>(null);
