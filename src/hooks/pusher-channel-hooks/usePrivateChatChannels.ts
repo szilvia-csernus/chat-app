@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Channel } from "pusher-js";
 import { pusherClient } from "@/lib/pusher";
 import { useCallback } from "react";
@@ -18,7 +18,7 @@ type Props = {
 }
 
 export const usePrivateChatChannels = ({ store, currentMember }: Props) => {
-  console.log("usePrivateChatChannels is running");
+  console.log("Private Chat");
 
   // Ref is used to prevent the creation of multiple channels when the component re-renders
   const chatChannelRefs = useRef<{ [key: string]: Channel | null }>({});
@@ -26,7 +26,7 @@ export const usePrivateChatChannels = ({ store, currentMember }: Props) => {
   // storing the active chatid in a ref to be used in the handleNewMessage function
   // which otherwise would not have access to it when
   // triggered by the channel event
-  const currentChatRef = useRef(<string | null>null);
+  const currentChatRef = useRef<string | null>(null);
   const params = useParams<{ chatId: string }>();
   currentChatRef.current = params.chatId;
   // console.log("Active chat in usePrivateChatChannels", currentChatRef.current);
@@ -34,15 +34,8 @@ export const usePrivateChatChannels = ({ store, currentMember }: Props) => {
   const currentMemberId = currentMember?.id;
   
   const chats = store.getState().chats.chats;
-  const [chatIds, setChatIds] = useState<string[]>([]);
-
-  useEffect(() => {
-    setChatIds(Object.keys(chats));
-  }, [chats]);
+  const chatIds = Object.keys(chats);
   
-
-  console.log("Chats in usePrivateChatChannels", chats);
-  console.log("Chat IDs in usePrivateChatChannels", chatIds);
 
   const handleNewMessage = useCallback(
     async (chatId: string, message: SerializedMessage) => {
@@ -96,14 +89,17 @@ export const usePrivateChatChannels = ({ store, currentMember }: Props) => {
   );
 
   useEffect(() => {
-      if (!currentMemberId) return;
+    if (!currentMemberId) return;
 
     // Subscribe to channels for each chat
     chatIds.forEach((id) => {
       if (!chatChannelRefs.current[id]) {
         const channel = pusherClient.subscribe(`private-chat-${id}`);
-        console.log("usePrivateChatChannel: Subscribed to chat channel", `private-chat-${id}`);
-       
+        console.log(
+          "usePrivateChatChannel: Subscribed to chat channel",
+          `private-chat-${id}`
+        );
+
         channel.bind(
           "new-message",
           (data: { chatId: string; message: SerializedMessage }) => {
@@ -131,7 +127,7 @@ export const usePrivateChatChannels = ({ store, currentMember }: Props) => {
         }
       });
     };
-  }, [currentMemberId, chatIds.length]);
+  }, [currentMemberId, chatIds, handleNewMessage, handleMessageRead]);
 
   return chatChannelRefs.current;
 };
