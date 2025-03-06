@@ -17,9 +17,7 @@ import ProfileFormFirstStep from "./ProfileFormFirstStep";
 import ProfileFormSecondStep from "./ProfileFormSecondStep";
 import { completeProfile } from "@/app/actions/profileActions";
 import { Session } from "next-auth";
-import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
-import { fetchAllMembers, setMembers } from "@/redux-store/features/membersSlice";
-import { getMembers, triggerUpdateAboutNewMember } from "@/app/actions/memberActions";
+import { useAppDispatch } from "@/redux-store/hooks";
 import { fetchCurrentMember } from "@/redux-store/features/currentMemberSlice";
 
 const stepSchemas = [profileSchema, photoSchema];
