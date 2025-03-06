@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, Skeleton } from '@heroui/react';
+import { Card } from '@heroui/react';
 
 export default function Loader() {
   return (
