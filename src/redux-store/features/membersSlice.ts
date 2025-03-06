@@ -1,8 +1,6 @@
 import { Member, Members } from "@/types";
 import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { useAppSelector } from "../hooks";
-import { selectCurrentMember } from "./currentMemberSlice";
-import { AppThunk, RootState } from "../store";
+import { AppThunk } from "../store";
 import { getMembers } from "@/app/actions/memberActions";
 import { updateProfileLastActive } from "@/app/actions/profileActions";
 import { mapProfilesDataToMembers } from "@/lib/maps";
