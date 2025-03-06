@@ -2,12 +2,10 @@ import {
   ChatData,
   ProfileData,
   Member,
-  Members,
   SerializedMessage,
   RawChatData,
   CurrentMember,
   CurrentProfileData,
-  SerializedMessages,
 } from "@/types";
 import {
   serializeDate,
@@ -28,69 +26,6 @@ export function mapProfileDataToCurrentMember(
 ): CurrentMember {
   return serializeCurrentProfileDataToCurrentMember(profile);
 }
-
-// function mapCPDataToChatPartnerType(
-//   currentProfileId: string,
-//   chatData: CPData
-// ): ChatPartner | null {
-//   const profile = chatData.profiles.filter((p) => p.id !== currentProfileId)[0];
-//   if (!profile) return null;
-//   return {
-//     chatPartner: mapProfileDataToMemberType(profile),
-//     chatId: chatData.id,
-//   };
-// }
-
-// export function mapCPDataListToChatPartnerList(
-//   currentProfileId: string | null,
-//   chatPartnersData: CPData[] | null
-// ): ChatPartner[] {
-//   if (!currentProfileId || !chatPartnersData) return [];
-
-//   const chatPartnersList = chatPartnersData.map((cp) =>
-//     mapCPDataToChatPartnerType(currentProfileId, cp)
-//   );
-
-//   return chatPartnersList.filter((cp) => cp !== null);
-// }
-
-// function mapRCDataToRecentChatsType(rcData: RCData): RecentChat {
-//   return {
-//     id: rcData.id,
-//     chatPartnerId: rcData.profiles[0].id,
-//     lastMessage: rcData.messages[0]?.content || "",
-//     unreadMessageCount: rcData._count.messages,
-//     inactive: rcData.inactive,
-//   };
-// }
-
-// function mapRCDataToChatData(rcData: RCData): ChatData {
-//   let messageList: { [key: string]: SerializedMessage } = {};
-//   let messageIds: string[] = [];
-//   rcData.messages.forEach((message) => {
-//     (messageList[message.id] = {
-//       ...message,
-//       createdAt: serializeDate(message.createdAt),
-//     }),
-//       messageIds.push(message.id);
-//   });
-//   return {
-//     id: rcData.id,
-//     chatPartnerId: rcData.profiles[0].id,
-//     messages: messageList,
-//     messageIds,
-//     inactive: rcData.inactive,
-//     unreadMessageCount: rcData._count.messages,
-//   }
-// };
-
-// export function mapRCDataListToRecentChatsList(
-//   rcData: RCData[] | null
-// ): RecentChat[] {
-//   if (!rcData) return [];
-
-//   return rcData.map((chat) => mapRCDataToRecentChatsType(chat));
-// }
 
 export function mapRawChatDataListToChatsAndMessages(
   rcData: RawChatData[] | null
