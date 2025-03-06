@@ -1,4 +1,4 @@
-import { MutableRefObject, useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 export function useActivityChange(): boolean {
   const isActive = useRef<boolean>(true);
