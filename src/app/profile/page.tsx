@@ -8,7 +8,7 @@ import ProfileImage from "./ProfileImage";
 import ProfileDetails from "./ProfileDetails";
 import DeleteProfile from "./DeleteProfile";
 import { deleteUser } from "@/app/actions/authActions";
-import { signOut } from "@/auth"
+
 
 export default async function ProfilePage() {
   const session = await auth();
