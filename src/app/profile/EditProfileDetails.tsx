@@ -18,13 +18,11 @@ import { useRouter } from "next/navigation";
 import { EditProfileSchema, editProfileSchema } from "@/lib/schemas/editProfileSchema";
 
 type EditProfileDetailsProps = {
-  session: Session | null;
   userName: string;
   profile: Profile | null;
 };
 
 export default function EditProfileDetails({
-  session,
   userName,
   profile,
 }: EditProfileDetailsProps) {
@@ -34,7 +32,6 @@ export default function EditProfileDetails({
   // for the form
   const {
     register,
-    setValue,
     getValues,
     setError,
     handleSubmit,
