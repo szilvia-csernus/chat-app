@@ -10,8 +10,6 @@ import {
   ModalFooter,
 } from "@heroui/react";
 import React, { useState } from "react";
-import { useAppSelector } from "@/redux-store/hooks";
-import { selectExistingMemberIds } from "@/redux-store/features/membersSlice";
 import { signOutUser } from "../actions/authActions";
 
 
@@ -24,9 +22,6 @@ export default function DeleteProfile({ deleteUserHandler }: Props) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const existingMemberIds = useAppSelector(selectExistingMemberIds);
-
 
   const handleDelete = async (onClose: () => void) => {
     try {
