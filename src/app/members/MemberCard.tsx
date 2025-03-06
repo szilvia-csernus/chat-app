@@ -8,7 +8,7 @@ import { useDisclosure } from "@heroui/react";
 import { useAppSelector } from "@/redux-store/hooks";
 import { selectCurrentMember, selectCurrentMemberId } from "@/redux-store/features/currentMemberSlice";
 import { selectMemberById, selectMemberOnlineStatus } from "@/redux-store/features/membersSlice";
-import { CurrentMember, Member } from "@/types";
+import {  Member } from "@/types";
 
 export type MemberCardProps = {
   memberId: string;
