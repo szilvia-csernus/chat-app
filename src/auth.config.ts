@@ -1,9 +1,10 @@
 import { Account, Session, User } from "next-auth";
 import { JWT } from "next-auth/jwt";
-import type { NextAuthConfig } from "next-auth";
+import type { NextAuthConfig, Profile } from "next-auth";
 import Google from "next-auth/providers/google";
 import Github from "next-auth/providers/github";
 import Linkedin from "next-auth/providers/linkedin";
+
 
 // Notice this is only an object, not a full Auth.js instance
 export default {
@@ -27,14 +28,15 @@ export default {
       token: JWT;
       user?: User;
       account?: Account | null;
-      profile?: any;
+      profile?: Profile | undefined;
     }) {
       if (jwt_token.user) {
         jwt_token.token.sub = jwt_token.user.id;
         jwt_token.token.provider = jwt_token.account?.provider;
         jwt_token.token.picture =
           jwt_token.profile?.picture || jwt_token.user.image;
-        jwt_token.token.name = jwt_token.profile?.name.split(" ")[0];
+        jwt_token.token.name =
+          jwt_token.profile?.name ? jwt_token.profile?.name.split(" ")[0] : jwt_token.user.name;
       }
       // console.log("jwt token", jwt_token.token);
       // return value will be passed to the session callback as 'token'.
