@@ -29,9 +29,7 @@ export const getMemberIdsServerFn = nextCache(
 
 /** Fetches all the members data, inc. conversation id for
  * the current user. */
-export const getMembers =
-  // nextCache(
-  async () => {
+export async function getMembers(){
     try {
       const currentProfileId = await getCurrentProfileId();
       if (!currentProfileId) return null;
@@ -64,7 +62,6 @@ export const getMembers =
       return null;
     }
   };
-// , ["all-members"], { tags: ["all-members"] });
 
 /** Fetches a member's data by its id. */
 export async function getMemberById(id: string) {
