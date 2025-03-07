@@ -74,10 +74,7 @@ export const usePrivateChatChannels = ({ store, currentMember }: Props) => {
     },
     [
       currentMemberId,
-      addNewMessage,
-      addMessageId,
-      updateUnreadCount,
-      currentChatRef.current
+      store,
     ]
   );
 
@@ -85,15 +82,17 @@ export const usePrivateChatChannels = ({ store, currentMember }: Props) => {
     (messageId: string) => {
        store.dispatch(updateMessageReadStatus(messageId));
     },
-    [updateMessageReadStatus]
+    [store]
   );
 
   useEffect(() => {
     if (!currentMemberId) return;
 
+    const currentChatChannelRefs = chatChannelRefs.current;
+    
     // Subscribe to channels for each chat
     chatIds.forEach((id) => {
-      if (!chatChannelRefs.current[id]) {
+      if (!currentChatChannelRefs[id]) {
         const channel = pusherClient.subscribe(`private-chat-${id}`);
         console.log(
           "usePrivateChatChannel: Subscribed to chat channel",
@@ -111,19 +110,18 @@ export const usePrivateChatChannels = ({ store, currentMember }: Props) => {
           // console.log("Message read event received", data);
           handleMessageRead(data.messageId);
         });
-        chatChannelRefs.current[id] = channel;
-        console.log(chatChannelRefs.current);
+        currentChatChannelRefs[id] = channel;
       }
     });
     // Cleanup function to unsubscribe from channels
     return () => {
       chatIds.forEach((id) => {
-        const channel = chatChannelRefs.current[id];
+        const channel = currentChatChannelRefs[id];
         if (channel) {
           console.log("Unsubscribed from channel", `private-chat-${id}`);
           channel.unbind();
           pusherClient.unsubscribe(`private-chat-${id}`);
-          chatChannelRefs.current[id] = null;
+          currentChatChannelRefs[id] = null;
         }
       });
     };
