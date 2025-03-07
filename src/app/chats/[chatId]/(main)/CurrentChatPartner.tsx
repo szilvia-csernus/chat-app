@@ -18,12 +18,12 @@ export default function CurrentChatPartner({
 }: Props) {
   const currentChat = useAppSelector(selectCurrentChat);
   const chatPartnerId = currentChat && currentChat.chatPartnerId;
-  const chatPartner = chatPartnerId && useAppSelector(state => selectMemberById(state, chatPartnerId));
-  const online = !!(chatPartnerId && useAppSelector(state => selectMemberOnlineStatus(state, chatPartnerId)));
+  const chatPartner = useAppSelector(state => selectMemberById(state, chatPartnerId));
+  const online = !!(useAppSelector(state => selectMemberOnlineStatus(state, chatPartnerId)));
 
   return (
     <>
-      { chatPartner &&
+      {chatPartner && (
         <div className="m-auto border-b-1 border-slate-300 dark:border-slate-500  bg-white dark:bg-gray-800 flex items-center relative">
           <IoIosArrowBack
             className="sm:hidden ml-2 text-slate-500  dark:text-slate-400"
@@ -52,13 +52,16 @@ export default function CurrentChatPartner({
             </div>
 
             {!online && (
-              <div className="text-xs text-gray-400 min-w-full relative">
+              <div
+                suppressHydrationWarning={true}
+                className="text-xs text-gray-400 min-w-full relative"
+              >
                 Last seen: {chatPartner && chatPartner.lastActive}
               </div>
             )}
           </div>
         </div>
-      }
+      )}
     </>
   );
 }
