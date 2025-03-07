@@ -1,7 +1,6 @@
 "use client";
 
 import { Button, Input } from "@heroui/react";
-import { Session } from "next-auth";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
