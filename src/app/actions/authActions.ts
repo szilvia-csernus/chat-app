@@ -16,7 +16,7 @@ export async function authWithRedirect() {
       return redirect("/login");
     }
     return null;
-  } catch (error) {
+  } catch {
     redirect("/login");
   }
 }
@@ -30,7 +30,7 @@ export async function authWithError() {
       throw new Error("User not authenticated");
     }
     return null;
-  } catch (error) {
+  } catch {
     throw new Error("User not authenticated");
   }
 }
@@ -53,7 +53,7 @@ export async function getCurrentUserId() {
       return null;
     }
     return session?.user?.id;
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -70,7 +70,7 @@ export async function getCurrentUser() {
         id: session?.user?.id,
       },
     });
-  } catch (error) {
+  } catch {
     return null;
   }
 }
