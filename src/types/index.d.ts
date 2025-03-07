@@ -1,4 +1,4 @@
-import { Conversation, Profile } from "@prisma/client";
+import { Conversation } from "@prisma/client";
 import { ZodIssue } from "zod";
 
 type ActionResult<T> =
@@ -83,7 +83,8 @@ type MessageData = {
 type SerializedMessage = {
   id: string;
   content: string;
-  createdAt: string;
+  date: string;
+  time: string;
   senderId: string | null;
   read: boolean;
   deleted: boolean;
@@ -92,32 +93,3 @@ type SerializedMessage = {
 type SerializedMessages = {
   [key: string]: SerializedMessage;
 };
-
-
-// type CPData = {
-//   profiles: ProfileData[];
-// } & Conversation;
-
-// type ChatPartner = {
-//   chatPartner: Member;
-//   chatId: string;
-// };
-
-
-
-// type RecentChat = {
-//   id: string;
-//   chatPartnerId: string;
-//   lastMessage: string;
-//   unreadMessageCount: number;
-//   inactive: boolean;
-// };
-
-
-
-// type CData = {
-//   profiles: {
-//     id: string;
-//   }[];
-//   messages: MessageData[];
-// } & Conversation;
