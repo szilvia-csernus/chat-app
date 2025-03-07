@@ -55,7 +55,7 @@ const chatsSlice = createSlice({
     },
     decrementChatUnreadCount(state, action: PayloadAction<string>) {
       state.chats[action.payload].unreadMessageCount -= 1;
-      state.allUnreadMessageCount -=1;
+      state.allUnreadMessageCount -= 1;
     },
     updateUnreadCount(
       state,
@@ -100,7 +100,7 @@ export const {
   deactivateChat,
   addMessageId,
   decrementChatUnreadCount,
-  updateUnreadCount
+  updateUnreadCount,
 } = chatsSlice.actions;
 
 export const {
@@ -138,6 +138,5 @@ export const selectChatList = createSelector([selectChats], (chats) =>
 
 //   };
 // }
-
 
 export default chatsSlice.reducer;
