@@ -40,7 +40,7 @@ export const usePrivateChannel = ({ store, currentMember }: Props) => {
         })
       );
     },
-    [addNewChat, updateChatting, store]
+    [store]
   );
 
   const handleChatInactive = useCallback(
@@ -49,7 +49,7 @@ export const usePrivateChannel = ({ store, currentMember }: Props) => {
       store.dispatch(deactivateChat(chatId));
       store.dispatch(updateMessagesWithDeletedStatus(messageIds));
     },
-    [deactivateChat, store]
+    [store]
   );
 
   const handleNewMember = useCallback(
@@ -64,7 +64,7 @@ export const usePrivateChannel = ({ store, currentMember }: Props) => {
         store.dispatch(addMember(newMember));
       }
     },
-    [addMember, store]
+    [store]
   );
 
   // when a member is deleted from the database
@@ -88,9 +88,10 @@ export const usePrivateChannel = ({ store, currentMember }: Props) => {
       "usePrivateChannel: Subscribing to private channel",
       `private-${currentMemberId}`
     );
-    const privateChannel = (privateChannelRef.current = pusherClient.subscribe(
+    privateChannelRef.current = pusherClient.subscribe(
       `private-${currentMemberId}`
-    ));
+    );
+    const privateChannel = privateChannelRef.current;
     privateChannel.bind(
       "new-chat",
       (data: { newChat: ChatData; chatPartnerId: string }) => {
@@ -124,7 +125,6 @@ export const usePrivateChannel = ({ store, currentMember }: Props) => {
 
     // Cleanup function to unsubscribe from channels
     return () => {
-      const privateChannel = privateChannelRef.current;
       if (privateChannel) {
         console.log(
           "usePrivateChannel: Unsubscribing from private channel",
@@ -134,7 +134,7 @@ export const usePrivateChannel = ({ store, currentMember }: Props) => {
         pusherClient.unsubscribe(`private-${currentMemberId}`);
       }
     };
-  }, [currentMemberId]);
+  }, [currentMemberId, handleNewChat, handleChatInactive, handleNewMember, handleDeleteMember]);
 
   return privateChannelRef.current;
 };
