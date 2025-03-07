@@ -14,6 +14,7 @@ export default function SidebarMobile({
   setIsSidebarOpen,
 }: Props) {
   const currentMember = useAppSelector(selectCurrentMember);
+  console.log("SidebarMobile currentMember", currentMember);
 
   return (
     <>
