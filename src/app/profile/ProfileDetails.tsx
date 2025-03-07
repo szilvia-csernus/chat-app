@@ -2,16 +2,13 @@
 
 import { Profile } from "@prisma/client";
 import EditProfileDetails from "./EditProfileDetails";
-import { Session } from "next-auth";
 
 type ProfileDetailsProps = {
-  session: Session | null;
   userName: string;
   profile: Profile | null;
 };
 
 export default function ProfileDetails({
-  session,
   userName,
   profile,
 }: ProfileDetailsProps) {
@@ -56,7 +53,6 @@ export default function ProfileDetails({
       </div>
 
       <EditProfileDetails
-        session={session}
         userName={userName}
         profile={profile}
       />
