@@ -1,6 +1,5 @@
+// eslint-disable-next-line
 import NextAuth from "next-auth";
-import { JWT } from "next-auth/jwt";
-import { AdapterUser } from "@auth/core/adapters";
 
 declare module "next-auth" {
   // Extend the User type
