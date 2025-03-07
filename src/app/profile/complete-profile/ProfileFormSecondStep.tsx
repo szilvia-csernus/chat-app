@@ -9,6 +9,7 @@ import {
 } from "@/app/actions/photoActions";
 import DividerOR from "@/components/dividerOR";
 import { PhotoSchema } from "@/lib/schemas/completeProfileSchema";
+import Image from "next/image";
 
 type ProfileFormSecondStepProps = {
   session: Session | null;
@@ -84,7 +85,7 @@ export default function ProfileFormSecondStep({
         <>
           Would you like to use your{" "}
           <span className="">{session.user.provider}</span> profile picture?
-          <img
+          <Image
             alt={session.user.name || "user"}
             src={session.user.image}
             width={100}
@@ -107,6 +108,9 @@ export default function ProfileFormSecondStep({
         setUploadedImage={setUploadedImage}
         uploadDisabled={isUploadDisabled}
       />
+      {errors && errors.imageUrl && (
+        <div className="text-red-500 text-sm">{errors.imageUrl.message}</div>
+      )}
       <Input type="hidden" {...register("imageUrl", { value: "" })} />
       <Input type="hidden" {...register("cloudinaryImageId", { value: "" })} />
     </div>
