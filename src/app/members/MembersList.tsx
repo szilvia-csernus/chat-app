@@ -5,7 +5,8 @@ import MemberCard from "./MemberCard";
 import { CurrentMember } from "@/types";
 import { selectExistingMemberIds } from "@/redux-store/features/membersSlice";
 import { setCurrentMember } from "@/redux-store/features/currentMemberSlice";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
+import MemberCardLoader from "./MemberCardLoadader";
 
 
 type MembersListProps = {
@@ -20,7 +21,7 @@ export default function MembersList({
   
   useEffect(() => {
     dispatch(setCurrentMember(currentMember));
-  }, [currentMember]);
+  }, [currentMember, dispatch]);
 
 
   const existingMemberIds = useAppSelector(selectExistingMemberIds);
@@ -31,10 +32,9 @@ export default function MembersList({
         {existingMemberIds.length > 0 &&
           existingMemberIds.map((id) => {
             return (
-              <MemberCard
-                key={id}
-                memberId={id}
-              />
+              <Suspense key={id} fallback={<MemberCardLoader />}>
+                <MemberCard memberId={id} />
+              </Suspense>
             );
           })}
       </div>
