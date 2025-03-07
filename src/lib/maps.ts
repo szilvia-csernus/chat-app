@@ -8,9 +8,9 @@ import {
   CurrentProfileData,
 } from "@/types";
 import {
-  serializeDate,
   serializeCurrentProfileDataToCurrentMember,
   serializeProfileDataToMember,
+  serializeMessage,
 } from "@/lib/serialize";
 
 function mapProfileDataToMember(profile: ProfileData): Member {
@@ -50,13 +50,10 @@ export function mapRawChatDataToChatAndMessages(
 ): { chat: ChatData; messages: SerializedMessage[] } | null {
   if (!rawChatData) return null;
 
-  let messages: SerializedMessage[] = [];
-  let messageIds: string[] = [];
+  const messages: SerializedMessage[] = [];
+  const messageIds: string[] = [];
   rawChatData.messages.map((message) => {
-    messages.push({
-        ...message,
-        createdAt: serializeDate(message.createdAt),
-    });
+    messages.push(serializeMessage(message));
     messageIds.push(message.id);
   });
 
