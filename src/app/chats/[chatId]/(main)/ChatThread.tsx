@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, {  useEffect, useRef } from "react";
 import MessageBox from "./MessageBox";
 
 import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
 import { selectCurrentMember } from "@/redux-store/features/currentMemberSlice";
-import { notFound } from "next/navigation";
 import { selectMemberById } from "@/redux-store/features/membersSlice";
 import {
   selectCurrentChat,
@@ -14,15 +13,15 @@ import {
 
 export default function ChatThread() {
   const dispatch = useAppDispatch();
+  const latestDate = useRef<string | null>(null);
+  const lastMsgSender = useRef<"currentMember" | "chatPartner" | null>(null);
 
   const currentChat = useAppSelector(selectCurrentChat);
   const currentMember = useAppSelector(selectCurrentMember);
   const chatPartnerId = currentChat && currentChat.chatPartnerId;
-  if (!chatPartnerId) return notFound();
   const chatPartner = useAppSelector((state) =>
     selectMemberById(state, chatPartnerId)
   );
-  if (!chatPartner) return notFound();
 
   useEffect(() => {
     if (currentChat) {
@@ -43,12 +42,14 @@ export default function ChatThread() {
   ) {
     chatThread = (
       <>
-        {currentChat.messageIds.map((id) => (
+        {chatPartner && currentChat.messageIds.map((id) => (
           <li key={id}>
             <MessageBox
               messageId={id}
               currentMember={currentMember}
               chatPartner={chatPartner}
+              latestDate={latestDate}
+              lastMsgSender={lastMsgSender}
             />
           </li>
         ))}
@@ -57,7 +58,7 @@ export default function ChatThread() {
   } else {
     chatThread = (
       <li key={0} className="my-4 pl-1">
-        Start chatting with {chatPartner.name}
+        Start chatting with {chatPartner && chatPartner.name}
       </li>
     );
   }
