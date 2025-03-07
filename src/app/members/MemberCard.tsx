@@ -1,59 +1,65 @@
 "use client";
 
 import { Card, CardFooter } from "@heroui/card";
-import MemberImage from "./MemberImage";
+import MemberImage from "../../components/MemberImage";
 import { useRouter } from "next/navigation";
 import NewChat from "./NewChat";
 import { useDisclosure } from "@heroui/react";
 import { useAppSelector } from "@/redux-store/hooks";
-import { selectCurrentMember, selectCurrentMemberId } from "@/redux-store/features/currentMemberSlice";
-import { selectMemberById, selectMemberOnlineStatus } from "@/redux-store/features/membersSlice";
-import {  Member } from "@/types";
+import {
+  selectCurrentMember,
+  selectCurrentMemberId,
+} from "@/redux-store/features/currentMemberSlice";
+import {
+  selectMemberById,
+  selectMemberOnlineStatus,
+} from "@/redux-store/features/membersSlice";
+import { Member } from "@/types";
 
 export type MemberCardProps = {
   memberId: string;
 };
 
-export default function MemberCard({
-  memberId,
-}: MemberCardProps) {
+export default function MemberCard({ memberId }: MemberCardProps) {
   const router = useRouter();
 
   // when member is the currentMember, somehow the member is not found
   const currentMemberId = useAppSelector(selectCurrentMemberId);
-  let member: Member | null = null;
-  if (currentMemberId === memberId !== null) {
-    const currentMember = useAppSelector(selectCurrentMember);
-    if (currentMember) {
-      member = {
-        id: currentMember.id,
-        name: currentMember.name,
-        image: currentMember.image,
-        lastActive: currentMember.lastActive,
-        deleted: currentMember.deleted,
-        chatting: null,
-        online: currentMember.online,
-      };
-    }
+  let memberToDisplay: Member | null = null;
+  const member = useAppSelector((state) => selectMemberById(state, memberId));
+  const currentMember = useAppSelector(selectCurrentMember);
+  if ((currentMemberId === memberId) !== null && currentMember) {
+    memberToDisplay = {
+      id: currentMember.id,
+      name: currentMember.name,
+      image: currentMember.image,
+      lastActive: currentMember.lastActive,
+      deleted: currentMember.deleted,
+      chatting: null,
+      online: currentMember.online,
+    };
   } else {
-    member = useAppSelector(state => selectMemberById(state, memberId));
+    memberToDisplay = member;
   }
 
   const online = useAppSelector((state) =>
-      selectMemberOnlineStatus(state, memberId)
-    );
-  const chatIdIfChatting = member && member.chatting;
-
-  const memberImageUrl = member && member.image ? member.image : "/images/user.png";
+    selectMemberOnlineStatus(state, memberId)
+  );
 
   // modal properties
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
+  const memberImageUrl =
+    memberToDisplay && memberToDisplay.image
+      ? memberToDisplay.image
+      : "/images/user.png";
+
   const onClickHandler = () => {
+    const chatIdIfChatting = member && member.chatting;
     if (chatIdIfChatting) {
       router.push(`/chats/${chatIdIfChatting}`);
     } else if (currentMemberId === memberId) {
-      router.push(`/profile`)
+      router.push(`/profile`);
     } else {
       onOpen();
     }
@@ -61,16 +67,19 @@ export default function MemberCard({
 
   return (
     <div onClick={onClickHandler}>
-      {member && isOpen && currentMemberId && (
+      {memberToDisplay && isOpen && currentMemberId && (
         <NewChat
-          member={member}
+          member={memberToDisplay}
           isOpen={isOpen}
           onOpenChange={onOpenChange}
         />
       )}
       <Card fullWidth>
         <div>
-          <MemberImage memberImage={memberImageUrl} memberName={member ? member.name : ""} />
+          <MemberImage
+            memberImage={memberImageUrl}
+            memberName={memberToDisplay ? memberToDisplay.name : ""}
+          />
           {currentMemberId === memberId && (
             <div className="absolute top-2 left-2 z-20">
               <div className="border-1 border-white p-1 rounded-2xl bg-[#fb9f3c] text-xs text-white">
@@ -95,7 +104,9 @@ export default function MemberCard({
 
           <CardFooter className="flex justify-start bg-dark-gradient overflow-hidden absolute bottom-0 z-10 pb-1 pt-12">
             <div className="flex flex-col text-white">
-              <span className="">{member ? member.name : ""}</span>
+              <span className="">
+                {memberToDisplay ? memberToDisplay.name : ""}
+              </span>
             </div>
           </CardFooter>
         </div>
