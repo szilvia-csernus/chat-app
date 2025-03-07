@@ -14,7 +14,7 @@ import {
 } from "@/lib/schemas/editProfileSchema";
 import { getCurrentUserId } from "./authActions";
 import { getMemberIdsServerFn, triggerUpdateAboutNewMember } from "./memberActions";
-import { formatShortDateTime } from "@/lib/utils";
+import { timeAgoWithSuffix } from "@/lib/utils";
 
 
 export async function updateProfileLastActive(profileId: string | null) {
@@ -175,7 +175,7 @@ export async function completeProfile(
             id: newMemberId,
             name: user.name || "",
             image: user.image,
-            lastActive: formatShortDateTime(user.profile?.lastActive || new Date()),
+            lastActive: timeAgoWithSuffix(user.profile?.lastActive || new Date()),
             deleted: user.profile?.deleted || false,
             online: true,
           }
@@ -205,7 +205,7 @@ export async function editProfileDetails(
       return { status: "error", error: "Invalid data" };
     }
 
-    const user = await prisma.user.update({
+    await prisma.user.update({
       where: { id: currentUserId },
       data: {
         name: data.name,
