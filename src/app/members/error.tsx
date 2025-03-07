@@ -3,7 +3,5 @@
 import React from 'react'
 
 export default function error() {
-  return (
-    <div>Member's page error</div>
-  )
+  return <div>Member&apos;s page error</div>;
 }
