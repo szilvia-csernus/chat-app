@@ -17,8 +17,8 @@ export default async function ChatsPage() {
           <h1 className="font-bold text-xl mb-2">No chats to show</h1>
 
           <p className="text-lg ">
-            Why don't you head over to the Members page and find someone to chat
-            with?
+            Why don&apos;t you head over to the Members page and find someone to
+            chat with?
           </p>
           <Link
             href="/members"
