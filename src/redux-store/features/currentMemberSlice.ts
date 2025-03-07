@@ -35,8 +35,7 @@ export const { setCurrentMember, resetCurrentMember } = currentMemberSlice.actio
 export const { selectCurrentMember, selectCurrentMemberId } = currentMemberSlice.selectors;
 
 export function fetchCurrentMember(): AppThunk {
-    return async (dispatch, getState) => {
-      const state = getState();
+    return async (dispatch) => {
       const currentProfile = await getCurrentProfile();
       const currentMember = currentProfile && mapProfileDataToCurrentMember(currentProfile);
       console.log(
