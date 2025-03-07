@@ -1,6 +1,7 @@
 import PusherServer from "pusher";
 import PusherClient from "pusher-js";
 
+/* eslint-disable */
 declare global {
   var pusherServerInstance: PusherServer | undefined;
   var pusherClientInstance: PusherClient | undefined;
