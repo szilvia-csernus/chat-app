@@ -52,10 +52,10 @@ export const usePresenceChannel = ({ store, currentMember }: Props) => {
       store.dispatch(updateMemberLastActive(memberId));
 
     },
-    [store, currentMemberId]
+    [store]
   );
 
-  const subscribeToChannel = () => {
+  const subscribeToChannel = useCallback(() => {
     if (!presenceChannelRef.current) {
       console.log("Subscribing to presence channel...");
       presenceChannelRef.current = pusherClient.subscribe(
@@ -95,7 +95,8 @@ export const usePresenceChannel = ({ store, currentMember }: Props) => {
         handleRemoveMember(memberId);
       });
     }
-  };
+  }, [handleSetMembers, handleAddMember, handleRemoveMember]);
+
 
   const unsubscribeFromChannel = () => {
     console.log("Unsubscribing from presence channel...");
@@ -117,7 +118,7 @@ export const usePresenceChannel = ({ store, currentMember }: Props) => {
         unsubscribeFromChannel();
       }
     };
-  }, [currentMemberId]);
+  }, [currentMemberId, subscribeToChannel]);
 
   useEffect(() => {
     if (currentMemberId && presenceChannelRef.current) {
