@@ -8,7 +8,6 @@ import {
   DropdownItem,
 } from "@heroui/dropdown";
 import { Avatar } from "@heroui/avatar";
-import Link from "next/link";
 import { signOutUser } from "@/app/actions/authActions";
 import { useRouter } from "next/navigation";
 
