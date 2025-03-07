@@ -107,7 +107,8 @@ export default function NewChat({
 
                 <ModalBody>
                   <div className="space-y-4 flex justify-center">
-                    It looks like this member has been deleted from our database. You can't start a chat with them.
+                    It looks like this member has been deleted from our
+                    database. You can&apos;t start a chat with them.
                   </div>
                 </ModalBody>
                 <ModalFooter>
@@ -121,7 +122,6 @@ export default function NewChat({
                     >
                       OK
                     </Button>
-                    
                   </div>
                 </ModalFooter>
               </>
