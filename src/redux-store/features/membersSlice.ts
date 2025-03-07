@@ -5,7 +5,6 @@ import { getMembers } from "@/app/actions/memberActions";
 import { updateProfileLastActive } from "@/app/actions/profileActions";
 import { mapProfilesDataToMembers } from "@/lib/maps";
 
-
 type MembersState = {
   members: Members;
 };
@@ -79,9 +78,14 @@ const membersSlice = createSlice({
   },
   selectors: {
     selectMembers: (membersState) => membersState.members,
-    selectMemberById: (membersState, id: string) => membersState.members[id],
-    selectMemberOnlineStatus: (membersState, id: string) =>
-      (membersState.members[id] && membersState.members[id].online) ? membersState.members[id].online : false,
+    selectMemberById: (membersState, id: string | null): Member | null => {
+      const member = id && membersState.members[id];
+      return member || null;
+    },
+    selectMemberOnlineStatus: (membersState, id: string | null) =>
+      id && membersState.members[id] && membersState.members[id].online
+        ? membersState.members[id].online
+        : false,
   },
 });
 
@@ -139,7 +143,7 @@ export function fetchAllMembers(): AppThunk {
       "membersSlice: Current member in fetchAllMembers",
       !!currentMember
     );
-    const membersData = await getMembers() || null;
+    const membersData = (await getMembers()) || null;
     const members = membersData && mapProfilesDataToMembers(membersData);
 
     console.log("membersSlice: Members in fetchAllMembers", members);
