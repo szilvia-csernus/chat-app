@@ -31,16 +31,16 @@ export const calculateAge = (dateString: string) => {
   return age;
 };
 
-export function formatShortDateTime(date: Date) {
-  return format(date, "dd MMM yy h:mm:a");
+export function formatShortDate(date: Date) {
+  return format(date, "dd MMM yy");
 }
 
-export function timeAgo(date: string) {
-  try {
-    return formatDistanceToNow(new Date(date), { addSuffix: true });
-  } catch (error) {
-    return date;
-  }
+export function formatShortTime(date: Date) {
+  return format(date, "HH:mm");
+}
+
+export function timeAgoWithSuffix(date: Date) {
+  return formatDistanceToNow(date, { addSuffix: true });
 }
 
 
