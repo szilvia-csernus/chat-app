@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { getChat } from "@/app/actions/chatActions";
 import { updateMessagesWithReadStatus } from "@/app/actions/messageActions";
 import { authWithRedirect } from "@/app/actions/authActions";
@@ -25,8 +25,6 @@ export default async function ChatPage({
   await updateMessagesWithReadStatus(chatId);
 
   const initialChat = await getChat(chatId);
-  if (!initialChat) return notFound();
-
 
   return (
     <Chats
