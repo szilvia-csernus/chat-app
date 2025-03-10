@@ -3,6 +3,7 @@ import membersReducer from "./features/membersSlice";
 import currentMemberReducer from "./features/currentMemberSlice";
 import chatsReducer from "./features/chatsSlice";
 import messagesReducer from "./features/messagesSlice";
+import uiReducer from "./features/uiSlice";
 
 
 export const makeStore = () => {
@@ -11,7 +12,8 @@ export const makeStore = () => {
       currentMember: currentMemberReducer,
       members: membersReducer,
       chats: chatsReducer,
-      messages: messagesReducer
+      messages: messagesReducer,
+      ui: uiReducer,
   },
   });
 };
