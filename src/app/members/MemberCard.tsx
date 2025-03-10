@@ -23,12 +23,13 @@ export type MemberCardProps = {
 export default function MemberCard({ memberId }: MemberCardProps) {
   const router = useRouter();
 
-  // when member is the currentMember, somehow the member is not found
   const currentMemberId = useAppSelector(selectCurrentMemberId);
-  let memberToDisplay: Member | null = null;
-  const member = useAppSelector((state) => selectMemberById(state, memberId));
   const currentMember = useAppSelector(selectCurrentMember);
-  if ((currentMemberId === memberId) !== null && currentMember) {
+  const member = useAppSelector((state) => selectMemberById(state, memberId));
+  
+  let memberToDisplay: Member | null = null;
+
+  if ((currentMemberId === memberId) && (currentMemberId !== null) && currentMember) {
     memberToDisplay = {
       id: currentMember.id,
       name: currentMember.name,
