@@ -1,34 +1,30 @@
-import { redirect } from "next/navigation";
+import React from "react";
+import Chat from "./(main)/Chat";
 import { getChat } from "@/app/actions/chatActions";
 import { updateMessagesWithReadStatus } from "@/app/actions/messageActions";
-import { authWithRedirect } from "@/app/actions/authActions";
-import Chats from "./Chats";
-import { getCurrentProfile } from "@/app/actions/profileActions";
+import { RawChatData } from "@/types";
 
 export const dynamic = "force-dynamic";
 
-export default async function ChatPage({
-  params,
-}: {
+type Params = {
   params: Promise<{ chatId: string }>;
-}) {
-  await authWithRedirect();
+};
 
+export default async function ChatsPage({ params }: Params) {
   const { chatId } = await params;
 
   console.log("Chat ID", chatId);
 
-  const currentProfile = await getCurrentProfile();
-  if (!currentProfile) return redirect("/profile/complete-profile");
-
+  let initialChat: RawChatData | null = null;
   // Update the messages in the database to be marked as read
-  await updateMessagesWithReadStatus(chatId);
-
-  const initialChat = await getChat(chatId);
+  if (chatId) {
+    await updateMessagesWithReadStatus(chatId );
+    initialChat = await getChat(chatId);
+  }
 
   return (
-    <Chats
-      initialChat={initialChat}
-    />
+    <div className="w-full sm:col-span-7 relative">
+      <Chat initialChat={initialChat} />
+    </div>
   );
 }
