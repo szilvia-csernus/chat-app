@@ -32,35 +32,53 @@ export default function MessageBox({
   const [renderChatPartnerImg, setRenderChatPartnerImg] = useState<boolean>(true);
 
   useEffect(() => {
-    if (message.date === latestDate.current) {
+    if ((message.date === latestDate.current) && (latestDate.current !== null)) {
       setDate(null);
     } else {
       setDate(message.date);
       latestDate.current = message.date;
     }
-  }, [message.date, latestDate]);
+    return () => {
+      latestDate.current = null;
+      setDate(null);
+    }
+  }, [message]);
 
   useEffect(() => {
-    if (message.senderId === currentMember.id && lastMsgSender.current === "currentMember") {
-      setRenderCurrentMemberImg(false);
-    } else {
-      if (message.senderId === currentMember.id) {
-        setRenderCurrentMemberImg(true);
+    if (message.senderId === currentMember.id) {
+      setRenderCurrentMemberImg(true);
+      setRenderChatPartnerImg(true);
+      if (
+        lastMsgSender.current === "currentMember"
+      ) {
+        setRenderCurrentMemberImg(false);
+      } else {
         lastMsgSender.current = "currentMember";
       }
     }
-  })
+    return () => {
+      lastMsgSender.current = null;
+      setRenderCurrentMemberImg(true);
+    }
+  }, [message, currentMember]);
 
   useEffect(() => {
-    if (message.senderId === chatPartner.id && lastMsgSender.current === "chatPartner") {
-      setRenderChatPartnerImg(false);
-    } else {
-      if (message.senderId === chatPartner.id) {
-        setRenderChatPartnerImg(true);
+    if (message.senderId === chatPartner.id) {
+      setRenderChatPartnerImg(true);
+      setRenderCurrentMemberImg(true);
+      if (
+        lastMsgSender.current === "chatPartner"
+      ) {
+        setRenderChatPartnerImg(false);
+      } else {
         lastMsgSender.current = "chatPartner";
-      } 
+      }
     }
-  })
+    return () => {
+      lastMsgSender.current = null;
+      setRenderChatPartnerImg(true);
+    }
+  }, [message, chatPartner]);
 
   const isCurrentMemberSender = message.senderId === currentMember.id;
   const sender = isCurrentMemberSender ? currentMember : chatPartner;
@@ -81,7 +99,9 @@ export default function MessageBox({
       src={sender.image || "/images/user.png"}
       online={chatPartnerOnline || false}
       deleted={sender.deleted}
-      className="self-end mx-1"
+      classNames=""
+      imageWidth={40}
+      imageHeight={40}
       own={isCurrentMemberSender}
     />
   );
@@ -121,7 +141,7 @@ export default function MessageBox({
   );
 
   const renderMessageContent = () => (
-    <div className="flex flex-col">
+    <div className="flex flex-col mt-1">
       <div className={messageContentClasses}>
         <p
           className={clsx(
@@ -145,7 +165,7 @@ export default function MessageBox({
       {date && (
         <div
           suppressHydrationWarning={true}
-          className="w-32 text-center text-xs font-semibold my-4 mx-auto py-1 border-1 bg-cyan-50 dark:bg-cyan-800 text-slate-800 dark:text-white rounded-full border-slate-300 dark:border-slate-500"
+          className=" w-none min-w-32 max-w-48 text-center text-xs font-semibold my-4 mx-auto py-1 px-2 border-1  text-secondary dark:text-teal-300 rounded-full border-slate-300 dark:border-slate-500"
         >
           {date}
         </div>
@@ -155,26 +175,24 @@ export default function MessageBox({
           <div className="grid grid-rows-1">
             <div
               className={clsx(
-                "flex gap-2 mb-1 items-start",
+                "flex gap-1 items-start min-h-10",
                 {
                   "justify-end text-right": isCurrentMemberSender,
                 },
-                { "justyfy-start": !isCurrentMemberSender }
+                { "justify-start": !isCurrentMemberSender }
               )}
             >
-              {!isCurrentMemberSender &&
-                (renderChatPartnerImg ? (
-                  renderAvatar()
-                ) : (
-                  <div className="w-10" />
-                ))}
+              <div className="min-w-10 mr-1 ml-1">
+                {(!isCurrentMemberSender) &&
+                  renderChatPartnerImg &&
+                  renderAvatar()}
+              </div>
               {renderMessageContent()}
-              {isCurrentMemberSender &&
-                (renderCurrentMemberImg ? (
-                  renderAvatar()
-                ) : (
-                  <div className="w-10" />
-                ))}
+              <div className="min-w-11 ml-1">
+                {isCurrentMemberSender &&
+                  renderCurrentMemberImg &&
+                  renderAvatar()}
+              </div>
             </div>
             <div ref={messageEndRef} />
           </div>
