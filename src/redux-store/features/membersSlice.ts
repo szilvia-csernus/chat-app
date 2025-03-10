@@ -108,18 +108,6 @@ export const selectMemberIds = createSelector([selectMembers], (members) =>
   Object.keys(members)
 );
 
-// export const selectExistingMembers = createSelector(
-//   [selectMembers, selectMemberIds],
-//   (members, memberIds) => {
-//     const existingMembers = {} as Members;
-//     memberIds.forEach((id) => {
-//           if (!members[id].deleted) {
-//             existingMembers[id] = members[id];
-//           }
-//         });
-//     return existingMembers;
-// });
-
 export const selectExistingMemberIds = createSelector(
   [selectMembers], // cannot put selectMemberIds here because input selectors should not have a reference (array, object etc.) as a return value
   (members) => {
