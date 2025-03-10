@@ -43,7 +43,7 @@ export default function ChatForm() {
     <form
       onSubmit={handleSubmit(onSubmit)}
       autoComplete="none"
-      className="flex flex-col mb-0"
+      className="flex flex-col mb-0 mx-1"
     >
       <div className="flex items-center gap-2 w-full">
         <Textarea
