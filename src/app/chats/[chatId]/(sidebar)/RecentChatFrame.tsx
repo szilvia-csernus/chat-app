@@ -1,5 +1,8 @@
 "use client";
 
+import { closeSidebar } from "@/redux-store/features/uiSlice";
+import { useAppDispatch } from "@/redux-store/hooks";
+import { Button } from "@heroui/react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import React from "react";
@@ -7,28 +10,22 @@ import React from "react";
 type Props = {
   chatId: string;
   children: React.ReactNode;
-  isSidebarOpen?: boolean;
-  setIsSidebarOpen?: (isOpen: boolean) => void;
 };
 
-export default function RecentChatFrame({ chatId, children, isSidebarOpen, setIsSidebarOpen }: Props) {
+export default function RecentChatFrame({ chatId, children }: Props) {
   const params = useParams();
   const currentChatId = params.chatId;
+  const dispatch = useAppDispatch();
 
   const additionalStyles =
     currentChatId === chatId ? "bg-white dark:bg-gray-800" : "";
   
-  const clickHandler = () => {
-    if (setIsSidebarOpen) {
-      setIsSidebarOpen(!isSidebarOpen);
-    }
-  }
 
   return (
     <Link
-      className={`relative flex flex-row justify-between items-center w-full cursor-pointer border-b-1 border-slate-300 dark:border-slate-500  ${additionalStyles}`}
+      className={`relative flex flex-row justify-between items-center h-18 rounded-none cursor-pointer border-b-1 border-slate-300 dark:border-slate-500  ${additionalStyles}`}
       href={`/chats/${chatId}`}
-      onClick={clickHandler}
+      onClick={() => dispatch(closeSidebar())}
     >
       {children}
     </Link>

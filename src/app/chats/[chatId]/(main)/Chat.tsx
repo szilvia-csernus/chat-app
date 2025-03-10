@@ -13,17 +13,12 @@ import { setMessages } from "@/redux-store/features/messagesSlice";
 
 type Props = {
   initialChat: RawChatData | null;
-  isSidebarOpen: boolean;
-  setIsSidebarOpen: (isOpen: boolean) => void;
 };
 
 export default function Chat({
   initialChat,
-  isSidebarOpen,
-  setIsSidebarOpen,
 }: Props) {
   const dispatch = useAppDispatch();
-
 
   const initialized = useRef(false);
   if (!initialized.current && initialChat) {
@@ -39,13 +34,10 @@ export default function Chat({
   return (
     <Card
       radius="none"
-      className="h-[calc(100dvh-80px)] m-0 border-1 border-slate-300 dark:border-slate-800 bg-zig-zag relative"
+      className="h-[calc(100dvh-80px)] m-0 border-1 border-slate-300 dark:border-slate-800 bg-zig-zag"
     >
-      <div className="sticky space-x-2">
-        <CurrentChatPartner
-          isSidebarOpen={isSidebarOpen}
-          setIsSidebarOpen={setIsSidebarOpen}
-        />
+      <div className="sticky space-x-2 sm:hidden">
+        <CurrentChatPartner />
       </div>
       <div className="flex flex-col-reverse h-svh overflow-scroll scrollbar-hide scroll-smooth">
         <ChatThread />
