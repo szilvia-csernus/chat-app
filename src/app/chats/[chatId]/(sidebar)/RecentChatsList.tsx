@@ -4,21 +4,16 @@ import { useAppSelector } from "@/redux-store/hooks";
 import { selectChatIds } from "@/redux-store/features/chatsSlice";
 
 
-type Props = {
-  setIsSidebarOpen?: (isOpen: boolean) => void;
-};
-
-export default function RecentChatsList({ setIsSidebarOpen }: Props) {
+export default function RecentChatsList() {
   const chatIds = useAppSelector(selectChatIds); 
 
   return (
-    <ul className="flex flex-col w-full overflow-hidden scrollbar-hide">
+    <ul className="flex flex-col w-full overflow-hidden scrollbar-x-hide">
       {chatIds.map((id) => {
         return (
           <li key={id}>
             <RecentChat
               chatId={id}
-              setIsSidebarOpen={setIsSidebarOpen}
             />
           </li>
         );
