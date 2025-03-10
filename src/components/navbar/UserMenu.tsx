@@ -10,6 +10,7 @@ import {
 import { Avatar } from "@heroui/avatar";
 import { signOutUser } from "@/app/actions/authActions";
 import { useRouter } from "next/navigation";
+import PresenceAvatar from "../PresenceAvatar";
 
 
 type UserMenuProps = {
@@ -27,12 +28,14 @@ export default function UserMenu({ userName, photoUrl }: UserMenuProps) {
   return (
     <Dropdown placement="bottom-end" className="shadow-sm shadow-foreground">
       <DropdownTrigger>
-        <Avatar
-          className="transition-transform cursor-pointer"
-          size="md"
-          radius="full"
-          src={photoUrl}
-        />
+        <div className="transition-transform cursor-pointer">
+          <PresenceAvatar
+            imageWidth={50}
+            imageHeight={50}
+            src={photoUrl}
+            own={true}
+          />
+        </div>
       </DropdownTrigger>
       <DropdownMenu
         variant="flat"
@@ -52,15 +55,15 @@ export default function UserMenu({ userName, photoUrl }: UserMenuProps) {
         </DropdownItem>
         <DropdownItem
           key="profile"
-          color="secondary"
           textValue="Profile"
+          className="hover:text-secondary hover:dark:text-teal-300 transition-all"
           onPress={handleProfileClick}
         >
           Profile
         </DropdownItem>
         <DropdownItem
           key="signout"
-          color="secondary"
+          className="hover:text-secondary hover:dark:text-teal-300 transition-all"
           onPress={async () => signOutUser()}
         >
           Sign Out
