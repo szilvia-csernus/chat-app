@@ -1,41 +1,38 @@
 "use client";
 
 import React from "react";
-import { useAppSelector } from "@/redux-store/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
 import { IoIosArrowBack } from "react-icons/io";
 import PresenceAvatar from "@/components/PresenceAvatar";
 import { selectMemberById, selectMemberOnlineStatus } from "@/redux-store/features/membersSlice";
 import { selectCurrentChat } from "@/redux-store/features/chatsSlice";
+import { openSidebar } from "@/redux-store/features/uiSlice";
 
-type Props = {
-  isSidebarOpen: boolean;
-  setIsSidebarOpen: (isOpen: boolean) => void;
-};
 
-export default function CurrentChatPartner({
-  isSidebarOpen,
-  setIsSidebarOpen,
-}: Props) {
+export default function CurrentChatPartner() {
   const currentChat = useAppSelector(selectCurrentChat);
   const chatPartnerId = currentChat && currentChat.chatPartnerId;
   const chatPartner = useAppSelector(state => selectMemberById(state, chatPartnerId));
   const online = !!(useAppSelector(state => selectMemberOnlineStatus(state, chatPartnerId)));
+  const dispatch = useAppDispatch();
 
   return (
     <>
       {chatPartner && (
-        <div className="m-auto border-b-1 border-slate-300 dark:border-slate-500  bg-white dark:bg-gray-800 flex items-center relative">
+        <div className="m-auto border-b-1 border-slate-300 dark:border-slate-500  bg-white dark:bg-gray-800 flex items-center">
           <IoIosArrowBack
-            className="sm:hidden ml-2 text-slate-500  dark:text-slate-400"
+            className="sm:hidden ml-2 text-slate-500  dark:text-slate-400 cursor-pointer"
             size={30}
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            onClick={() => dispatch(openSidebar())}
           />
-          <div className="mx-1 my-3 ">
+          <div className="my-3 ">
             <PresenceAvatar
               src={chatPartner.image || "/images/user.png"}
               online={online}
               deleted={chatPartner.deleted || false}
-              className="self-end mx-1"
+              classNames="self-end mx-1 mr-2"
+              imageWidth={40}
+              imageHeight={40}
               own={false}
             />
           </div>
