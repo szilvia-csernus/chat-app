@@ -14,7 +14,6 @@ import {
 } from "@/lib/schemas/editProfileSchema";
 import { getCurrentUserId } from "./authActions";
 import { getMemberIdsServerFn, triggerUpdateAboutNewMember } from "./memberActions";
-import { timeAgoWithSuffix } from "@/lib/utils";
 
 
 export async function updateProfileLastActive(profileId: string | null) {
@@ -175,7 +174,7 @@ export async function completeProfile(
             id: newMemberId,
             name: user.name || "",
             image: user.image,
-            lastActive: timeAgoWithSuffix(user.profile?.lastActive || new Date()),
+            lastActive: (user.profile?.lastActive || new Date()).toISOString(),
             deleted: user.profile?.deleted || false,
             online: true,
           }
