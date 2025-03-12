@@ -1,6 +1,10 @@
-import { format, formatDistanceToNow } from "date-fns";
 import { FieldValues, UseFormSetError, Path } from "react-hook-form";
 import { ZodIssue } from "zod";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import isToday from "dayjs/plugin/isToday";
+import isYesterday from "dayjs/plugin/isYesterday";
+
 
 
 export function handleFormServerErrors<TFieldValues extends FieldValues>(
@@ -31,16 +35,29 @@ export const calculateAge = (dateString: string) => {
   return age;
 };
 
-export function formatShortDate(date: Date) {
-  return format(date, "dd MMM yy");
-}
 
 export function formatShortTime(date: Date) {
-  return format(date, "HH:mm");
+  return dayjs(date).format("H:mm");
 }
 
-export function timeAgoWithSuffix(date: Date) {
-  return formatDistanceToNow(date, { addSuffix: true });
+export function timeAgoDate(date: string) {
+  dayjs.extend(isToday);
+  dayjs.extend(isYesterday);
+  dayjs.extend(relativeTime);
+
+  if (dayjs(date).isToday()) {
+    return "Today";
+  }
+  if (dayjs(date).isYesterday()) {
+    return "Yesterday";
+  }
+
+  return dayjs(date).fromNow();
+}
+
+export function timeAgoDateTime(date: string) {
+  dayjs.extend(relativeTime);
+  return dayjs(date).fromNow();
 }
 
 
