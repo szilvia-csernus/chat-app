@@ -38,7 +38,7 @@ export const usePrivateChatChannels = ({ store, currentMember }: Props) => {
   
 
   const handleNewMessage = useCallback(
-    async (chatId: string, message: SerializedMessage) => {
+    async (chatId: string, message: SerializedMessage, date: string) => {
       console.log("Handling new message", chatId, currentChatRef.current);
       // If the message is for the acctive chat, add it to the chat
       // on either or both the sender and receiver side
@@ -48,7 +48,7 @@ export const usePrivateChatChannels = ({ store, currentMember }: Props) => {
           currentChatRef.current
         );
         store.dispatch(addNewMessage(message));
-        store.dispatch(addMessageId({ chatId, messageId: message.id }));
+        store.dispatch(addMessageId({ chatId, messageId: message.id, date }));
       }
 
       // Receiver side: if the message is not for the active chat,
@@ -101,9 +101,9 @@ export const usePrivateChatChannels = ({ store, currentMember }: Props) => {
 
         channel.bind(
           "new-message",
-          (data: { chatId: string; message: SerializedMessage }) => {
+          (data: { chatId: string; message: SerializedMessage, date: string }) => {
             // console.log("New message received", data.chatId, data.message);
-            handleNewMessage(data.chatId, data.message);
+            handleNewMessage(data.chatId, data.message, data.date);
           }
         );
         channel.bind("message-read", (data: { messageId: string }) => {
