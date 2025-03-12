@@ -37,7 +37,8 @@ export default function NewChat({
       addNewChat({
         id: newChat.id,
         chatPartnerId: member.id,
-        messageIds: [],
+        groupedMessageIds: {},
+        msgIdGroupChronList: [],
         unreadMessageCount: 0,
         inactive: false,
       })
