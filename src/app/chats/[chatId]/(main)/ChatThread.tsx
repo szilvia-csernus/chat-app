@@ -1,26 +1,27 @@
 "use client";
 
-import React, {  useEffect, useRef } from "react";
-import MessageBox from "./MessageBox";
+import React, { useEffect } from "react";
 
 import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
-import { selectCurrentMember } from "@/redux-store/features/currentMemberSlice";
 import { selectMemberById } from "@/redux-store/features/membersSlice";
 import {
   selectCurrentChat,
+  selectCurrentChatMsgIdGroupChronList,
+  selectCurrentChatPartnerId,
   updateUnreadCount,
 } from "@/redux-store/features/chatsSlice";
+import MessageCluster from "./MessageCluster";
 
 export default function ChatThread() {
   const dispatch = useAppDispatch();
-  const latestDate = useRef<string | null>(null);
-  const lastMsgSender = useRef<"currentMember" | "chatPartner" | null>(null);
 
   const currentChat = useAppSelector(selectCurrentChat);
-  const currentMember = useAppSelector(selectCurrentMember);
-  const chatPartnerId = currentChat && currentChat.chatPartnerId;
+  const chatPartnerId = useAppSelector(selectCurrentChatPartnerId);
   const chatPartner = useAppSelector((state) =>
     selectMemberById(state, chatPartnerId)
+  );
+  const messageGroupList = useAppSelector(
+    selectCurrentChatMsgIdGroupChronList
   );
 
   useEffect(() => {
@@ -34,31 +35,29 @@ export default function ChatThread() {
   });
 
   let chatThread: React.JSX.Element;
+
   if (
-    currentMember &&
     currentChat &&
-    currentChat.messageIds &&
-    currentChat.messageIds.length > 0
+    chatPartner &&
+    messageGroupList &&
+    messageGroupList.length > 0
   ) {
     chatThread = (
       <>
-        {chatPartner && currentChat.messageIds.map((id) => (
-          <li key={id}>
-            <MessageBox
-              messageId={id}
-              currentMember={currentMember}
-              chatPartner={chatPartner}
-              latestDate={latestDate}
-              lastMsgSender={lastMsgSender}
-            />
-          </li>
-        ))}
+        {messageGroupList.map((date: string) => {
+          return(
+            <li key={date}>
+              <MessageCluster
+                date={date}
+              />
+            </li>
+          )})}
       </>
     );
   } else {
     chatThread = (
-      <li key={0} className="my-4 pl-1">
-        Start chatting with {chatPartner && chatPartner.name}
+      <li key={"No message"} className="my-4 pl-1">
+        Start chatting {(chatPartner && chatPartner.name) && ` with ${chatPartner.name}`}!
       </li>
     );
   }
