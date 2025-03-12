@@ -6,7 +6,7 @@ import {
   selectMemberById,
   selectMemberOnlineStatus,
 } from "@/redux-store/features/membersSlice";
-import { selectChatById } from "@/redux-store/features/chatsSlice";
+import { selectChatById, selectLastMessageIdByChatId } from "@/redux-store/features/chatsSlice";
 import { selectMessageById } from "@/redux-store/features/messagesSlice";
 import PresenceAvatar from "@/components/PresenceAvatar";
 
@@ -18,11 +18,9 @@ export default function RecentChat({
   chatId,
 }: Props) {
   const chat = useAppSelector((state) => selectChatById(state, chatId));
-  const { chatPartnerId, messageIds = [], unreadMessageCount } = chat;
-  const lastMessageId = messageIds[messageIds.length - 1];
-  const lastMessage = useAppSelector(
-    (messagesState) => selectMessageById(messagesState, lastMessageId)?.content
-  );
+  const { chatPartnerId, unreadMessageCount } = chat;
+  const lastMessageId = useAppSelector(state => selectLastMessageIdByChatId(state, chatId));
+  const lastMessage = useAppSelector(state => selectMessageById(state, lastMessageId))?.content;
   const chatPartner = useAppSelector((state) =>
     selectMemberById(state, chatPartnerId)
   );
