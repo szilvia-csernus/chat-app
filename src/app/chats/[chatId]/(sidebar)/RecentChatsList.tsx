@@ -9,15 +9,14 @@ export default function RecentChatsList() {
 
   return (
     <ul className="flex flex-col w-full overflow-hidden scrollbar-x-hide">
-      {chatIds.map((id) => {
-        return (
+      {chatIds.map((id) => (
           <li key={id}>
             <RecentChat
               chatId={id}
             />
           </li>
-        );
-      })}
+        )
+      )}
     </ul>
   );
 }
