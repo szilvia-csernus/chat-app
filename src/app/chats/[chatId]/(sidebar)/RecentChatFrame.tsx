@@ -2,7 +2,6 @@
 
 import { closeSidebar } from "@/redux-store/features/uiSlice";
 import { useAppDispatch } from "@/redux-store/hooks";
-import { Button } from "@heroui/react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import React from "react";
