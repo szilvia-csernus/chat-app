@@ -7,7 +7,6 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "@heroui/dropdown";
-import { Avatar } from "@heroui/avatar";
 import { signOutUser } from "@/app/actions/authActions";
 import { useRouter } from "next/navigation";
 import PresenceAvatar from "../PresenceAvatar";
