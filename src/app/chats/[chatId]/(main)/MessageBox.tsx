@@ -2,50 +2,39 @@
 
 import PresenceAvatar from "@/components/PresenceAvatar";
 import { useAppSelector } from "@/redux-store/hooks";
-import { CurrentMember, Member } from "@/types";
 import clsx from "clsx";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { selectMemberOnlineStatus } from "@/redux-store/features/membersSlice";
 import { selectMessageById } from "@/redux-store/features/messagesSlice";
+import { selectCurrentMember } from "@/redux-store/features/currentMemberSlice";
+import { selectMemberById } from "@/redux-store/features/membersSlice";
+import {
+  selectCurrentChatPartnerId
+} from "@/redux-store/features/chatsSlice";
 
 type MessageBoxProps = {
   messageId: string;
-  currentMember: CurrentMember;
-  chatPartner: Member;
-  latestDate: { current: string | null };
   lastMsgSender: { current: "currentMember" | "chatPartner" | null};
 };
 
 export default function MessageBox({
   messageId,
-  currentMember,
-  chatPartner,
-  latestDate,
   lastMsgSender
 }: MessageBoxProps) {
   const message = useAppSelector((state) =>
     selectMessageById(state, messageId)
   );
+  const currentMember = useAppSelector(selectCurrentMember);
+    const chatPartnerId = useAppSelector(selectCurrentChatPartnerId);
+    const chatPartner = useAppSelector((state) =>
+      selectMemberById(state, chatPartnerId)
+    );
 
-  const [date, setDate] = useState<string | null>(null);
   const [renderCurrentMemberImg, setRenderCurrentMemberImg] = useState<boolean>(true);
   const [renderChatPartnerImg, setRenderChatPartnerImg] = useState<boolean>(true);
 
   useEffect(() => {
-    if ((message.date === latestDate.current) && (latestDate.current !== null)) {
-      setDate(null);
-    } else {
-      setDate(message.date);
-      latestDate.current = message.date;
-    }
-    return () => {
-      latestDate.current = null;
-      setDate(null);
-    }
-  }, [message]);
-
-  useEffect(() => {
-    if (message.senderId === currentMember.id) {
+    if ( message && currentMember && message.senderId === currentMember.id) {
       setRenderCurrentMemberImg(true);
       setRenderChatPartnerImg(true);
       if (
@@ -60,10 +49,10 @@ export default function MessageBox({
       lastMsgSender.current = null;
       setRenderCurrentMemberImg(true);
     }
-  }, [message, currentMember]);
+  }, [message, currentMember, lastMsgSender]);
 
   useEffect(() => {
-    if (message.senderId === chatPartner.id) {
+    if (message!.senderId === chatPartner!.id) {
       setRenderChatPartnerImg(true);
       setRenderCurrentMemberImg(true);
       if (
@@ -78,12 +67,12 @@ export default function MessageBox({
       lastMsgSender.current = null;
       setRenderChatPartnerImg(true);
     }
-  }, [message, chatPartner]);
+  }, [message, chatPartner, lastMsgSender]);
 
-  const isCurrentMemberSender = message.senderId === currentMember.id;
+  const isCurrentMemberSender = message!.senderId === currentMember!.id;
   const sender = isCurrentMemberSender ? currentMember : chatPartner;
   const chatPartnerOnline = useAppSelector((state) =>
-    selectMemberOnlineStatus(state, chatPartner.id)
+    selectMemberOnlineStatus(state, chatPartner!.id)
   );
 
   const messageEndRef = useRef<HTMLDivElement>(null);
@@ -95,15 +84,19 @@ export default function MessageBox({
   }, [messageEndRef]);
 
   const renderAvatar = () => (
-    <PresenceAvatar
-      src={sender.image || "/images/user.png"}
-      online={chatPartnerOnline || false}
-      deleted={sender.deleted}
-      classNames=""
-      imageWidth={40}
-      imageHeight={40}
-      own={isCurrentMemberSender}
-    />
+    <>
+      { message &&
+        <PresenceAvatar
+          src={sender!.image || "/images/user.png"}
+          online={chatPartnerOnline || false}
+          deleted={sender!.deleted}
+          classNames=""
+          imageWidth={40}
+          imageHeight={40}
+          own={isCurrentMemberSender}
+        />
+      }
+    </>
   );
 
   const messageContentClasses = clsx(
@@ -131,7 +124,7 @@ export default function MessageBox({
           {isCurrentMemberSender ? "You" : sender.name}
         </span> */}
         <div className="text-xs">{message?.time}</div>
-        {message?.read && message.senderId === currentMember.id && (
+        {message?.read && message.senderId === currentMember!.id && (
           <div className="text-xs text-gray-400 italic w-auto">
             Seen &#10003;
           </div>
@@ -162,14 +155,6 @@ export default function MessageBox({
 
   return (
     <>
-      {date && (
-        <div
-          suppressHydrationWarning={true}
-          className=" w-none min-w-32 max-w-48 text-center text-xs font-semibold my-4 mx-auto py-1 px-2 border-1  text-secondary dark:text-teal-300 rounded-full border-slate-300 dark:border-slate-500"
-        >
-          {date}
-        </div>
-      )}
       <Suspense fallback={<div>Loading message...</div>}>
         {message && (
           <div className="grid grid-rows-1">
