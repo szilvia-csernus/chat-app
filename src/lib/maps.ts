@@ -6,6 +6,7 @@ import {
   RawChatData,
   CurrentMember,
   CurrentProfileData,
+  GroupedChatMessageIds,
 } from "@/types";
 import {
   serializeCurrentProfileDataToCurrentMember,
@@ -50,17 +51,36 @@ export function mapRawChatDataToChatAndMessages(
 ): { chat: ChatData; messages: SerializedMessage[] } | null {
   if (!rawChatData) return null;
 
+  // const messageIds: string[] = [];
   const messages: SerializedMessage[] = [];
-  const messageIds: string[] = [];
+  const msgIdGroupChronList: string[] = [];
+  const groupedMessageIds: GroupedChatMessageIds = {};
+  let currentDate: string = rawChatData.messages[0].createdAt.toISOString().split('T')[0];
+  msgIdGroupChronList.push(currentDate);
+  groupedMessageIds[currentDate] = [];
+
   rawChatData.messages.map((message) => {
     messages.push(serializeMessage(message));
-    messageIds.push(message.id);
+    // messageIds.push(message.id);
+    const messageDate = message.createdAt.toISOString().split("T")[0];
+    
+    if (groupedMessageIds[currentDate]) {
+      groupedMessageIds[currentDate].push(message.id);
+    } else {
+      groupedMessageIds[currentDate] = [message.id];
+    }
+
+    if (messageDate !== currentDate) {
+      msgIdGroupChronList.push(messageDate);
+      currentDate = messageDate;
+    } 
   });
 
   const chat = {
     id: rawChatData.id,
     chatPartnerId: rawChatData.profiles[0].id,
-    messageIds,
+    groupedMessageIds,
+    msgIdGroupChronList,
     inactive: rawChatData.inactive,
     unreadMessageCount: rawChatData._count.messages,
   };
