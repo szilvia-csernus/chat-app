@@ -5,13 +5,13 @@ import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
 import { IoIosArrowBack } from "react-icons/io";
 import PresenceAvatar from "@/components/PresenceAvatar";
 import { selectMemberById, selectMemberOnlineStatus } from "@/redux-store/features/membersSlice";
-import { selectCurrentChat } from "@/redux-store/features/chatsSlice";
+import { selectCurrentChatPartnerId } from "@/redux-store/features/chatsSlice";
 import { openSidebar } from "@/redux-store/features/uiSlice";
+import { formatShortTime, timeAgoDateTime } from "@/lib/utils";
 
 
 export default function CurrentChatPartner() {
-  const currentChat = useAppSelector(selectCurrentChat);
-  const chatPartnerId = currentChat && currentChat.chatPartnerId;
+  const chatPartnerId = useAppSelector(selectCurrentChatPartnerId);
   const chatPartner = useAppSelector(state => selectMemberById(state, chatPartnerId));
   const online = !!(useAppSelector(state => selectMemberOnlineStatus(state, chatPartnerId)));
   const dispatch = useAppDispatch();
@@ -53,7 +53,7 @@ export default function CurrentChatPartner() {
                 suppressHydrationWarning={true}
                 className="text-xs text-gray-400 min-w-full relative"
               >
-                Last seen: {chatPartner && chatPartner.lastActive}
+                Last seen: {chatPartner && timeAgoDateTime(chatPartner.lastActive)}
               </div>
             )}
           </div>
