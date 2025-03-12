@@ -13,9 +13,8 @@ type Params = {
 export default async function ChatsPage({ params }: Params) {
   const { chatId } = await params;
 
-  console.log("Chat ID", chatId);
-
   let initialChat: RawChatData | null = null;
+  
   // Update the messages in the database to be marked as read
   if (chatId) {
     await updateMessagesWithReadStatus(chatId );
