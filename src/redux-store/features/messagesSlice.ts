@@ -42,8 +42,10 @@ const messagesSlice = createSlice({
     },
   },
   selectors: {
-    selectMessageById: (messagesState, id: string) =>
-      messagesState.messages[id],
+    selectMessageById: (messagesState, id: string | null) => {
+      if (!id) return null;
+      return  messagesState.messages[id]
+    }
   },
 });
 
