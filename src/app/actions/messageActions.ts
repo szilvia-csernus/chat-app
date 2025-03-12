@@ -73,6 +73,7 @@ export async function createMessage(
     await pusherServer.trigger(`private-chat-${chatId}`, "new-message", {
       chatId: chatId,
       message: serializedMessage,
+      date: message.createdAt.toISOString().split("T")[0],
     });
 
     return { status: "success", data: message };
