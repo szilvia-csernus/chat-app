@@ -6,7 +6,7 @@ import {
   RawChatData,
   CurrentMember,
   CurrentProfileData,
-  GroupedChatMessageIds,
+  GroupedMessageIds,
 } from "@/types";
 import {
   serializeCurrentProfileDataToCurrentMember,
@@ -35,13 +35,13 @@ export function mapRawChatDataListToChatsAndMessages(
 
   const chats: ChatData[] = [];
   const messages: SerializedMessage[] = [];
-  rcData.forEach(rc => {
+  rcData.forEach((rc) => {
     const result = mapRawChatDataToChatAndMessages(rc);
     if (result && result.chat && result.messages) {
       chats.push(result.chat);
       messages.push(...result.messages);
     }
-  })
+  });
 
   return { chats, messages };
 }
@@ -53,34 +53,33 @@ export function mapRawChatDataToChatAndMessages(
 
   // const messageIds: string[] = [];
   const messages: SerializedMessage[] = [];
-  const msgIdGroupChronList: string[] = [];
-  const groupedMessageIds: GroupedChatMessageIds = {};
-  let currentDate: string = rawChatData.messages[0].createdAt.toISOString().split('T')[0];
-  msgIdGroupChronList.push(currentDate);
-  groupedMessageIds[currentDate] = [];
+  const msgGroupChronList: string[] = [];
+  const msgGroups: GroupedMessageIds = {};
+  let currentDate: string = rawChatData.messages[0].createdAt
+    .toISOString()
+    .split("T")[0];
+  msgGroupChronList.push(currentDate);
+  msgGroups[currentDate] = [];
 
   rawChatData.messages.map((message) => {
     messages.push(serializeMessage(message));
     // messageIds.push(message.id);
     const messageDate = message.createdAt.toISOString().split("T")[0];
-    
-    if (groupedMessageIds[currentDate]) {
-      groupedMessageIds[currentDate].push(message.id);
-    } else {
-      groupedMessageIds[currentDate] = [message.id];
-    }
 
-    if (messageDate !== currentDate) {
-      msgIdGroupChronList.push(messageDate);
-      currentDate = messageDate;
-    } 
+    if (messageDate === currentDate) {
+        msgGroups[messageDate].push(message.id);
+      } else {
+        msgGroups[messageDate] = [message.id];
+         msgGroupChronList.push(messageDate);
+         currentDate = messageDate;
+      }
   });
 
   const chat = {
     id: rawChatData.id,
     chatPartnerId: rawChatData.profiles[0].id,
-    groupedMessageIds,
-    msgIdGroupChronList,
+    msgGroups,
+    msgGroupChronList,
     inactive: rawChatData.inactive,
     unreadMessageCount: rawChatData._count.messages,
   };
