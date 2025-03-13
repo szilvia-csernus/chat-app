@@ -50,15 +50,13 @@ const chatsSlice = createSlice({
     ) {
       const chat = state.chats[action.payload.chatId];
       const lastDate =
-        chat.msgIdGroupChronList[chat.msgIdGroupChronList.length - 1];
+        chat.msgGroupChronList[chat.msgGroupChronList.length - 1];
       if (state.currentChatId === action.payload.chatId) {
         if (lastDate === action.payload.date) {
-          chat.groupedMessageIds[lastDate].push(action.payload.messageId);
+          chat.msgGroups[lastDate].push(action.payload.messageId);
         } else {
-          chat.groupedMessageIds[action.payload.date] = [
-            action.payload.messageId,
-          ];
-          chat.msgIdGroupChronList.push(action.payload.date);
+          chat.msgGroups[action.payload.date] = [action.payload.messageId];
+          chat.msgGroupChronList.push(action.payload.date);
         }
       }
     },
@@ -99,24 +97,26 @@ const chatsSlice = createSlice({
     selectCurrentChatMsgIdGroupChronList: (chatsState) => {
       const chatId = chatsState.currentChatId;
       const chat = chatId ? chatsState.chats[chatId] : null;
-      const msgIdGroupChronList = chat ? chat.msgIdGroupChronList : [] as string[];
-      return msgIdGroupChronList;
+      const msgGroupChronList = chat
+        ? chat.msgGroupChronList
+        : ([] as string[]);
+      return msgGroupChronList;
     },
     selectCurrentChatGroupedMessageIdsByDate: (chatsState, date: string) => {
       const chatId = chatsState.currentChatId;
       const chat = chatId ? chatsState.chats[chatId] : null;
-      return chat ? chat.groupedMessageIds[date] : [];
+      return chat ? chat.msgGroups[date] : [];
     },
     selectLastMessageIdByChatId: (chatsState, chatId: string) => {
       const chat = chatsState.chats[chatId];
       const lastDate = chat
-        ? chat.msgIdGroupChronList[chat.msgIdGroupChronList.length - 1]
+        ? chat.msgGroupChronList[chat.msgGroupChronList.length - 1]
         : null;
       const lastMessageIdIndex = lastDate
-        ? chat.groupedMessageIds[lastDate].length - 1
+        ? chat.msgGroups[lastDate].length - 1
         : null;
-      return (lastMessageIdIndex && lastDate)
-        ? chat.groupedMessageIds[lastDate][lastMessageIdIndex]
+      return lastMessageIdIndex && lastDate
+        ? chat.msgGroups[lastDate][lastMessageIdIndex]
         : null;
     },
     selectAllUnreadMessageCount: (chatsState) =>
@@ -149,10 +149,6 @@ export const {
 // memoized selectors
 export const selectChatIds = createSelector([selectChats], (chats) =>
   Object.keys(chats)
-);
-
-export const selectChatList = createSelector([selectChats], (chats) =>
-  Object.values(chats)
 );
 
 // export function fetchCurrentChat(id: string): AppThunk {
