@@ -11,7 +11,7 @@ type Props = {
   date: string;
 };
 
-export default function MessageCluster({ date}: Props) {
+export default function MessageGroup({ date}: Props) {
   const messageIdGroup = useAppSelector((state) => selectCurrentChatGroupedMessageIdsByDate(state, date));
 
   const lastMsgSender = useRef<"currentMember" | "chatPartner" | null>(null);
@@ -24,7 +24,7 @@ export default function MessageCluster({ date}: Props) {
       >
         {timeAgoDate(date)}
       </div>}
-      {/* message cluster for specific date */}
+      {/* message group for specific date */}
       <ul>
         {messageIdGroup.map((id) => (
           <li key={id}>
