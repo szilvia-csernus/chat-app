@@ -10,7 +10,7 @@ import {
   selectCurrentChatPartnerId,
   updateUnreadCount,
 } from "@/redux-store/features/chatsSlice";
-import MessageCluster from "./MessageCluster";
+import MessageGroup from "./MessageGroup";
 
 export default function ChatThread() {
   const dispatch = useAppDispatch();
@@ -47,7 +47,7 @@ export default function ChatThread() {
         {messageGroupList.map((date: string) => {
           return(
             <li key={date}>
-              <MessageCluster
+              <MessageGroup
                 date={date}
               />
             </li>
