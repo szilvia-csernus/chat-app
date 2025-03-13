@@ -33,8 +33,11 @@ export const usePrivateChatChannels = ({ store, currentMember }: Props) => {
   
   const currentMemberId = currentMember?.id;
   
+  // at this point, we don't have access to the "useAppSelector" hook yet
+  // so we need to get the chat ids from the store directly
   const chats = store.getState().chats.chats;
   const chatIds = Object.keys(chats);
+  const activeChatIds = chatIds.filter((id) => !chats[id].inactive);
   
 
   const handleNewMessage = useCallback(
@@ -87,12 +90,10 @@ export const usePrivateChatChannels = ({ store, currentMember }: Props) => {
 
   useEffect(() => {
     if (!currentMemberId) return;
-
-    const currentChatChannelRefs = chatChannelRefs.current;
     
     // Subscribe to channels for each chat
-    chatIds.forEach((id) => {
-      if (!currentChatChannelRefs[id]) {
+    activeChatIds.forEach((id) => {
+      if (!chatChannelRefs.current[id]) {
         const channel = pusherClient.subscribe(`private-chat-${id}`);
         console.log(
           "usePrivateChatChannel: Subscribed to chat channel",
@@ -110,18 +111,18 @@ export const usePrivateChatChannels = ({ store, currentMember }: Props) => {
           // console.log("Message read event received", data);
           handleMessageRead(data.messageId);
         });
-        currentChatChannelRefs[id] = channel;
+        chatChannelRefs.current[id] = channel;
       }
     });
     // Cleanup function to unsubscribe from channels
     return () => {
       chatIds.forEach((id) => {
-        const channel = currentChatChannelRefs[id];
+        const channel = chatChannelRefs.current[id];
         if (channel) {
           console.log("Unsubscribed from channel", `private-chat-${id}`);
           channel.unbind();
           pusherClient.unsubscribe(`private-chat-${id}`);
-          currentChatChannelRefs[id] = null;
+          chatChannelRefs.current[id] = null;
         }
       });
     };
