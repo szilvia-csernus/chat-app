@@ -62,8 +62,8 @@ type RawChatData = {
 type ChatData = {
   id: string;
   chatPartnerId: string;
-  groupedMessageIds: GroupedChatMessageIds;
-  msgIdGroupChronList: string[];
+  msgGroups: GroupedMessageIds;
+  msgGroupChronList: string[];
   inactive: boolean;
   unreadMessageCount: number;
 };
@@ -94,6 +94,6 @@ type SerializedMessages = {
   [key: string]: SerializedMessage;
 };
 
-type GroupedChatMessageIds = {
+type GroupedMessageIds = {
   [date: string]: string[];
 };
