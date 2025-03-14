@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { SerializedMessage, SerializedMessages } from "@/types";
 
-type MessagesState = {
+export type MessagesState = {
   messages: SerializedMessages;
 };
 
