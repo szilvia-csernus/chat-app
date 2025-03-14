@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
 import { selectMemberById } from "@/redux-store/features/membersSlice";
 import {
   selectCurrentChat,
-  selectCurrentChatMsgIdGroupChronList,
+  selectCurrentChatMsgGroupChronList,
   selectCurrentChatPartnerId,
   updateUnreadCount,
 } from "@/redux-store/features/chatsSlice";
@@ -20,9 +20,7 @@ export default function ChatThread() {
   const chatPartner = useAppSelector((state) =>
     selectMemberById(state, chatPartnerId)
   );
-  const messageGroupList = useAppSelector(
-    selectCurrentChatMsgIdGroupChronList
-  );
+  const messageGroupList = useAppSelector(selectCurrentChatMsgGroupChronList);
 
   useEffect(() => {
     if (currentChat) {
@@ -34,33 +32,30 @@ export default function ChatThread() {
     }
   });
 
-  let chatThread: React.JSX.Element;
-
-  if (
-    currentChat &&
-    chatPartner &&
-    messageGroupList &&
-    messageGroupList.length > 0
-  ) {
-    chatThread = (
-      <>
-        {messageGroupList.map((date: string) => {
-          return(
-            <li key={date}>
-              <MessageGroup
-                date={date}
-              />
+  return (
+      <ul className="flex flex-col px-1 py-2">
+        {currentChat &&
+          chatPartner &&
+          messageGroupList &&
+          messageGroupList.length > 0 && (
+            <>
+              {messageGroupList.map((date: string) => {
+                return (
+                  <li key={date}>
+                    <MessageGroup date={date} />
+                  </li>
+                );
+              })}
+            </>
+          )}
+        {currentChat &&
+          chatPartner &&
+          messageGroupList &&
+          messageGroupList.length === 0 && (
+            <li key={"No message"} className="my-4 pl-1">
+              Start chatting{chatPartner.name && ` with ${chatPartner.name}`}!
             </li>
-          )})}
-      </>
-    );
-  } else {
-    chatThread = (
-      <li key={"No message"} className="my-4 pl-1">
-        Start chatting {(chatPartner && chatPartner.name) && ` with ${chatPartner.name}`}!
-      </li>
-    );
-  }
-
-  return <ul className="flex flex-col px-1 py-2">{chatThread}</ul>;
+          )}
+      </ul>
+  );
 }
