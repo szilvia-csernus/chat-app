@@ -62,8 +62,7 @@ type RawChatData = {
 type ChatData = {
   id: string;
   chatPartnerId: string;
-  msgGroups: GroupedMessageIds;
-  msgGroupChronList: string[];
+  msgGroupData: MsgGroupData;
   inactive: boolean;
   unreadMessageCount: number;
 };
@@ -94,6 +93,44 @@ type SerializedMessages = {
   [key: string]: SerializedMessage;
 };
 
-type GroupedMessageIds = {
-  [date: string]: string[];
+// Messages are grouped by date
+type MsgGroups = {
+  [date: string]: MsgClustersData;
+};
+
+// MsgGroup ids (dates) are in chronological order in msgGroupChronList
+type MsgGroupData = {
+  msgGroups: MsgGroups;
+  msgGroupChronList: string[];
+}
+
+// Inside message groups, messages are clustered by senderId
+// the cluster's id is the first message's id
+type MsgCluster = {
+  id: string;
+  senderId: string;
+  msgIds: string[];
+};
+
+type MsgClusters = {
+  [key: string]: MsgCluster;
+};
+
+// MsgCluster ids are in chronological order in clusterIds
+type MsgClustersData = {
+  msgClusters: MsgClusters;
+  clusterIds: string[];
+}
+
+type MsgGroups = {
+  [date: string]: {
+    msgClusters: {
+      [key: string]: {
+        id: string;
+        senderId: string;
+        msgIds: string[];
+      };
+    };
+    clusterIds: string[];
+  };
 };
