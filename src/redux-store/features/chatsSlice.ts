@@ -44,7 +44,7 @@ const chatsSlice = createSlice({
         chat.inactive = true;
       }
     },
-    addMessageId(
+    addMsgId(
       state,
       action: PayloadAction<{
         chatId: string;
@@ -138,13 +138,17 @@ const chatsSlice = createSlice({
       const chat = chatId ? chatsState.chats[chatId] : null;
       return chat ? chat.msgGroupData.msgGroups[date] : null;
     },
-    selectCurrentChatMsgClusterById: (chatsState, date: string, clusterId: string) => {
+    selectCurrentChatMsgClusterById: (
+      chatsState,
+      date: string,
+      clusterId: string
+    ) => {
       const chatId = chatsState.currentChatId;
       const chat = chatId ? chatsState.chats[chatId] : null;
       const msgGroupData = chat?.msgGroupData.msgGroups[date];
       return msgGroupData?.msgClusters[clusterId] || null;
     },
-    selectLastMessageIdByChatId: (chatsState, chatId: string) => {
+    selectLastMsgIdByChatId: (chatsState, chatId: string) => {
       const chat = chatsState.chats[chatId];
       if (!chat) return null;
 
@@ -159,12 +163,11 @@ const chatsSlice = createSlice({
         lastMsgGroupData.clusterIds[lastMsgGroupData.clusterIds.length - 1];
       const lastCluster = lastMsgGroupData.msgClusters[lastClusterId];
       if (!lastCluster) return null;
-      
+
       const lastMessageId = lastCluster.msgIds[lastCluster.msgIds.length - 1];
       return lastMessageId;
     },
-    selectAllUnreadMessageCount: (chatsState) =>
-      chatsState.allUnreadMessageCount,
+    selectAllUnreadMsgCount: (chatsState) => chatsState.allUnreadMessageCount,
   },
 });
 
@@ -174,7 +177,7 @@ export const {
   addNewChat,
   setCurrentChatId,
   deactivateChat,
-  addMessageId,
+  addMsgId,
   decrementChatUnreadCount,
   updateUnreadCount,
 } = chatsSlice.actions;
@@ -187,8 +190,8 @@ export const {
   selectCurrentChatMsgGroupChronList,
   selectCurrentChatMsgClustersDataByDate,
   selectCurrentChatMsgClusterById,
-  selectLastMessageIdByChatId,
-  selectAllUnreadMessageCount,
+  selectLastMsgIdByChatId,
+  selectAllUnreadMsgCount,
 } = chatsSlice.selectors;
 
 // memoized selectors

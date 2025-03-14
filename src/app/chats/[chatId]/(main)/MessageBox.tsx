@@ -2,7 +2,7 @@
 
 import { useAppSelector } from "@/redux-store/hooks";
 import clsx from "clsx";
-import { selectMessageById } from "@/redux-store/features/messagesSlice";
+import { selectMsgById } from "@/redux-store/features/messagesSlice";
 
 type MessageBoxProps = {
   messageId: string;
@@ -13,9 +13,7 @@ export default function MessageBox({
   messageId,
   isCurrentMemberSender,
 }: MessageBoxProps) {
-  const message = useAppSelector((state) =>
-    selectMessageById(state, messageId)
-  );
+  const message = useAppSelector((state) => selectMsgById(state, messageId));
 
   const messageContentClasses = clsx(
     "flex flex-col mt-1 min-w-32 w-auto px-2 py-1 border-1 border-slate-300 dark:border-slate-500",

@@ -6,16 +6,19 @@ import { pusherClient } from "@/lib/pusher";
 import { useCallback } from "react";
 import { updateReadStatus } from "@/app/actions/messageActions";
 import { getUnreadMessageCount } from "@/app/actions/chatActions";
-import { CurrentMember, SerializedMessage} from "@/types";
+import { CurrentMember, SerializedMessage } from "@/types";
 import { useParams } from "next/navigation";
 import { AppStore } from "@/redux-store/store";
-import { addMessageId, updateUnreadCount } from "@/redux-store/features/chatsSlice";
-import { addNewMessage, updateMessageReadStatus } from "@/redux-store/features/messagesSlice";
+import { addMsgId, updateUnreadCount } from "@/redux-store/features/chatsSlice";
+import {
+  addNewMsg,
+  updateMsgReadStatus,
+} from "@/redux-store/features/messagesSlice";
 
 type Props = {
   store: AppStore;
   currentMember: CurrentMember | null;
-}
+};
 
 export const usePrivateChatChannels = ({ store, currentMember }: Props) => {
   console.log("Private Chat");
@@ -30,15 +33,14 @@ export const usePrivateChatChannels = ({ store, currentMember }: Props) => {
   const params = useParams<{ chatId: string }>();
   currentChatRef.current = params.chatId;
   // console.log("Active chat in usePrivateChatChannels", currentChatRef.current);
-  
+
   const currentMemberId = currentMember?.id;
-  
+
   // at this point, we don't have access to the "useAppSelector" hook yet
   // so we need to get the chat ids from the store directly
   const chats = store.getState().chats.chats;
   const chatIds = Object.keys(chats);
   const activeChatIds = chatIds.filter((id) => !chats[id].inactive);
-  
 
   const handleNewMessage = useCallback(
     async (chatId: string, message: SerializedMessage, date: string) => {
@@ -46,12 +48,16 @@ export const usePrivateChatChannels = ({ store, currentMember }: Props) => {
       // If the message is for the acctive chat, add it to the chat
       // on either or both the sender and receiver side
       if (currentChatRef.current === chatId) {
-        console.log(
-          "Adding message to active chat...",
-          currentChatRef.current
+        console.log("Adding message to active chat...", currentChatRef.current);
+        store.dispatch(addNewMsg(message));
+        store.dispatch(
+          addMsgId({
+            chatId,
+            senderId: message.senderId!,
+            messageId: message.id,
+            date,
+          })
         );
-        store.dispatch(addNewMessage(message));
-        store.dispatch(addMessageId({ chatId, senderId: message.senderId!, messageId: message.id, date }));
       }
 
       // Receiver side: if the message is not for the active chat,
@@ -61,7 +67,7 @@ export const usePrivateChatChannels = ({ store, currentMember }: Props) => {
         message.senderId !== currentMemberId
       ) {
         const unreadCount = await getUnreadMessageCount(chatId);
-         store.dispatch(updateUnreadCount({ chatId, count: unreadCount }));
+        store.dispatch(updateUnreadCount({ chatId, count: unreadCount }));
       }
 
       // Receiver side: if the message is for the active chat,
@@ -75,22 +81,19 @@ export const usePrivateChatChannels = ({ store, currentMember }: Props) => {
         await updateReadStatus(message.id);
       }
     },
-    [
-      currentMemberId,
-      store,
-    ]
+    [currentMemberId, store]
   );
 
   const handleMessageRead = useCallback(
     (messageId: string) => {
-       store.dispatch(updateMessageReadStatus(messageId));
+      store.dispatch(updateMsgReadStatus(messageId));
     },
     [store]
   );
 
   useEffect(() => {
     if (!currentMemberId) return;
-    
+
     // Subscribe to channels for each chat
     activeChatIds.forEach((id) => {
       if (!chatChannelRefs.current[id]) {
@@ -102,7 +105,11 @@ export const usePrivateChatChannels = ({ store, currentMember }: Props) => {
 
         channel.bind(
           "new-message",
-          (data: { chatId: string; message: SerializedMessage, date: string }) => {
+          (data: {
+            chatId: string;
+            message: SerializedMessage;
+            date: string;
+          }) => {
             // console.log("New message received", data.chatId, data.message);
             handleNewMessage(data.chatId, data.message, data.date);
           }

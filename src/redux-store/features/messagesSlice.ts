@@ -20,18 +20,18 @@ const messagesSlice = createSlice({
         }
       });
     },
-    addNewMessage(state, action: PayloadAction<SerializedMessage>) {
+    addNewMsg(state, action: PayloadAction<SerializedMessage>) {
       if (!state.messages[action.payload.id]) {
         state.messages[action.payload.id] = action.payload;
       }
     },
-    updateMessageReadStatus(state, action: PayloadAction<string>) {
+    updateMsgReadStatus(state, action: PayloadAction<string>) {
       const message = state.messages[action.payload];
       if (message) {
         message.read = true;
       }
     },
-    updateMessagesWithDeletedStatus(state, action: PayloadAction<string[]>) {
+    updateMsgsWithDeletedStatus(state, action: PayloadAction<string[]>) {
       action.payload.forEach((id) => {
         const message = state.messages[id];
         if (message) {
@@ -42,20 +42,20 @@ const messagesSlice = createSlice({
     },
   },
   selectors: {
-    selectMessageById: (messagesState, id: string | null) => {
+    selectMsgById: (messagesState, id: string | null) => {
       if (!id) return null;
-      return  messagesState.messages[id]
-    }
+      return messagesState.messages[id];
+    },
   },
 });
 
 export const {
   setMessages,
-  addNewMessage,
-  updateMessageReadStatus,
-  updateMessagesWithDeletedStatus,
+  addNewMsg,
+  updateMsgReadStatus,
+  updateMsgsWithDeletedStatus,
 } = messagesSlice.actions;
 
-export const { selectMessageById } = messagesSlice.selectors;
+export const { selectMsgById } = messagesSlice.selectors;
 
 export default messagesSlice.reducer;
