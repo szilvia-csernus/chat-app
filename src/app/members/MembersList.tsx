@@ -5,8 +5,7 @@ import MemberCard from "./MemberCard";
 import { CurrentMember } from "@/types";
 import { selectExistingMemberIds } from "@/redux-store/features/membersSlice";
 import { setCurrentMember } from "@/redux-store/features/currentMemberSlice";
-import { Suspense, useEffect } from "react";
-import MemberCardLoader from "./MemberCardLoadader";
+import { useEffect } from "react";
 
 
 type MembersListProps = {
