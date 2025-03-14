@@ -51,7 +51,7 @@ export const usePrivateChatChannels = ({ store, currentMember }: Props) => {
           currentChatRef.current
         );
         store.dispatch(addNewMessage(message));
-        store.dispatch(addMessageId({ chatId, messageId: message.id, date }));
+        store.dispatch(addMessageId({ chatId, senderId: message.senderId!, messageId: message.id, date }));
       }
 
       // Receiver side: if the message is not for the active chat,
@@ -116,7 +116,7 @@ export const usePrivateChatChannels = ({ store, currentMember }: Props) => {
     });
     // Cleanup function to unsubscribe from channels
     return () => {
-      chatIds.forEach((id) => {
+      activeChatIds.forEach((id) => {
         const channel = chatChannelRefs.current[id];
         if (channel) {
           console.log("Unsubscribed from channel", `private-chat-${id}`);
@@ -126,7 +126,7 @@ export const usePrivateChatChannels = ({ store, currentMember }: Props) => {
         }
       });
     };
-  }, [currentMemberId, chatIds, handleNewMessage, handleMessageRead]);
+  }, [currentMemberId, activeChatIds, handleNewMessage, handleMessageRead]);
 
   return chatChannelRefs.current;
 };
