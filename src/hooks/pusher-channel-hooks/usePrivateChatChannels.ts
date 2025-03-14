@@ -30,7 +30,7 @@ export const usePrivateChatChannels = ({ store, currentMember }: Props) => {
       console.log("Handling new message", chatId);
       store.dispatch(addNewMessage(chatId, message, date))
     },
-    []
+    [store]
   );
 
   const handleMessageRead = useCallback(
@@ -88,7 +88,7 @@ export const usePrivateChatChannels = ({ store, currentMember }: Props) => {
         }
       });
     };
-  }, [currentMemberId, handleNewMessage, handleMessageRead]);
+  }, [store, currentMemberId, handleNewMessage, handleMessageRead]);
 
   return chatChannelRefs.current;
 };
