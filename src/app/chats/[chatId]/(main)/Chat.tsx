@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Card } from "@heroui/card";
 import ChatThread from "./ChatThread";
 import ChatForm from "./ChatForm";
@@ -31,6 +31,14 @@ export default function Chat({
     }
   }
 
+  const messageEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (messageEndRef.current) {
+      messageEndRef.current.scrollIntoView({ behavior: "auto" });
+    }
+  }, [messageEndRef]);
+
   return (
     <Card
       radius="none"
@@ -48,6 +56,7 @@ export default function Chat({
             This chat is inactive. Your chat partner has deleted their account.
           </div>
         )}
+        <div ref={messageEndRef} />
         {!initialChat?.inactive && <ChatForm />}
       </div>
     </Card>
