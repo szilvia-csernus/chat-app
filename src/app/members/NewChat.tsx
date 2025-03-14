@@ -10,7 +10,7 @@ import {
 } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { createChat } from "@/app/actions/chatActions";
-import { Member } from "@/types";
+import { ChatData, Member } from "@/types";
 import { useAppDispatch } from "@/redux-store/hooks";
 import { addNewChat } from "@/redux-store/features/chatsSlice";
 
@@ -37,12 +37,11 @@ export default function NewChat({
       addNewChat({
         id: newChat.id,
         chatPartnerId: member.id,
-        groupedMessageIds: {},
-        msgIdGroupChronList: [],
+        msgGroupData: {},
         unreadMessageCount: 0,
         inactive: false,
-      })
-    )
+      } as ChatData)
+    );
     router.push(`/chats/${newChat.id}`);
     onClose();
   };
