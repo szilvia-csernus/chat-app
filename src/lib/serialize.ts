@@ -1,7 +1,7 @@
 // Serialization of data is required by redux
 
 import { ProfileData, Member, SerializedMessage, CurrentMember, CurrentProfileData, MessageData } from "@/types";
-import { formatShortTime, timeAgoDateTime } from "./utils";
+import { formatShortTime } from "./utils";
 
 
 export function serializeMessage(message: MessageData): SerializedMessage {
