@@ -1,7 +1,7 @@
 import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ChatData, ChatsData } from "@/types";
 
-type ChatsState = {
+export type ChatsState = {
   chats: ChatsData;
   currentChatId: string | null;
   allUnreadMessageCount: number;
@@ -199,22 +199,5 @@ export const selectChatIds = createSelector([selectChats], (chats) =>
   Object.keys(chats)
 );
 
-// export function fetchCurrentChat(id: string): AppThunk {
-//   return async (dispatch, getState) => {
-//     const state = getState();
-//     const chat = await getChat(id);
-//     if (!chat) return null;
-
-//     dispatch(setChat(chat));
-//     dispatch(setCurrentChatId(chat.id));
-//   };
-// }
-
-// export function fetchRecentChats(id: string): AppThunk {
-//   return async (dispatch, getState) => {
-//     const state = getState();
-
-//   };
-// }
 
 export default chatsSlice.reducer;
