@@ -6,7 +6,8 @@ import { pusherClient } from "@/lib/pusher";
 import { useActivityChange } from "../misc-hooks/useActivityChange";
 import { AppStore } from "@/redux-store/store";
 import { CurrentMember } from "@/types";
-import { setMembersOnlineStatus, updateMemberLastActive, updateOnlineStatus } from "@/redux-store/features/membersSlice";
+import { setMembersOnlineStatus, updateOnlineStatus } from "@/redux-store/features/membersSlice";
+import { updateMemberLastActive } from "@/redux-store/thunks";
 
 type Props = {
   store: AppStore;
