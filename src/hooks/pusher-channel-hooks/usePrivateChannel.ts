@@ -13,7 +13,7 @@ import {
 import { getMembers } from "@/app/actions/memberActions";
 import { AppStore } from "@/redux-store/store";
 import { addNewChat, deactivateChat } from "@/redux-store/features/chatsSlice";
-import { updateMessagesWithDeletedStatus } from "@/redux-store/features/messagesSlice";
+import { updateMsgsWithDeletedStatus } from "@/redux-store/features/messagesSlice";
 
 type Props = {
   store: AppStore;
@@ -22,7 +22,7 @@ type Props = {
 
 export const usePrivateChannel = ({ store, currentMember }: Props) => {
   console.log("Private");
-  
+
   // Ref is used to prevent the creation of multiple channels when the component re-renders
   const privateChannelRef = useRef<Channel | null>(null);
 
@@ -44,10 +44,10 @@ export const usePrivateChannel = ({ store, currentMember }: Props) => {
   );
 
   const handleChatInactive = useCallback(
-    (chatId: string, messageIds: string[] ) => {
+    (chatId: string, messageIds: string[]) => {
       console.log("usePrivateChannel: handleChatInactive", chatId);
       store.dispatch(deactivateChat(chatId));
-      store.dispatch(updateMessagesWithDeletedStatus(messageIds));
+      store.dispatch(updateMsgsWithDeletedStatus(messageIds));
     },
     [store]
   );
@@ -100,7 +100,7 @@ export const usePrivateChannel = ({ store, currentMember }: Props) => {
     );
     privateChannel.bind(
       "chat-inactive",
-      (data: {chatId: string, messageIds: string[]}) => {
+      (data: { chatId: string; messageIds: string[] }) => {
         console.log(
           "usePrivateChannel: Chat inactive event received",
           data.chatId
@@ -134,7 +134,13 @@ export const usePrivateChannel = ({ store, currentMember }: Props) => {
         pusherClient.unsubscribe(`private-${currentMemberId}`);
       }
     };
-  }, [currentMemberId, handleNewChat, handleChatInactive, handleNewMember, handleDeleteMember]);
+  }, [
+    currentMemberId,
+    handleNewChat,
+    handleChatInactive,
+    handleNewMember,
+    handleDeleteMember,
+  ]);
 
   return privateChannelRef.current;
 };

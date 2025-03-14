@@ -16,8 +16,7 @@ import UserMenu from "./UserMenu";
 import NavLink from "./NavLink";
 import { HiOutlineChatBubbleLeftRight } from "react-icons/hi2";
 import { useAppSelector } from "@/redux-store/hooks";
-import { selectAllUnreadMessageCount } from "@/redux-store/features/chatsSlice";
-
+import { selectAllUnreadMsgCount } from "@/redux-store/features/chatsSlice";
 
 type MainNavProps = {
   currentMemberId: string | null;
@@ -32,8 +31,7 @@ export default function MainNav({
 }: MainNavProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const allUnreadMessageCount = useAppSelector(selectAllUnreadMessageCount);
-
+  const allUnreadMessageCount = useAppSelector(selectAllUnreadMsgCount);
 
   const menuItems = [
     { href: "/members", label: "Members" },

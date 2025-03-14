@@ -6,21 +6,26 @@ import {
   selectMemberById,
   selectMemberOnlineStatus,
 } from "@/redux-store/features/membersSlice";
-import { selectChatById, selectLastMessageIdByChatId } from "@/redux-store/features/chatsSlice";
-import { selectMessageById } from "@/redux-store/features/messagesSlice";
+import {
+  selectChatById,
+  selectLastMsgIdByChatId,
+} from "@/redux-store/features/chatsSlice";
+import { selectMsgById } from "@/redux-store/features/messagesSlice";
 import PresenceAvatar from "@/components/PresenceAvatar";
 
 type Props = {
   chatId: string;
 };
 
-export default function RecentChat({
-  chatId,
-}: Props) {
+export default function RecentChat({ chatId }: Props) {
   const chat = useAppSelector((state) => selectChatById(state, chatId));
   const { chatPartnerId, unreadMessageCount } = chat;
-  const lastMessageId = useAppSelector(state => selectLastMessageIdByChatId(state, chatId));
-  const lastMessage = useAppSelector(state => selectMessageById(state, lastMessageId))?.content;
+  const lastMessageId = useAppSelector((state) =>
+    selectLastMsgIdByChatId(state, chatId)
+  );
+  const lastMessage = useAppSelector((state) =>
+    selectMsgById(state, lastMessageId)
+  )?.content;
   const chatPartner = useAppSelector((state) =>
     selectMemberById(state, chatPartnerId)
   );
@@ -31,9 +36,7 @@ export default function RecentChat({
   return (
     <>
       {chatPartner && (
-        <RecentChatFrame
-          chatId={chatId}
-        >
+        <RecentChatFrame chatId={chatId}>
           <div className="flex items-center">
             <div className="m-2">
               <PresenceAvatar
