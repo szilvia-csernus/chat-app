@@ -5,7 +5,7 @@ import { getMembers } from "@/app/actions/memberActions";
 import { updateProfileLastActive } from "@/app/actions/profileActions";
 import { mapProfilesDataToMembers } from "@/lib/maps";
 
-type MembersState = {
+export type MembersState = {
   members: Members;
 };
 
@@ -32,10 +32,7 @@ const membersSlice = createSlice({
       state,
       action: PayloadAction<{ id: string; lastActive: string }>
     ) {
-      state.members[action.payload.id] = {
-        ...state.members[action.payload.id],
-        lastActive: action.payload.lastActive,
-      };
+      state.members[action.payload.id].lastActive = action.payload.lastActive
     },
     updateMemberWithDeletedStatus(state, action: PayloadAction<string>) {
       state.members[action.payload] = {
@@ -50,31 +47,24 @@ const membersSlice = createSlice({
       state,
       action: PayloadAction<{ memberId: string; chatId: string }>
     ) {
-      state.members[action.payload.memberId] = {
-        ...state.members[action.payload.memberId],
-        chatting: action.payload.chatId,
-      };
+      state.members[action.payload.memberId].chatting = action.payload.chatId
     },
     setMembersOnlineStatus(
       state,
       action: PayloadAction<{ memberIds: string[] }>
     ) {
       action.payload.memberIds.forEach((id) => {
-        state.members[id] = {
-          ...state.members[id],
-          online: true,
-        };
+        state.members[id] && (
+        state.members[id].online = true);
       });
     },
     updateOnlineStatus(
       state,
       action: PayloadAction<{ memberId: string; online: boolean }>
     ) {
-      state.members[action.payload.memberId] = {
-        ...state.members[action.payload.memberId],
-        online: action.payload.online,
-      };
-    },
+      if (state.members[action.payload.memberId]) {
+      state.members[action.payload.memberId].online = action.payload.online;
+      }}
   },
   selectors: {
     selectMembers: (membersState) => membersState.members,
@@ -121,32 +111,5 @@ export const selectExistingMemberIds = createSelector(
   }
 );
 
-// Thunks
-
-export function fetchAllMembers(): AppThunk {
-  return async (dispatch, getState) => {
-    const state = getState();
-    const currentMember = state.currentMember.currentMember;
-    console.log(
-      "membersSlice: Current member in fetchAllMembers",
-      !!currentMember
-    );
-    const membersData = (await getMembers()) || null;
-    const members = membersData && mapProfilesDataToMembers(membersData);
-
-    console.log("membersSlice: Members in fetchAllMembers", members);
-    if (currentMember && members) {
-      dispatch(setMembers(members));
-    }
-  };
-}
-
-export function updateMemberLastActive(id: string): AppThunk {
-  return async (dispatch) => {
-    const lastActive = new Date().toISOString();
-    dispatch(updateMemberWithLastActiveTime({ id, lastActive }));
-    await updateProfileLastActive(id);
-  };
-}
 
 export default membersSlice.reducer;
