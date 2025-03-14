@@ -7,7 +7,7 @@ import PresenceAvatar from "@/components/PresenceAvatar";
 import { selectMemberById, selectMemberOnlineStatus } from "@/redux-store/features/membersSlice";
 import { selectCurrentChatPartnerId } from "@/redux-store/features/chatsSlice";
 import { openSidebar } from "@/redux-store/features/uiSlice";
-import { formatShortTime, timeAgoDateTime } from "@/lib/utils";
+import { timeAgoDateTime } from "@/lib/utils";
 
 
 export default function CurrentChatPartner() {
