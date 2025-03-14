@@ -81,9 +81,6 @@ export async function getChat(chatId: string) {
   const currentUserId = await getCurrentUserId();
   if (!currentUserId) return null;
 
-  // for testin loading state
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-
   try {
     const currentProfileId = await getCurrentProfileId();
     if (!currentProfileId) return redirect("/profile/complete-profile");
