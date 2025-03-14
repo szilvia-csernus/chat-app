@@ -6,13 +6,18 @@ import {
   RawChatData,
   CurrentMember,
   CurrentProfileData,
-  GroupedMessageIds,
+  MsgGroups,
+  MsgClusters,
+  MessageData,
+  MsgClustersData,
+  MsgGroupData,
 } from "@/types";
 import {
   serializeCurrentProfileDataToCurrentMember,
   serializeProfileDataToMember,
   serializeMessage,
 } from "@/lib/serialize";
+
 
 function mapProfileDataToMember(profile: ProfileData): Member {
   return serializeProfileDataToMember(profile);
@@ -51,38 +56,73 @@ export function mapRawChatDataToChatAndMessages(
 ): { chat: ChatData; messages: SerializedMessage[] } | null {
   if (!rawChatData) return null;
 
-  // const messageIds: string[] = [];
-  const messages: SerializedMessage[] = [];
-  const msgGroupChronList: string[] = [];
-  const msgGroups: GroupedMessageIds = {};
-  let currentDate: string = rawChatData.messages[0].createdAt
-    .toISOString()
-    .split("T")[0];
-  msgGroupChronList.push(currentDate);
-  msgGroups[currentDate] = [];
-
-  rawChatData.messages.map((message) => {
-    messages.push(serializeMessage(message));
-    // messageIds.push(message.id);
-    const messageDate = message.createdAt.toISOString().split("T")[0];
-
-    if (messageDate === currentDate) {
-        msgGroups[messageDate].push(message.id);
-      } else {
-        msgGroups[messageDate] = [message.id];
-         msgGroupChronList.push(messageDate);
-         currentDate = messageDate;
-      }
-  });
+  const messages = rawChatData.messages.map((message) => serializeMessage(message));
+  const msgGroupData = groupMessagesByDate(rawChatData.messages);
 
   const chat = {
     id: rawChatData.id,
     chatPartnerId: rawChatData.profiles[0].id,
-    msgGroups,
-    msgGroupChronList,
+    msgGroupData,
     inactive: rawChatData.inactive,
     unreadMessageCount: rawChatData._count.messages,
   };
 
   return { chat, messages };
+}
+
+
+function clusterMessagesBySender(messages: MessageData[]): MsgClustersData {
+  const msgClusters: MsgClusters = {};
+  const clusterIds: string[] = [];
+  let currentSenderId: string = "";
+  let currentClusterId: string = "";
+  messages.forEach((message) => {
+    if (message.senderId !== currentSenderId) {
+      currentSenderId = message.senderId!;
+      currentClusterId = message.id;
+      msgClusters[currentClusterId] = {
+        id: currentClusterId,
+        senderId: currentSenderId,
+        msgIds: [message.id],
+      };
+      clusterIds.push(currentClusterId);
+    } else {
+      msgClusters[currentClusterId].msgIds.push(message.id);
+    }
+  });
+
+  return { msgClusters, clusterIds };
+}
+
+function groupMessagesByDate(mesages: MessageData[]): MsgGroupData {
+  let currentDate: string = mesages[0].createdAt.toISOString().split("T")[0];
+  const msgGroups: MsgGroups = {};
+  const msgGroupChronList: string[] = [];
+  let startIndex: number = 0;
+  let endIndex: number = 0;
+
+  mesages.forEach((message, idx) => {
+    const messageDate = message.createdAt.toISOString().split("T")[0];
+
+    if (messageDate !== currentDate) {
+      endIndex = idx;
+      const msgClusterData = clusterMessagesBySender(
+        mesages.slice(startIndex, endIndex)
+      );
+      msgGroups[currentDate] = msgClusterData
+      msgGroupChronList.push(currentDate);
+
+      startIndex = idx;
+      currentDate = messageDate;
+    }
+  });
+
+  // Add the last group
+  const msgClusterData = clusterMessagesBySender(
+    mesages.slice(startIndex)
+  );
+  msgGroups[currentDate] = msgClusterData;
+  msgGroupChronList.push(currentDate);
+
+  return { msgGroups, msgGroupChronList };
 }
