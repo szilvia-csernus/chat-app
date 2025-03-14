@@ -4,7 +4,7 @@ import { AppThunk } from "../store";
 import { getCurrentProfile } from "@/app/actions/profileActions";
 import { mapProfileDataToCurrentMember } from "@/lib/maps";
 
-type CurrentMemberState = {
+export type CurrentMemberState = {
   currentMember: CurrentMember | null;
 };
 
@@ -34,18 +34,5 @@ export const { setCurrentMember, resetCurrentMember } = currentMemberSlice.actio
 
 export const { selectCurrentMember, selectCurrentMemberId } = currentMemberSlice.selectors;
 
-export function fetchCurrentMember(): AppThunk {
-    return async (dispatch) => {
-      const currentProfile = await getCurrentProfile();
-      const currentMember = currentProfile && mapProfileDataToCurrentMember(currentProfile);
-      console.log(
-        "currentMemberSlice: Current member in fetchCurrentMember",
-        !!currentMember
-      );
-      if (currentMember) {
-        dispatch(setCurrentMember(currentMember));
-      }
-    };
-  }
 
 export default currentMemberSlice.reducer;
