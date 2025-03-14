@@ -1,20 +1,26 @@
-import React from 'react'
-import { GoDot, GoDotFill } from 'react-icons/go'
+import React from "react";
 
 type PresenceDotProps = {
-  outlineColor?: string
-}
+  outlineColor?: string;
+  children: React.ReactNode;
+  online?: boolean;
+  deleted?: boolean;
+  own?: boolean;
+};
 
-
-export default function PresenceDot({ outlineColor="primary" }: PresenceDotProps) {
-
+export default function PresenceDot({
+  outlineColor = "primary",
+  children,
+  online,
+  deleted,
+  own,
+}: PresenceDotProps) {
   return (
     <div className="relative">
-      <GoDot size={28} fill={outlineColor} className="absolute left-[-3px] top-0"/>
-      <GoDotFill
-        size={22}
-        className="fill-teal-400 animate-pulse absolute top-[3px] left-0"
-      />
+      {children}
+      {online && !deleted && !own && (
+        <div className="border-1 border-primary w-[13px] h-[13px] rounded-full bg-teal-400 animate-pulse absolute bottom-0 right-0"></div>
+      )}
     </div>
   );
 }
