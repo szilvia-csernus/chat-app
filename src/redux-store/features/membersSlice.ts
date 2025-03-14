@@ -1,9 +1,6 @@
 import { Member, Members } from "@/types";
 import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AppThunk } from "../store";
-import { getMembers } from "@/app/actions/memberActions";
-import { updateProfileLastActive } from "@/app/actions/profileActions";
-import { mapProfilesDataToMembers } from "@/lib/maps";
+
 
 export type MembersState = {
   members: Members;
@@ -54,8 +51,8 @@ const membersSlice = createSlice({
       action: PayloadAction<{ memberIds: string[] }>
     ) {
       action.payload.memberIds.forEach((id) => {
-        state.members[id] && (
-        state.members[id].online = true);
+        if (state.members[id]) {
+        state.members[id].online = true};
       });
     },
     updateOnlineStatus(
