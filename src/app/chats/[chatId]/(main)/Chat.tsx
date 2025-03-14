@@ -19,17 +19,20 @@ export default function Chat({
   initialChat,
 }: Props) {
   const dispatch = useAppDispatch();
-
   const initialized = useRef(false);
-  if (!initialized.current && initialChat) {
-    const result = mapRawChatDataToChatAndMessages(initialChat);
-    if (result) {
-      const { chat, messages } = result;
-      dispatch(setCurrentChat(chat));
-      dispatch(setMessages(messages));
-      initialized.current = true;
+
+  useEffect(() => {
+    if (!initialized.current && initialChat) {
+      console.log("Chat useEffect: Setting initial chat in store", initialChat.id);
+      const result = mapRawChatDataToChatAndMessages(initialChat);
+      if (result) {
+        const { chat, messages } = result;
+        dispatch(setCurrentChat(chat));
+        dispatch(setMessages(messages));
+        initialized.current = true;
+      }
     }
-  }
+  }, [initialChat, dispatch]);
 
   const messageEndRef = useRef<HTMLDivElement>(null);
 
@@ -42,7 +45,7 @@ export default function Chat({
   return (
     <Card
       radius="none"
-      className="h-[calc(100dvh-80px)] m-0 border-1 border-slate-300 dark:border-slate-800 bg-zig-zag"
+      className="h-[calc(100dvh-80px)] m-0 border-1 border-slate-300 dark:border-slate-700 bg-zig-zag"
     >
       <div className="sticky space-x-2 sm:hidden">
         <CurrentChatPartner />
