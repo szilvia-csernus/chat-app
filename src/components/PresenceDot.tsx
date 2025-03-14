@@ -9,7 +9,6 @@ type PresenceDotProps = {
 };
 
 export default function PresenceDot({
-  outlineColor = "primary",
   children,
   online,
   deleted,
