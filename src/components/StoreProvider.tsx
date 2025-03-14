@@ -7,7 +7,7 @@ import { usePresenceChannel } from "@/hooks/pusher-channel-hooks/usePresenceChan
 import { usePrivateChatChannels } from "@/hooks/pusher-channel-hooks/usePrivateChatChannels";
 import { usePrivateChannel } from "@/hooks/pusher-channel-hooks/usePrivateChannel";
 import { setCurrentMember } from "@/redux-store/features/currentMemberSlice";
-import { fetchAllMembers } from "@/redux-store/features/membersSlice";
+import { fetchAllMembers } from "@/redux-store/thunks";
 import { setCurrentChat, setChats } from "@/redux-store/features/chatsSlice";
 import { mapRawChatDataListToChatsAndMessages, mapRawChatDataToChatAndMessages } from "@/lib/maps";
 import { setMessages } from "@/redux-store/features/messagesSlice";
