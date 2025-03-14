@@ -32,9 +32,7 @@ export default function MembersList({
         {existingMemberIds.length > 0 &&
           existingMemberIds.map((id) => {
             return (
-              <Suspense key={id} fallback={<MemberCardLoader />}>
-                <MemberCard memberId={id} />
-              </Suspense>
+                <MemberCard key={id} memberId={id} />
             );
           })}
       </div>
