@@ -17,6 +17,7 @@ export const metadata: Metadata = {
   title: "Chat App",
   description:
     "An app for chatting through the web. Built with Next.js, Prisma, Pusher, NextAuth and more.",
+    manifest: 'data:application/manifest+json;base64,...base64 encoded manifest.json...',
   // The openGraph property controls the appearance of the page when shared on social media.
   openGraph: {
     title: "Chat APP",
@@ -35,6 +36,7 @@ export const metadata: Metadata = {
     locale: "en_US",
   },
 };
+
 
 export const viewport: Viewport = {
   width: "device-width",
