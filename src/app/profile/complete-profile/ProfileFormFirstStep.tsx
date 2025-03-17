@@ -7,7 +7,9 @@ type ProfileFormFirstStepProps = {
   session: Session | null;
 };
 
-export default function ProfileFormFirstStep({session}: ProfileFormFirstStepProps) {
+export default function ProfileFormFirstStep({
+  session,
+}: ProfileFormFirstStepProps) {
   const {
     register,
     setValue,
@@ -32,6 +34,10 @@ export default function ProfileFormFirstStep({session}: ProfileFormFirstStepProp
         {...register("name")}
         isInvalid={!!errors.name}
         errorMessage={errors.name?.message as string}
+        classNames={{
+          inputWrapper: "bg-gray-50 dark:bg-background",
+          input: "text-foreground",
+        }}
       />
       <Input
         label="Country of residence"
@@ -41,6 +47,10 @@ export default function ProfileFormFirstStep({session}: ProfileFormFirstStepProp
         {...register("country")}
         isInvalid={!!errors.country}
         errorMessage={errors.country?.message as string}
+        classNames={{
+          inputWrapper: "bg-gray-50 dark:bg-background",
+          input: "text-foreground",
+        }}
       />
       <Select
         label="Gender"
@@ -50,6 +60,9 @@ export default function ProfileFormFirstStep({session}: ProfileFormFirstStepProp
         isInvalid={!!errors.gender}
         errorMessage={errors.gender?.message as string}
         onChange={(e) => setValue("gender", e.target.value)}
+        classNames={{
+          mainWrapper: "bg-gray-50 dark:bg-background",
+        }}
       >
         {genderList.map((item) => (
           <SelectItem key={item.value} data-value={item.value}>
@@ -67,6 +80,10 @@ export default function ProfileFormFirstStep({session}: ProfileFormFirstStepProp
         isInvalid={!!errors.dateOfBirth}
         {...register("dateOfBirth")}
         errorMessage={errors.dateOfBirth?.message as string}
+        classNames={{
+          inputWrapper: "bg-gray-50 dark:bg-background",
+          input: "text-foreground",
+        }}
       />
     </div>
   );
