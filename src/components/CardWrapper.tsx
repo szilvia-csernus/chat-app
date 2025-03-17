@@ -30,7 +30,7 @@ export default function CardWrapper({
   footer,
 }: CardWrapperProps) {
   return (
-    <Card radius="none" className="min-w-80 w-full max-w-md mx-auto p-5 bg-inherit gap-4 flex flex-col items-center justify-center shadow-none">
+    <Card radius="none" className="min-w-80 w-full max-w-md mx-auto p-5 bg-transparent gap-4 flex flex-col items-center justify-center shadow-none">
       <CardHeader className="flex flex-col items-center justify-center mt-2">
         <div className="flex flex-col gap-5 items-center">
           <div className="flex flex-row items-center gap-3">
