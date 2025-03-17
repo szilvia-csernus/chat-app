@@ -1,6 +1,6 @@
 // Thunks
 
-import { SerializedMessage } from "@/types";
+import { Member, SerializedMessage } from "@/types";
 import { AppThunk, RootState } from "./store";
 import {
   addMsgId,
@@ -13,7 +13,7 @@ import { getCurrentProfile, updateProfileLastActive } from "@/app/actions/profil
 import { mapProfileDataToCurrentMember, mapProfilesDataToMembers } from "@/lib/maps";
 import { setCurrentMember } from "./features/currentMemberSlice";
 import { getMembers } from "@/app/actions/memberActions";
-import { setMembers, updateMemberWithLastActiveTime } from "./features/membersSlice";
+import { addMember, setMembers, updateMemberWithLastActiveTime } from "./features/membersSlice";
 
 
 export function fetchCurrentMember(): AppThunk {
@@ -27,6 +27,7 @@ export function fetchCurrentMember(): AppThunk {
     );
     if (currentMember) {
       dispatch(setCurrentMember(currentMember));
+      dispatch(addMember(currentMember as Member));
     }
   };
 }
