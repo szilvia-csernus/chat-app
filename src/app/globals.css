@@ -56,7 +56,7 @@ button[data-slot="trigger"] {
   height: calc(100%-80px);
 }
 
-div[data-slot="input-wrapper"],
+/* div[data-slot="input-wrapper"],
 div[data-slot="input-wrapper"]:hover,
 div[data-slot="input-wrapper"]:focus,
 div[data-slot="input-wrapper"]:active,
@@ -66,7 +66,7 @@ input[data-filled="true"],
 input[data-slot="input"] {
   background-color: var(--background) !important;
   color: var(--foreground) !important;
-}
+} */
 
 /* Don't push side of content out of chat screen on mobile when
 tapping into message input field */
