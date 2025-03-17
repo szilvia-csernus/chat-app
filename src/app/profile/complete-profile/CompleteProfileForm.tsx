@@ -55,7 +55,7 @@ export default function CompleteProfileForm({
     // dispatch(setMembers(members || []));
     
     // dispatch(fetchAllMembers());
-    dispatch(fetchCurrentMember);
+    dispatch(fetchCurrentMember());
 
     if (result.status === "success") {
       router.replace("/members");
