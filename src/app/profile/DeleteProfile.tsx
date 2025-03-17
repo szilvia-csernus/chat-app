@@ -64,7 +64,7 @@ export default function DeleteProfile({ deleteUserHandler }: Props) {
 
             <ModalBody>
               <div className="space-y-4 flex justify-center">
-                This action will permanently delete all your data from our
+                This action will permanently erase all your data from our
                 servers.
               </div>
               <div>{error && <p className="text-danger">{error}</p>}</div>
