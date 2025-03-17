@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
  
  export default function manifest(): MetadataRoute.Manifest {
   return {
+    id: "/",
     name: "ChatAPP",
     short_name: "ChatApp",
     description: "ChatApp is a simple chat application",
