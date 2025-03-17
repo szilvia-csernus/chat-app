@@ -17,7 +17,7 @@ export async function authWithRedirect() {
     }
     return null;
   } catch {
-    redirect("/login");
+    return redirect("/login");
   }
 }
 
