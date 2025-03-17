@@ -26,7 +26,7 @@ export const usePresenceChannel = ({ store, currentMember }: Props) => {
 
   const handleSetMembers = useCallback(
     (memberIds: string[]) => {
-      console.log("Setting members", memberIds);
+      console.log("Setting members' online list", memberIds);
       store.dispatch(setMembersOnlineStatus({memberIds}));
     },
     [store]
@@ -34,7 +34,7 @@ export const usePresenceChannel = ({ store, currentMember }: Props) => {
 
   const handleAddMember = useCallback(
     async (memberId: string) => {
-      console.log("Adding member", memberId);
+      console.log("Adding member to online list", memberId);
       // add member to online members' list
       store.dispatch(updateOnlineStatus({memberId, online: true}));
     },
@@ -46,7 +46,7 @@ export const usePresenceChannel = ({ store, currentMember }: Props) => {
     async (memberId: string | null) => {
       if (!memberId) return;
 
-      console.log("usePresenceChannel: Removing member", memberId);
+      console.log("usePresenceChannel: Removing member from online list", memberId);
       store.dispatch(updateOnlineStatus({ memberId, online: false }));
 
       console.log("usePresenceChannel: Updating chat partner last active");
