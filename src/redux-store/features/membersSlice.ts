@@ -1,7 +1,6 @@
 import { Member, Members } from "@/types";
 import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-
 export type MembersState = {
   members: Members;
 };
@@ -29,22 +28,28 @@ const membersSlice = createSlice({
       state,
       action: PayloadAction<{ id: string; lastActive: string }>
     ) {
-      state.members[action.payload.id].lastActive = action.payload.lastActive
+      if (state.members[action.payload.id]) {
+      state.members[action.payload.id].lastActive = action.payload.lastActive;
+      }
     },
     updateMemberWithDeletedStatus(state, action: PayloadAction<string>) {
-      state.members[action.payload] = {
-        ...state.members[action.payload],
-        deleted: true,
-        name: "",
-        image: "",
-        lastActive: new Date().toISOString(),
-      };
+      if (state.members[action.payload]) {
+        state.members[action.payload] = {
+          ...state.members[action.payload],
+          deleted: true,
+          name: "",
+          image: "",
+          lastActive: new Date().toISOString(),
+        };
+      }
     },
     updateChatting(
       state,
       action: PayloadAction<{ memberId: string; chatId: string }>
     ) {
-      state.members[action.payload.memberId].chatting = action.payload.chatId
+      if (state.members[action.payload.memberId]) {
+        state.members[action.payload.memberId].chatting = action.payload.chatId;
+      }
     },
     setMembersOnlineStatus(
       state,
@@ -52,7 +57,8 @@ const membersSlice = createSlice({
     ) {
       action.payload.memberIds.forEach((id) => {
         if (state.members[id]) {
-        state.members[id].online = true};
+          state.members[id].online = true;
+        }
       });
     },
     updateOnlineStatus(
@@ -60,8 +66,9 @@ const membersSlice = createSlice({
       action: PayloadAction<{ memberId: string; online: boolean }>
     ) {
       if (state.members[action.payload.memberId]) {
-      state.members[action.payload.memberId].online = action.payload.online;
-      }}
+        state.members[action.payload.memberId].online = action.payload.online;
+      }
+    },
   },
   selectors: {
     selectMembers: (membersState) => membersState.members,
