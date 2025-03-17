@@ -150,7 +150,13 @@ const chatsSlice = createSlice({
     },
     selectLastMsgIdByChatId: (chatsState, chatId: string) => {
       const chat = chatsState.chats[chatId];
-      if (!chat) return null;
+      if (
+        !chat ||
+        !chat.msgGroupData ||
+        !chat.msgGroupData.msgGroupChronList ||
+        chat.msgGroupData.msgGroupChronList.length === 0
+      )
+        return null;
 
       const lastDate =
         chat.msgGroupData.msgGroupChronList[
@@ -198,6 +204,5 @@ export const {
 export const selectChatIds = createSelector([selectChats], (chats) =>
   Object.keys(chats)
 );
-
 
 export default chatsSlice.reducer;
