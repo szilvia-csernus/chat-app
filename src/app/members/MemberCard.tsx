@@ -67,7 +67,7 @@ export default function MemberCard({ memberId }: MemberCardProps) {
   };
 
   return (
-    <div onClick={onClickHandler}>
+    <div onClick={onClickHandler} className="cursor-pointer">
       {memberToDisplay && isOpen && currentMemberId && (
         <NewChat
           member={memberToDisplay}
@@ -80,7 +80,6 @@ export default function MemberCard({ memberId }: MemberCardProps) {
           <MemberImage
             memberImage={memberImageUrl}
             memberName={memberToDisplay ? memberToDisplay.name : ""}
-            className="cursor-pointer"
           />
           {currentMemberId === memberId && (
             <div className="absolute top-2 left-2 z-20">
