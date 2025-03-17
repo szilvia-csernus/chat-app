@@ -80,6 +80,7 @@ export default function MemberCard({ memberId }: MemberCardProps) {
           <MemberImage
             memberImage={memberImageUrl}
             memberName={memberToDisplay ? memberToDisplay.name : ""}
+            className="cursor-pointer"
           />
           {currentMemberId === memberId && (
             <div className="absolute top-2 left-2 z-20">
