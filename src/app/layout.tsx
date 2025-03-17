@@ -4,20 +4,15 @@ import Providers from "@/components/Providers";
 import MainNav from "@/components/navbar/MainNav";
 import { getCurrentUser } from "./actions/authActions";
 import { getPhotoByUserId } from "./actions/photoActions";
-import {
-  getChat,
-  getRecentChats,
-} from "./actions/chatActions";
+import { getChat, getRecentChats } from "./actions/chatActions";
 import { nunito } from "@/app/fonts";
 import { getCurrentProfile } from "./actions/profileActions";
 import { mapProfileDataToCurrentMember } from "@/lib/maps";
-
 
 export const metadata: Metadata = {
   title: "Chat App",
   description:
     "An app for chatting through the web. Built with Next.js, Prisma, Pusher, NextAuth and more.",
-    manifest: 'data:application/manifest+json;base64,...base64 encoded manifest.json...',
   // The openGraph property controls the appearance of the page when shared on social media.
   openGraph: {
     title: "Chat APP",
@@ -37,13 +32,11 @@ export const metadata: Metadata = {
   },
 };
 
-
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1.0,
-  maximumScale: 1.0
-}
-
+  maximumScale: 1.0,
+};
 
 export default async function RootLayout({
   children,
@@ -62,7 +55,8 @@ export default async function RootLayout({
   const photoUrl = userPhoto ? userPhoto.imageUrl : "/images/user.png";
 
   const currentProfile = await getCurrentProfile();
-  const currentMember = currentProfile && mapProfileDataToCurrentMember(currentProfile);
+  const currentMember =
+    currentProfile && mapProfileDataToCurrentMember(currentProfile);
 
   console.log("currentMember", currentMember);
 
