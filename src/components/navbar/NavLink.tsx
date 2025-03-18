@@ -3,7 +3,8 @@
 import { NavbarItem } from "@heroui/navbar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { set } from "zod";
 
 type NavLinkProps = {
   href: string;
@@ -14,17 +15,16 @@ type NavLinkProps = {
 
 export default function NavLink({ href, label, badge, onClick }: NavLinkProps) {
   const pathname = usePathname();
-
-  const isActiveRef = useRef(pathname === href);
+  const [isActive, setIsActive] = useState(pathname === href);
 
   useEffect(() => {
-    isActiveRef.current = (pathname === href);
+    setIsActive(pathname === href);
   }, [pathname, href]);
   
   return (
     <div className="relative">
       <NavbarItem
-        isActive={isActiveRef.current}
+        isActive={isActive}
         as={Link}
         href={href}
         onClick={onClick}
