@@ -54,10 +54,9 @@ export default function CompleteProfileForm({
     // const members = await getMembers();
     // dispatch(setMembers(members || []));
     
-    // dispatch(fetchAllMembers());
-    dispatch(fetchCurrentMember());
-
     if (result.status === "success") {
+      // dispatch(fetchAllMembers());
+      dispatch(fetchCurrentMember());
       router.replace("/members");
     } else {
       // Handle server errors by Zod
