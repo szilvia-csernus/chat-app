@@ -33,7 +33,7 @@ export default function MembersList({
             return <MemberCard key={id} memberId={id} />;
           })}
       </div>
-      {existingMemberIds.length === 0 && (
+      {existingMemberIds && existingMemberIds.length === 0 && (
         <div>
           <h1 className="text-xl font-semibold mt-5 justify-self-center">
             No members to show.
