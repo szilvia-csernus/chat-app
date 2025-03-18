@@ -103,11 +103,10 @@ export async function deleteUser(userId: string) {
     });
 
     const messageIds = Object.keys(messages);
-    
+
     console.log("Messages marked as deleted", messageIds);
 
-
-    // Delete already inactive conversations
+    // Delete user's already inactive conversations
     await prisma.conversation.deleteMany({
       where: { profiles: { some: { id: profileId } }, inactive: true },
     });
@@ -144,7 +143,10 @@ export async function deleteUser(userId: string) {
     // Trigger chat partners' browsers to update inactivated chats and deleted user profile
     inactiveConversations.forEach(async (chat) => {
       const chatPartnerId = chat.profiles[0].id;
-      pusherServer.trigger(`private-${chatPartnerId}`, "chat-inactive",  {chatId: chat.id, messageIds: messageIds});
+      pusherServer.trigger(`private-${chatPartnerId}`, "chat-inactive", {
+        chatId: chat.id,
+        messageIds: messageIds,
+      });
     });
 
     // Find the user's photo
@@ -194,7 +196,12 @@ export async function deleteUser(userId: string) {
     console.log("Profile data deleted");
 
     // Trigger presence channel to remove user from online list
-    pusherServer.trigger("presence-chat-app", "remove_member",  profileId);
+    pusherServer.trigger("presence-chat-app", "remove_member", profileId);
+
+    // Trigger private channel to remove user from members list
+    pusherServer.trigger(`private-${profileId}`, "delete-member", {
+      memberId: profileId,
+    });
 
     revalidateTag("all-members");
 
