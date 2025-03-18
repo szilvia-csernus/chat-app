@@ -257,7 +257,7 @@ export async function createChat(memberId: string) {
     const newChatData = {
       id: newChat.id,
       chatPartnerId: chatPartner.id,
-      msgGroupData: {},
+      msgGroupData: { msgGroups: { clusterIds: [] }, msgGroupChronList: [] },
       inactive: false,
       unreadMessageCount: 0,
     };
