@@ -3,8 +3,7 @@
 import { NavbarItem } from "@heroui/navbar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useEffect, useRef, useState } from "react";
-import { set } from "zod";
+import React, { useEffect, useState } from "react";
 
 type NavLinkProps = {
   href: string;
