@@ -13,6 +13,7 @@ import { createChat } from "@/app/actions/chatActions";
 import { ChatData, Member } from "@/types";
 import { useAppDispatch } from "@/redux-store/hooks";
 import { addNewChat } from "@/redux-store/features/chatsSlice";
+import { useState } from "react";
 
 type NewChatProps = {
   member: Member;
@@ -27,8 +28,10 @@ export default function NewChat({
 }: NewChatProps) {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const newChatHandler = async (onClose: () => void) => {
+    setIsSubmitting(true);
     const newChat = await createChat(member.id);
     if (!newChat) {
       throw new Error("Failed to create new chat");
@@ -42,6 +45,7 @@ export default function NewChat({
         inactive: false,
       } as ChatData)
     );
+    setIsSubmitting(false);
     router.push(`/chats/${newChat.id}`);
     onClose();
   };
@@ -88,6 +92,7 @@ export default function NewChat({
                       type="submit"
                       size="lg"
                       color="secondary"
+                      isLoading={isSubmitting}
                       className="btn w-full btn-secondary text-white"
                       onPress={() => newChatHandler(onClose)}
                     >
