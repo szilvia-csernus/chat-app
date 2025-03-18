@@ -56,7 +56,7 @@ export async function createMessage(
     if (!chat.profiles.some((p) => p.id === profileId)) {
       return {
         status: "error",
-        error: "You are not authorized to send messages to this chat",
+        error: `${profileId} is not authorized to send messages to this chat`,
       };
     }
 
