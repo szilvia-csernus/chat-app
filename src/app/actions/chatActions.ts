@@ -257,10 +257,9 @@ export async function createChat(memberId: string) {
     const newChatData = {
       id: newChat.id,
       chatPartnerId: chatPartner.id,
-      messges: {},
-      messageIds: [],
-      unreadMessageCount: 0,
+      msgGroupData: {},
       inactive: false,
+      unreadMessageCount: 0,
     };
 
     await pusherServer.trigger(`private-${memberId}`, "new-chat", {
