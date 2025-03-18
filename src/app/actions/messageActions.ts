@@ -49,7 +49,7 @@ export async function createMessage(
     }
 
     if (chat.inactive) {
-      return { status: "error", error: "Chat is inactive" };
+      return { status: "error", error: "Chat is inactive. Your chat partner may have deleted their account." };
     }
 
     // If the current user is not part of the conversation
