@@ -15,6 +15,10 @@ export default function MessageBox({
 }: MessageBoxProps) {
   const message = useAppSelector((state) => selectMsgById(state, messageId));
 
+  if (!message) {
+    return null;
+  }
+
   const messageContentClasses = clsx(
     "flex flex-col mt-1 min-w-32 w-auto px-2 py-1 border-1 border-slate-300 dark:border-slate-500",
     {
