@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { createChat } from "@/app/actions/chatActions";
 import { ChatData, Member } from "@/types";
 import { useAppDispatch } from "@/redux-store/hooks";
-import { addNewChat } from "@/redux-store/features/chatsSlice";
+import { addNewChat, setCurrentChatId } from "@/redux-store/features/chatsSlice";
 import { useState } from "react";
 
 type NewChatProps = {
@@ -45,6 +45,7 @@ export default function NewChat({
         inactive: false,
       } as ChatData)
     );
+    dispatch(setCurrentChatId(newChat.id));
     setIsSubmitting(false);
     router.push(`/chats/${newChat.id}`);
     onClose();
