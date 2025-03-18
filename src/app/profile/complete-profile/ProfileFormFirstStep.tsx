@@ -61,7 +61,7 @@ export default function ProfileFormFirstStep({
         errorMessage={errors.gender?.message as string}
         onChange={(e) => setValue("gender", e.target.value)}
         classNames={{
-          mainWrapper: "bg-gray-50 dark:bg-background",
+          mainWrapper: "bg-[#f7f7f7] dark:bg-background",
         }}
       >
         {genderList.map((item) => (
