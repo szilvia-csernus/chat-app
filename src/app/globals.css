@@ -4,6 +4,7 @@
 
 :root {
   --background: #ededed;
+  --soft-background: #f7f7f7;
   --foreground: #020617;
   --primary: #344664;
   --secondary: #344664;
@@ -14,6 +15,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #020617;
+    --soft-background: #151822;
     --foreground: #ededed;
     --primary: #344664;
     --secondary: #5f88cc;
@@ -56,7 +58,7 @@ button[data-slot="trigger"] {
   height: calc(100%-80px);
 }
 
-/* div[data-slot="input-wrapper"],
+div[data-slot="input-wrapper"],
 div[data-slot="input-wrapper"]:hover,
 div[data-slot="input-wrapper"]:focus,
 div[data-slot="input-wrapper"]:active,
@@ -64,9 +66,9 @@ div[data-slot="content"],
 div[data-focus="true"],
 input[data-filled="true"],
 input[data-slot="input"] {
-  background-color: var(--background) !important;
+  background-color: var(--soft-background) !important;
   color: var(--foreground) !important;
-} */
+}
 
 /* Don't push side of content out of chat screen on mobile when
 tapping into message input field */
@@ -89,7 +91,7 @@ label[data-slot="label"] {
 li[role="option"][data-selectable="true"]:focus,
 li[role="option"][data-selectable="true"]:hover,
 li[role="option"][data-selected="true"]:active {
-  background-color: rgb(180, 180, 180);
+  background-color: var(--background);
 }
 
 /* Override the internal autofill selected color */
