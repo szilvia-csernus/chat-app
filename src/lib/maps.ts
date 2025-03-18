@@ -95,6 +95,12 @@ function clusterMessagesBySender(messages: MessageData[]): MsgClustersData {
 }
 
 function groupMessagesByDate(mesages: MessageData[]): MsgGroupData {
+  if (mesages.length === 0) {
+    return {
+      msgGroups: {} as MsgGroups,
+      msgGroupChronList: []
+    };
+  }
   let currentDate: string = mesages[0].createdAt.toISOString().split("T")[0];
   const msgGroups: MsgGroups = {};
   const msgGroupChronList: string[] = [];
