@@ -76,7 +76,7 @@ export default function MemberCard({ memberId }: MemberCardProps) {
         />
       )}
       <Card fullWidth>
-        <div>
+        <div className="border-1 border-gray-300 dark:border-gray-700 rounded-lg">
           <MemberImage
             memberImage={memberImageUrl}
             memberName={memberToDisplay ? memberToDisplay.name : ""}
