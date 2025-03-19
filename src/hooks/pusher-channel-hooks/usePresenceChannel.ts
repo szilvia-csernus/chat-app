@@ -1,44 +1,40 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
-import { Members, PresenceChannel } from "pusher-js";
+import { useCallback, useEffect } from "react";
+import { Channel, Members, PresenceChannel } from "pusher-js";
 import { pusherClient } from "@/lib/pusher";
-import { useActivityChange } from "../misc-hooks/useActivityChange";
-import { AppStore } from "@/redux-store/store";
-import { CurrentMember } from "@/types";
 import { setMembersOnlineStatus, updateOnlineStatus } from "@/redux-store/features/membersSlice";
 import { updateMemberLastActive } from "@/redux-store/thunks";
+import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
+import { selectCurrentMemberId, selectIsActive } from "@/redux-store/features/currentMemberSlice";
 
-type Props = {
-  store: AppStore;
-  currentMember: CurrentMember | null;
-};
 
-export const usePresenceChannel = ({ store, currentMember }: Props) => {
+// Singleton constant is used for the channel to prevent the creation of 
+// multiple channels when the component re-renders
+const presenceChannelRef: { [key: string]: Channel | null } = {}; 
+
+export const usePresenceChannel = () => {
   console.log("Presence")
   
-  // Ref is used to prevent the creation of multiple channels when the component re-renders
-  const presenceChannelRef = useRef<PresenceChannel | null>(null);
-
-  const currentMemberId = currentMember?.id;
-
-  const isActive = useActivityChange();
+  const dispatch = useAppDispatch();
+  const currentMemberId = useAppSelector(selectCurrentMemberId);
+  const isActive = useAppSelector(selectIsActive);
 
   const handleSetMembers = useCallback(
     (memberIds: string[]) => {
       console.log("Setting members' online list", memberIds);
-      store.dispatch(setMembersOnlineStatus({memberIds}));
+      dispatch(setMembersOnlineStatus({memberIds}));
     },
-    [store]
+    [dispatch]
   );
 
   const handleAddMember = useCallback(
     async (memberId: string) => {
       console.log("Adding member to online list", memberId);
       // add member to online members' list
-      store.dispatch(updateOnlineStatus({memberId, online: true}));
+      dispatch(updateOnlineStatus({memberId, online: true}));
     },
-    [store]
+    [dispatch]
   );
 
   // when a member gets inactive
@@ -47,23 +43,30 @@ export const usePresenceChannel = ({ store, currentMember }: Props) => {
       if (!memberId) return;
 
       console.log("usePresenceChannel: Removing member from online list", memberId);
-      store.dispatch(updateOnlineStatus({ memberId, online: false }));
+      dispatch(updateOnlineStatus({ memberId, online: false }));
 
       console.log("usePresenceChannel: Updating chat partner last active");
-      store.dispatch(updateMemberLastActive(memberId));
+      dispatch(updateMemberLastActive(memberId));
 
     },
-    [store]
+    [dispatch]
   );
 
   const subscribeToChannel = useCallback(() => {
-    if (!presenceChannelRef.current) {
+    if (
+      presenceChannelRef["presence-chat-app"] &&
+      presenceChannelRef["presence-chat-app"].subscribed
+    ) {
+      console.log("Already subscribed to presence channel.");
+      return;
+    }
+    if (!presenceChannelRef["presence-chat-app"]) {
       console.log("Subscribing to presence channel...");
-      presenceChannelRef.current = pusherClient.subscribe(
+      presenceChannelRef["presence-chat-app"] = pusherClient.subscribe(
         "presence-chat-app"
       ) as PresenceChannel;
 
-      presenceChannelRef.current.bind(
+      presenceChannelRef["presence-chat-app"].bind(
         "pusher:subscription_succeeded",
         (members: Members) => {
           if (members && members.members) {
@@ -74,66 +77,58 @@ export const usePresenceChannel = ({ store, currentMember }: Props) => {
         }
       );
 
-      presenceChannelRef.current.bind(
+      presenceChannelRef["presence-chat-app"].bind(
         "pusher:member_added",
         (member: Record<string, never>) => {
           handleAddMember(member.id);
         }
       );
 
-      presenceChannelRef.current.bind(
+      presenceChannelRef["presence-chat-app"].bind(
         "pusher:member_removed",
         (member: Record<string, never>) => {
           handleRemoveMember(member.id);
         }
       );
 
-      presenceChannelRef.current.bind("add_member", (memberId: string) => {
+      presenceChannelRef["presence-chat-app"].bind("add_member", (memberId: string) => {
         handleAddMember(memberId);
       });
 
-      presenceChannelRef.current.bind("remove_member", (memberId: string) => {
+      presenceChannelRef["presence-chat-app"].bind("remove_member", (memberId: string) => {
         handleRemoveMember(memberId);
       });
     }
   }, [handleSetMembers, handleAddMember, handleRemoveMember]);
 
 
-  const unsubscribeFromChannel = () => {
+  const unsubscribeFromChannel = useCallback(() => {
     console.log("Unsubscribing from presence channel...");
-    if (presenceChannelRef.current && presenceChannelRef.current.subscribed) {
-      presenceChannelRef.current.unbind();
-      presenceChannelRef.current.unsubscribe();
+    if (presenceChannelRef["presence-chat-app"] && presenceChannelRef["presence-chat-app"].subscribed) {
+      presenceChannelRef["presence-chat-app"].unbind();
+      presenceChannelRef["presence-chat-app"].unsubscribe();
+      presenceChannelRef["presence-chat-app"] = null;
     }
-  };
+  }, []);
 
   useEffect(() => {
-    if (!currentMemberId) return;
+    if (!currentMemberId) {
+      unsubscribeFromChannel();
+      return;
+    }
 
-    subscribeToChannel();
+    if (isActive) {
+      subscribeToChannel();
+    } else {
+      unsubscribeFromChannel();
+    }
 
     // Cleanup
     return () => {
-      if (presenceChannelRef.current) {
-        console.log("Cleaning up presence channel subscription");
-        unsubscribeFromChannel();
-      }
+      unsubscribeFromChannel();
     };
-  }, [currentMemberId, subscribeToChannel]);
+  }, [currentMemberId, isActive, subscribeToChannel, unsubscribeFromChannel]);
 
-  useEffect(() => {
-    if (currentMemberId && presenceChannelRef.current) {
-      if (isActive) {
-        // Tab is active, subscribing to channel
-        console.log("User is active, subscribing to presence channel");
-        presenceChannelRef.current.emit("add_member", currentMemberId);
-      } else {
-        // Tab is inactive, unsubscribing from channel
-        console.log("User is inactive, unsubscribing from presence channel");
-        presenceChannelRef.current.emit("remove_member", currentMemberId);
-      }
-    }
-  }, [isActive, currentMemberId]);
 
-  return presenceChannelRef.current;
+  return presenceChannelRef["presence-chat-app"];
 };
