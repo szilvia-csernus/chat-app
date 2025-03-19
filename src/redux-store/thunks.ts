@@ -1,18 +1,15 @@
-// Thunks
-
 import { Member, SerializedMessage } from "@/types";
 import { AppThunk, RootState } from "./store";
 import {
   addMsgId,
   resetChatUnreadCount,
-  setCurrentChat,
   updateUnreadCount,
 } from "./features/chatsSlice";
-import { getChat, getUnreadMessageCount } from "@/app/actions/chatActions";
+import { getUnreadMessageCount } from "@/app/actions/chatActions";
 import { updateMessagesWithReadStatus, updateReadStatus } from "@/app/actions/messageActions";
-import { addNewMsg, setMessages } from "./features/messagesSlice";
+import { addNewMsg } from "./features/messagesSlice";
 import { getCurrentProfile, updateProfileLastActive } from "@/app/actions/profileActions";
-import { mapProfileDataToCurrentMember, mapProfilesDataToMembers, mapRawChatDataToChatAndMessages } from "@/lib/maps";
+import { mapProfileDataToCurrentMember, mapProfilesDataToMembers } from "@/lib/maps";
 import { setCurrentMember } from "./features/currentMemberSlice";
 import { getMembers } from "@/app/actions/memberActions";
 import { addMember, setMembers, updateMemberWithLastActiveTime } from "./features/membersSlice";
