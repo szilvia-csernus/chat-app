@@ -20,7 +20,7 @@ type Props = {
 
 export default function MessageCluster({ clusterId, date }: Props) {
   const msgCluster = useAppSelector((state) =>
-    selectCurrentChatMsgClusterById(state, date, clusterId)
+    selectCurrentChatMsgClusterById(state.chats, date, clusterId)
   );
   const senderId = msgCluster?.senderId;
   const messageIds = msgCluster?.msgIds || [];
