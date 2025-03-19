@@ -125,29 +125,29 @@ const chatsSlice = createSlice({
       const chat = chatId ? chatsState.chats[chatId] : null;
       return chat ? chat.chatPartnerId : null;
     },
-    selectCurrentChatMsgGroupChronList: (chatsState) => {
-      const chatId = chatsState.currentChatId;
-      const chat = chatId ? chatsState.chats[chatId] : null;
-      const msgGroupChronList = chat
-        ? chat.msgGroupData.msgGroupChronList
-        : ([] as string[]);
-      return msgGroupChronList;
-    },
-    selectCurrentChatMsgClustersDataByDate: (chatsState, date: string) => {
-      const chatId = chatsState.currentChatId;
-      const chat = chatId ? chatsState.chats[chatId] : null;
-      return chat ? chat.msgGroupData.msgGroups[date] : null;
-    },
-    selectCurrentChatMsgClusterById: (
-      chatsState,
-      date: string,
-      clusterId: string
-    ) => {
-      const chatId = chatsState.currentChatId;
-      const chat = chatId ? chatsState.chats[chatId] : null;
-      const msgGroupData = chat?.msgGroupData.msgGroups[date];
-      return msgGroupData?.msgClusters[clusterId] || null;
-    },
+    // selectCurrentChatMsgGroupChronList: (chatsState) => {
+    //   const chatId = chatsState.currentChatId;
+    //   const chat = chatId ? chatsState.chats[chatId] : null;
+    //   const msgGroupChronList = chat
+    //     ? chat.msgGroupData.msgGroupChronList
+    //     : ([] as string[]);
+    //   return msgGroupChronList;
+    // },
+    // selectCurrentChatMsgClustersDataByDate: (chatsState, date: string) => {
+    //   const chatId = chatsState.currentChatId;
+    //   const chat = chatId ? chatsState.chats[chatId] : null;
+    //   return chat ? chat.msgGroupData.msgGroups[date] : null;
+    // },
+    // selectCurrentChatMsgClusterById: (
+    //   chatsState,
+    //   date: string,
+    //   clusterId: string
+    // ) => {
+    //   const chatId = chatsState.currentChatId;
+    //   const chat = chatId ? chatsState.chats[chatId] : null;
+    //   const msgGroupData = chat?.msgGroupData.msgGroups[date];
+    //   return msgGroupData?.msgClusters[clusterId] || null;
+    // },
     selectLastMsgIdByChatId: (chatsState, chatId: string) => {
       const chat = chatsState.chats[chatId];
       if (
@@ -193,9 +193,9 @@ export const {
   selectChatById,
   selectCurrentChat,
   selectCurrentChatPartnerId,
-  selectCurrentChatMsgGroupChronList,
-  selectCurrentChatMsgClustersDataByDate,
-  selectCurrentChatMsgClusterById,
+  // selectCurrentChatMsgGroupChronList,
+  // selectCurrentChatMsgClustersDataByDate,
+  // selectCurrentChatMsgClusterById,
   selectLastMsgIdByChatId,
   selectAllUnreadMsgCount,
 } = chatsSlice.selectors;
@@ -203,6 +203,41 @@ export const {
 // memoized selectors
 export const selectChatIds = createSelector([selectChats], (chats) =>
   Object.keys(chats)
+);
+
+export const selectActiveChatIds = createSelector([selectChats], (chats) =>
+  Object.keys(chats).filter((chatId) => !chats[chatId].inactive)
+);
+
+export const selectCurrentChatMsgClustersDataByDate = createSelector(
+  (state: ChatsState) => state.currentChatId,
+  (state: ChatsState, date: string) => date,
+  (state: ChatsState) => state.chats,
+  (currentChatId, date, chats) => {
+    const chat = currentChatId ? chats[currentChatId] : null;
+    return chat ? chat.msgGroupData.msgGroups[date] : null;
+  }
+);
+
+export const selectCurrentChatMsgClusterById = createSelector(
+  (state: ChatsState) => state.currentChatId,
+  (state: ChatsState, date: string) => date,
+  (state: ChatsState, date: string, clusterId: string) => clusterId,
+  (state: ChatsState) => state.chats,
+  (currentChatId, date, clusterId, chats) => {
+    const chat = currentChatId ? chats[currentChatId] : null;
+    const msgGroupData = chat?.msgGroupData.msgGroups[date];
+    return msgGroupData?.msgClusters[clusterId] || null;
+  }
+);
+
+export const selectCurrentChatMsgGroupChronList = createSelector(
+  (state: ChatsState) => state.currentChatId,
+  (state: ChatsState) => state.chats,
+  (currentChatId, chats) => {
+    const chat = currentChatId ? chats[currentChatId] : null;
+    return chat ? chat.msgGroupData.msgGroupChronList : [];
+  }
 );
 
 export default chatsSlice.reducer;
