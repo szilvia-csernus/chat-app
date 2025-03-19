@@ -1,55 +1,54 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { Channel } from "pusher-js";
 import { pusherClient } from "@/lib/pusher";
 import { useCallback } from "react";
-import { ChatData, CurrentMember, Member } from "@/types";
+import { ChatData, Member } from "@/types";
 import {
   addMember,
   updateChatting,
   updateMemberWithDeletedStatus,
 } from "@/redux-store/features/membersSlice";
 import { getMembers } from "@/app/actions/memberActions";
-import { AppStore } from "@/redux-store/store";
 import { addNewChat, deactivateChat } from "@/redux-store/features/chatsSlice";
 import { updateMsgsWithDeletedStatus } from "@/redux-store/features/messagesSlice";
+import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
+import { selectCurrentMemberId } from "@/redux-store/features/currentMemberSlice";
 
-type Props = {
-  store: AppStore;
-  currentMember: CurrentMember | null;
-};
 
-export const usePrivateChannel = ({ store, currentMember }: Props) => {
+// Singleton constant is used for the channel to prevent the creation of 
+// multiple channels when the component re-renders
+const privateChannelRef: { [key: string]: Channel | null } = {};
+
+export const usePrivateChannel = () => {
   console.log("Private");
 
-  // Ref is used to prevent the creation of multiple channels when the component re-renders
-  const privateChannelRef = useRef<Channel | null>(null);
-
-  const currentMemberId = currentMember?.id;
+  const dispatch = useAppDispatch();
+  const currentMemberId = useAppSelector(selectCurrentMemberId);
 
   const handleNewChat = useCallback(
     (data: { newChat: ChatData; chatPartnerId: string }) => {
       console.log("usePrivateChannel: New chat received", data.newChat.id);
-      store.dispatch(addNewChat(data.newChat));
+      dispatch(addNewChat(data.newChat));
       // add new chat partner
-      store.dispatch(
+      dispatch(
         updateChatting({
           memberId: data.chatPartnerId,
           chatId: data.newChat.id,
         })
       );
     },
-    [store]
+    [dispatch]
   );
 
   const handleChatInactive = useCallback(
     (chatId: string, messageIds: string[]) => {
       console.log("usePrivateChannel: handleChatInactive", chatId);
-      store.dispatch(deactivateChat(chatId));
-      store.dispatch(updateMsgsWithDeletedStatus(messageIds));
+      dispatch(deactivateChat(chatId));
+      dispatch(updateMsgsWithDeletedStatus(messageIds));
     },
-    [store]
+    [dispatch]
   );
 
   const handleNewMember = useCallback(
@@ -61,10 +60,10 @@ export const usePrivateChannel = ({ store, currentMember }: Props) => {
           "usePrivateChannel: Dispatching addMember for new member",
           newMember
         );
-        store.dispatch(addMember(newMember));
+        dispatch(addMember(newMember));
       }
     },
-    [store]
+    [dispatch]
   );
 
   // when a member is deleted from the database
@@ -76,62 +75,65 @@ export const usePrivateChannel = ({ store, currentMember }: Props) => {
       const allMemberIds = currentMembers?.map((m) => m.id);
       console.log("usePrivateChannel: All member ids", allMemberIds);
       console.log("usePrivateChannel: dispatching removeMember: ", memberId);
-      store.dispatch(updateMemberWithDeletedStatus(memberId));
+      dispatch(updateMemberWithDeletedStatus(memberId));
     },
-    [store]
+    [dispatch]
   );
 
   useEffect(() => {
-    if (!currentMemberId) return;
-
-    console.log(
-      "usePrivateChannel: Subscribing to private channel",
-      `private-${currentMemberId}`
-    );
-    privateChannelRef.current = pusherClient.subscribe(
-      `private-${currentMemberId}`
-    );
-    const privateChannel = privateChannelRef.current;
-    privateChannel.bind(
-      "new-chat",
-      (data: { newChat: ChatData; chatPartnerId: string }) => {
-        handleNewChat(data);
-      }
-    );
-    privateChannel.bind(
-      "chat-inactive",
-      (data: { chatId: string; messageIds: string[] }) => {
-        console.log(
-          "usePrivateChannel: Chat inactive event received",
-          data.chatId
+    if (currentMemberId) {
+      console.log(
+        "usePrivateChannel: Subscribing to private channel",
+        `private-${currentMemberId}`
+      );
+      if (!privateChannelRef["presence"]) {
+        privateChannelRef["presence"] = pusherClient.subscribe(
+          `private-${currentMemberId}`
         );
-        handleChatInactive(data.chatId, data.messageIds);
+        const privateChannel = privateChannelRef["presence"];
+        privateChannel.bind(
+          "new-chat",
+          (data: { newChat: ChatData; chatPartnerId: string }) => {
+            handleNewChat(data);
+          }
+        );
+        privateChannel.bind(
+          "chat-inactive",
+          (data: { chatId: string; messageIds: string[] }) => {
+            console.log(
+              "usePrivateChannel: Chat inactive event received",
+              data.chatId
+            );
+            handleChatInactive(data.chatId, data.messageIds);
+          }
+        );
+        privateChannel.bind("new-member", (data: { newMember: Member }) => {
+          console.log(
+            "usePrivateChannel: New member event received",
+            data.newMember
+          );
+          handleNewMember(data.newMember);
+        });
+        privateChannel.bind("delete-member", (data: { memberId: string }) => {
+          console.log(
+            "usePrivateChannel: Member deleted event received",
+            data.memberId
+          );
+          handleDeleteMember(data.memberId);
+        });
       }
-    );
-    privateChannel.bind("new-member", (data: { newMember: Member }) => {
-      console.log(
-        "usePrivateChannel: New member event received",
-        data.newMember
-      );
-      handleNewMember(data.newMember);
-    });
-    privateChannel.bind("delete-member", (data: { memberId: string }) => {
-      console.log(
-        "usePrivateChannel: Member deleted event received",
-        data.memberId
-      );
-      handleDeleteMember(data.memberId);
-    });
+    }
 
     // Cleanup function to unsubscribe from channels
     return () => {
-      if (privateChannel) {
+      if (privateChannelRef["presence"]) {
         console.log(
           "usePrivateChannel: Unsubscribing from private channel",
           `private-${currentMemberId}`
         );
-        privateChannel.unbind();
+        privateChannelRef["presence"].unbind();
         pusherClient.unsubscribe(`private-${currentMemberId}`);
+        privateChannelRef["presence"] = null;
       }
     };
   }, [
@@ -142,5 +144,5 @@ export const usePrivateChannel = ({ store, currentMember }: Props) => {
     handleDeleteMember,
   ]);
 
-  return privateChannelRef.current;
+  return privateChannelRef;
 };
