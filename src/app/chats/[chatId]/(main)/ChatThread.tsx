@@ -28,9 +28,9 @@ export default function ChatThread() {
     if (currentChat) {
       // The user just opened this chat, meaning they can now see all previously
       // unread messages, therefore, we reset the unread count in the redux store.
-      dispatch(updateUnreadMsgCount({ chatId: currentChat.id, count: 0 }));
+      dispatch(updateUnreadMsgCount(currentChat.id));
     }
-  });
+  }, [currentChat, dispatch]);
 
   return (
     <ul className="flex flex-col px-1 py-2">
