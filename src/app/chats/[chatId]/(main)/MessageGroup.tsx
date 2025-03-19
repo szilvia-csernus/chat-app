@@ -11,7 +11,7 @@ type Props = {
 
 export default function MessageGroup({ date }: Props) {
   const messageClustersData = useAppSelector((state) =>
-    selectCurrentChatMsgClustersDataByDate(state, date)
+    selectCurrentChatMsgClustersDataByDate(state.chats, date)
   );
 
   const msgClusterIds = messageClustersData?.clusterIds || [];
