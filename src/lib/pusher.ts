@@ -33,6 +33,6 @@ if (!global.pusherClientInstance) {
 export const pusherServer = global.pusherServerInstance;
 export const pusherClient = global.pusherClientInstance;
 
-// this code makes sure that hot-module-reload would not consistently create
-// new instances so we only have one instance of the pusher client and server 
-// in the application to avoid overcharge.
+// this code makes sure that during development, hot-module-reload would not repeatedly create
+// new instances. This way, we can avoid overcharge by having only one instance for
+// the pusher client as well as for the pusher server.
