@@ -1,49 +1,52 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { selectIsActive, setIsActive } from "@/redux-store/features/currentMemberSlice";
+import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
+import { useEffect } from "react";
 
 export function useActivityChange(): boolean {
-  const isActive = useRef<boolean>(true);
-  console.log("useActivityChange: activity state", isActive.current);
+  const dispatch = useAppDispatch();
+  const isActive = useAppSelector(selectIsActive);
+  console.log("useActivityChange: activity state", isActive);
 
   useEffect(() => {
-    const handleVisibilityChange = () => {
-      console.log("visibility change event fired");
-      isActive.current = document.visibilityState === "visible";
-    };
+    // const handleVisibilityChange = () => {
+    //   console.log("visibility change event fired");
+    //   dispatch(setIsActive(document.visibilityState === "visible"));
+    // };
 
     const handleFocus = () => {
       console.log("focus event fired");
-      isActive.current = true;
+      dispatch(setIsActive(true));
     };
 
     const handleBlur = () => {
       console.log("blur event fired");
-      isActive.current = false;
+      dispatch(setIsActive(false));
     };
 
     const handleOnline = () => {
       console.log("online event fired");
-      isActive.current = document.visibilityState === "visible";
+      dispatch(setIsActive(document.visibilityState === "visible"));
     };
 
     const handleOffline = () => {
       console.log("offline event fired");
-      isActive.current = false;
+      dispatch(setIsActive(false));
     };
 
     const handleFreeze = () => {
       console.log("freeze event fired");
-      isActive.current = false;
+      dispatch(setIsActive(false));
     };
 
     const handleResume = () => {
       console.log("resume event fired");
-      isActive.current = document.visibilityState === "visible";
+      dispatch(setIsActive(document.visibilityState === "visible"));
     };
 
     // Add event listeners
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+    // document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("focus", handleFocus);
     window.addEventListener("blur", handleBlur);
     window.addEventListener("online", handleOnline);
@@ -53,7 +56,7 @@ export function useActivityChange(): boolean {
 
     // Cleanup
     return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      // document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("focus", handleFocus);
       window.removeEventListener("blur", handleBlur);
       window.removeEventListener("online", handleOnline);
@@ -61,7 +64,7 @@ export function useActivityChange(): boolean {
       document.removeEventListener("freeze", handleFreeze);
       document.removeEventListener("resume", handleResume);
     };
-  }, []);
+  }, [dispatch]);
 
-  return isActive.current;
+  return isActive;
 }
