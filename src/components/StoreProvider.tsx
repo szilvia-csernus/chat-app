@@ -3,9 +3,6 @@ import { ReactNode, useRef, useEffect } from "react";
 import { Provider } from "react-redux";
 import { makeStore, AppStore } from "@/redux-store/store";
 import { CurrentMember, RawChatData } from "@/types";
-import { usePresenceChannel } from "@/hooks/pusher-channel-hooks/usePresenceChannel";
-import { usePrivateChatChannels } from "@/hooks/pusher-channel-hooks/usePrivateChatChannels";
-import { usePrivateChannel } from "@/hooks/pusher-channel-hooks/usePrivateChannel";
 import { setCurrentMember } from "@/redux-store/features/currentMemberSlice";
 import { fetchAllMembers } from "@/redux-store/thunks";
 import { setCurrentChat, setChats } from "@/redux-store/features/chatsSlice";
@@ -62,12 +59,6 @@ export default function StoreProvider({
       }
     }
   }, [currentMember, currentChat]);
-
-
-  usePresenceChannel({ store: storeRef.current, currentMember });
-  usePrivateChannel({ store: storeRef.current, currentMember });
-  usePrivateChatChannels({ store: storeRef.current, currentMember });
-
 
   return <Provider store={storeRef.current}>{children}</Provider>;
 }
