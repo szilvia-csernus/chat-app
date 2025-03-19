@@ -9,7 +9,6 @@ import { pusherServer } from "@/lib/pusher";
 import { authWithError } from "./authActions";
 import { serializeMessage } from "@/lib/serialize";
 
-
 /** Creates a message in the given chat. */
 export async function createMessage(
   chatId: string,
@@ -49,7 +48,11 @@ export async function createMessage(
     }
 
     if (chat.inactive) {
-      return { status: "error", error: "Chat is inactive. Your chat partner may have deleted their account." };
+      return {
+        status: "error",
+        error:
+          "Chat is inactive. Your chat partner may have deleted their account.",
+      };
     }
 
     // If the current user is not part of the conversation
@@ -68,7 +71,7 @@ export async function createMessage(
       },
     });
 
-    const serializedMessage = serializeMessage(message)
+    const serializedMessage = serializeMessage(message);
 
     await pusherServer.trigger(`private-chat-${chatId}`, "new-message", {
       chatId: chatId,
@@ -84,15 +87,20 @@ export async function createMessage(
 }
 
 /** Updates all messages with a read:true status in a given
- * chat for a given recipient. */
-export const updateMessagesWithReadStatus = async (
-  chatId: string
-) => {
+ * chat as if the current member has just read them. */
+export async function updateMessagesWithReadStatus(chatId: string) {
   await authWithError();
+
+  const currentProfileId = await getCurrentProfileId();
 
   // Find the message IDs first so we don't have to fetch them twice
   const messages = await prisma.message.findMany({
-    where: { conversationId: chatId, deleted: false, read: false },
+    where: {
+      conversationId: chatId,
+      senderId: { not: currentProfileId },
+      deleted: false,
+      read: false,
+    },
     select: { id: true },
   });
 
@@ -106,9 +114,11 @@ export const updateMessagesWithReadStatus = async (
 
   // Trigger Pusher events for each message
   for (const messageId of messageIds) {
-    await pusherServer.trigger(`private-chat-${chatId}`, "message-read", {messageId});
+    await pusherServer.trigger(`private-chat-${chatId}`, "message-read", {
+      messageId,
+    });
   }
-};
+}
 
 /** Updates a message with a read:true status. */
 export async function updateReadStatus(messageId: string) {
@@ -123,7 +133,11 @@ export async function updateReadStatus(messageId: string) {
       },
     });
 
-    if (!currentProfileId || !message || message.senderId === currentProfileId) {
+    if (
+      !currentProfileId ||
+      !message ||
+      message.senderId === currentProfileId
+    ) {
       return null;
     }
 
@@ -140,11 +154,10 @@ export async function updateReadStatus(messageId: string) {
     await pusherServer.trigger(
       `private-chat-${message.conversationId}`,
       "message-read",
-      {messageId}
+      { messageId }
     );
   } catch (error) {
     console.error(error);
-    return null
+    return null;
   }
 }
-
