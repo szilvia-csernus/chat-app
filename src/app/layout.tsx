@@ -8,6 +8,7 @@ import { getChat, getRecentChats } from "./actions/chatActions";
 import { nunito } from "@/app/fonts";
 import { getCurrentProfile } from "./actions/profileActions";
 import { mapProfileDataToCurrentMember } from "@/lib/maps";
+import Channels from "@/components/Channels";
 
 export const metadata: Metadata = {
   title: "Chat App",
@@ -79,14 +80,16 @@ export default async function RootLayout({
           recentChats={recentChats}
           currentChat={currentChat}
         >
-          <MainNav
-            currentMemberId={currentMember?.id || null}
-            userName={userName}
-            photoUrl={photoUrl}
-          />
-          <main className="h-full mx-auto w-full sm:max-w-4xl">
-            <div className="place-items-center">{children}</div>
-          </main>
+          <Channels>
+            <MainNav
+              currentMemberId={currentMember?.id || null}
+              userName={userName}
+              photoUrl={photoUrl}
+            />
+            <main className="h-full mx-auto w-full sm:max-w-4xl">
+              <div className="place-items-center">{children}</div>
+            </main>
+          </Channels>
         </Providers>
       </body>
     </html>
