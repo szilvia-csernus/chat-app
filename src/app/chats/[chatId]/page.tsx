@@ -1,7 +1,6 @@
 import React from "react";
 import Chat from "./(main)/Chat";
 import { getChat } from "@/app/actions/chatActions";
-import { updateMessagesWithReadStatus } from "@/app/actions/messageActions";
 import { RawChatData } from "@/types";
 
 export const dynamic = "force-dynamic";
@@ -15,9 +14,7 @@ export default async function ChatsPage({ params }: Params) {
 
   let initialChat: RawChatData | null = null;
   
-  // Update the messages in the database to be marked as read
   if (chatId) {
-    await updateMessagesWithReadStatus(chatId );
     initialChat = await getChat(chatId);
   }
 
