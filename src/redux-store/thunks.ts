@@ -4,13 +4,15 @@ import { Member, SerializedMessage } from "@/types";
 import { AppThunk, RootState } from "./store";
 import {
   addMsgId,
+  resetChatUnreadCount,
+  setCurrentChat,
   updateUnreadCount,
 } from "./features/chatsSlice";
-import { getUnreadMessageCount } from "@/app/actions/chatActions";
+import { getChat, getUnreadMessageCount } from "@/app/actions/chatActions";
 import { updateMessagesWithReadStatus, updateReadStatus } from "@/app/actions/messageActions";
-import { addNewMsg } from "./features/messagesSlice";
+import { addNewMsg, setMessages } from "./features/messagesSlice";
 import { getCurrentProfile, updateProfileLastActive } from "@/app/actions/profileActions";
-import { mapProfileDataToCurrentMember, mapProfilesDataToMembers } from "@/lib/maps";
+import { mapProfileDataToCurrentMember, mapProfilesDataToMembers, mapRawChatDataToChatAndMessages } from "@/lib/maps";
 import { setCurrentMember } from "./features/currentMemberSlice";
 import { getMembers } from "@/app/actions/memberActions";
 import { addMember, setMembers, updateMemberWithLastActiveTime } from "./features/membersSlice";
@@ -101,10 +103,10 @@ export function addNewMessage(
 }
 
 export function updateUnreadMsgCount(
-      {chatId, count}: {chatId: string, count: number}
+      chatId: string
     ): AppThunk {
       return async (dispatch) => {
-      dispatch(updateUnreadCount({ chatId, count }));
+      dispatch(resetChatUnreadCount(chatId));
       await updateMessagesWithReadStatus(chatId);
     }
   }
@@ -114,15 +116,11 @@ export function updateUnreadMsgCount(
 //     const state = getState();
 //     const chat = await getChat(id);
 //     if (!chat) return null;
-
-//     dispatch(setChat(chat));
-//     dispatch(setCurrentChatId(chat.id));
-//   };
-// }
-
-// export function fetchRecentChats(id: string): AppThunk {
-//   return async (dispatch, getState) => {
-//     const state = getState();
-
+//     const result = mapRawChatDataToChatAndMessages(chat);
+//           if (result) {
+//             const { chat, messages } = result;
+//             dispatch(setCurrentChat(chat));
+//             dispatch(setMessages(messages));
+//           }
 //   };
 // }
