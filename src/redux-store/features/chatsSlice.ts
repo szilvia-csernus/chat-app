@@ -108,6 +108,16 @@ const chatsSlice = createSlice({
         0
       );
     },
+    resetChatUnreadCount(state, action: PayloadAction<string>) {
+      const chat = state.chats[action.payload];
+      if (chat) {
+        chat.unreadMessageCount = 0;
+      }
+      state.allUnreadMessageCount = Object.keys(state.chats).reduce(
+        (acc, idx) => acc + state.chats[idx].unreadMessageCount,
+        0
+      );
+    },
     // updateAllUnreadCount(state) {
     //   state.allUnreadMessageCount = state.chatIds.reduce(
     //     (acc, idx) => acc + state.chats[idx].unreadMessageCount,
@@ -119,7 +129,7 @@ const chatsSlice = createSlice({
     selectChats: (chatsState) => chatsState.chats,
     selectChatById: (chatsState, chatId: string) => chatsState.chats[chatId],
     selectCurrentChat: (chatsState) =>
-      chatsState.currentChatId && chatsState.chats[chatsState.currentChatId],
+      chatsState.currentChatId ? chatsState.chats[chatsState.currentChatId] : null,
     selectCurrentChatPartnerId: (chatsState) => {
       const chatId = chatsState.currentChatId;
       const chat = chatId ? chatsState.chats[chatId] : null;
@@ -186,6 +196,7 @@ export const {
   addMsgId,
   decrementChatUnreadCount,
   updateUnreadCount,
+  resetChatUnreadCount,
 } = chatsSlice.actions;
 
 export const {
