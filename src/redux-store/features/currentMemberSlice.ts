@@ -1,15 +1,15 @@
 import { CurrentMember } from "@/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-
 export type CurrentMemberState = {
   currentMember: CurrentMember | null;
+  isActive: boolean;
 };
 
 const initialState: CurrentMemberState = {
- currentMember: null,
+  currentMember: null,
+  isActive: true,
 };
-
 
 const currentMemberSlice = createSlice({
   name: "currentMember",
@@ -20,17 +20,24 @@ const currentMemberSlice = createSlice({
     },
     resetCurrentMember(state) {
       state.currentMember = null;
-    }
+    },
+    setIsActive(state, action: PayloadAction<boolean>) {
+      state.isActive = action.payload;
+    },
   },
   selectors: {
-    selectCurrentMember: (currentMemberState) => currentMemberState.currentMember,
-    selectCurrentMemberId: (currentMemberState) => currentMemberState.currentMember?.id
+    selectCurrentMember: (currentMemberState) =>
+      currentMemberState.currentMember,
+    selectCurrentMemberId: (currentMemberState) =>
+      currentMemberState.currentMember?.id,
+    selectIsActive: (currentMemberState) => currentMemberState.isActive,
   },
 });
 
-export const { setCurrentMember, resetCurrentMember } = currentMemberSlice.actions;
+export const { setCurrentMember, resetCurrentMember, setIsActive } =
+  currentMemberSlice.actions;
 
-export const { selectCurrentMember, selectCurrentMemberId } = currentMemberSlice.selectors;
-
+export const { selectCurrentMember, selectCurrentMemberId, selectIsActive } =
+  currentMemberSlice.selectors;
 
 export default currentMemberSlice.reducer;
