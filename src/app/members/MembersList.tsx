@@ -2,25 +2,17 @@
 
 import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
 import MemberCard from "./MemberCard";
-import { CurrentMember } from "@/types";
 import { selectExistingMemberIds } from "@/redux-store/features/membersSlice";
-import { setCurrentMember } from "@/redux-store/features/currentMemberSlice";
 import { useEffect } from "react";
+import { fetchCurrentMember } from "@/redux-store/thunks";
 
 
-type MembersListProps = {
-  currentMember: CurrentMember;
-};
-
-export default function MembersList({
-  currentMember,
-
-}: MembersListProps) {
+export default function MembersList() {
   const dispatch = useAppDispatch();
   
   useEffect(() => {
-    dispatch(setCurrentMember(currentMember));
-  }, [currentMember, dispatch]);
+    dispatch(fetchCurrentMember());
+  }, [dispatch]);
 
 
   const existingMemberIds = useAppSelector(selectExistingMemberIds);
