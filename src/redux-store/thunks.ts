@@ -7,7 +7,7 @@ import {
   updateUnreadCount,
 } from "./features/chatsSlice";
 import { getUnreadMessageCount } from "@/app/actions/chatActions";
-import { updateReadStatus } from "@/app/actions/messageActions";
+import { updateMessagesWithReadStatus, updateReadStatus } from "@/app/actions/messageActions";
 import { addNewMsg } from "./features/messagesSlice";
 import { getCurrentProfile, updateProfileLastActive } from "@/app/actions/profileActions";
 import { mapProfileDataToCurrentMember, mapProfilesDataToMembers } from "@/lib/maps";
@@ -99,6 +99,15 @@ export function addNewMessage(
     }
   };
 }
+
+export function updateUnreadMsgCount(
+      {chatId, count}: {chatId: string, count: number}
+    ): AppThunk {
+      return async (dispatch) => {
+      dispatch(updateUnreadCount({ chatId, count }));
+      await updateMessagesWithReadStatus(chatId);
+    }
+  }
 
 // export function fetchCurrentChat(id: string): AppThunk {
 //   return async (dispatch, getState) => {
