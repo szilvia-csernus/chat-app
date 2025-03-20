@@ -24,7 +24,7 @@ export default function RecentChat({ chatId }: Props) {
     selectLastMsgIdByChatId(state, chatId)
   );
   const lastMessage = useAppSelector((state) =>
-    selectMsgById(state, lastMessageId)
+    selectMsgById(state.messages, lastMessageId)
   )?.content;
   const chatPartner = useAppSelector((state) =>
     selectMemberById(state.members, chatPartnerId)
