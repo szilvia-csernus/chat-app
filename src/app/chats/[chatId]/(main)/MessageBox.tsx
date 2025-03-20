@@ -13,7 +13,7 @@ export default function MessageBox({
   messageId,
   isCurrentMemberSender,
 }: MessageBoxProps) {
-  const message = useAppSelector((state) => selectMsgById(state, messageId));
+  const message = useAppSelector((state) => selectMsgById(state.messages, messageId));
 
   if (!message) {
     return null;
