@@ -26,11 +26,12 @@ const uiSlice = createSlice({
   },
   selectors: {
     selectIsSidebarOpen: (uiState) => uiState.isSidebarOpen,
+    selectChatVisible: (uiState) => uiState.chatVisible,
   },
 });
 
 export const { openSidebar, closeSidebar, setChatVisible } = uiSlice.actions;
 
-export const { selectIsSidebarOpen } = uiSlice.selectors;
+export const { selectIsSidebarOpen, selectChatVisible } = uiSlice.selectors;
 
 export default uiSlice.reducer;
