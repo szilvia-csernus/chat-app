@@ -278,10 +278,16 @@ export async function createChat(memberId: string) {
 export async function getUnreadMessageCount(chatId: string) {
   await authWithError();
 
+  const currentProfileId = await getCurrentProfileId();
+  if (!currentProfileId) return null;
+
   try {
     return prisma.message.count({
       where: {
         conversationId: chatId,
+        senderId: {
+          not: currentProfileId,
+        },
         read: false,
       },
     });
