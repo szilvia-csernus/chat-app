@@ -23,7 +23,7 @@ export default function PresenceAvatar({
 }: Props) {
   return (
     <div
-      className={`relative flex justify-center items-end text-xs ${classNames}`}
+      className={`relative flex justify-center items-end text-xs rounded-full overflow-hidden ${classNames}`}
     >
       <div>
         <PresenceDot online={online} deleted={deleted} own={own}>
@@ -32,7 +32,7 @@ export default function PresenceAvatar({
             memberName="User avatar"
             imageWidth={imageWidth}
             imageHeight={imageHeight}
-            className="border-1 border-slate-300 dark:border-slate-500 rounded-full z-5"
+            className="border-1 border-slate-300 dark:border-slate-500 z-5"
           />
         </PresenceDot>
       </div>
