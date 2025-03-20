@@ -16,9 +16,11 @@ const uiSlice = createSlice({
   reducers: {
     openSidebar(state) {
       state.isSidebarOpen = true;
+      state.chatVisible = false;
     },
     closeSidebar(state) {
       state.isSidebarOpen = false;
+      state.chatVisible = true;
     },
     setChatVisible(state, action) {
       state.chatVisible = action.payload;
