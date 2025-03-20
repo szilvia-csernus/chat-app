@@ -2,6 +2,9 @@
 
 import { Profile } from "@prisma/client";
 import EditProfileDetails from "./EditProfileDetails";
+import { useAppDispatch } from "@/redux-store/hooks";
+import { useEffect } from "react";
+import { setChatVisible } from "@/redux-store/features/uiSlice";
 
 type ProfileDetailsProps = {
   userName: string;
@@ -12,6 +15,12 @@ export default function ProfileDetails({
   userName,
   profile,
 }: ProfileDetailsProps) {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(setChatVisible(false));
+  }, [dispatch]);
+
   return (
     <div className="flex flex-col justify-between items-center gap-4 text-md">
       <div className="sm:hidden">*</div>
@@ -52,10 +61,7 @@ export default function ProfileDetails({
         </p>
       </div>
 
-      <EditProfileDetails
-        userName={userName}
-        profile={profile}
-      />
+      <EditProfileDetails userName={userName} profile={profile} />
     </div>
   );
 }
