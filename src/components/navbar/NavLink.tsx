@@ -15,10 +15,10 @@ type NavLinkProps = {
 
 export default function NavLink({ href, label, unreadCount, onClick }: NavLinkProps) {
   const pathname = usePathname();
-  const [isActive, setIsActive] = useState(pathname === href);
+  const [isActive, setIsActive] = useState(pathname.includes(href));
 
   useEffect(() => {
-    setIsActive(pathname === href);
+    setIsActive(pathname.includes(href));
   }, [pathname, href]);
   
   return (
