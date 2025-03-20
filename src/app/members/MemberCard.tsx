@@ -23,7 +23,7 @@ export default function MemberCard({ memberId }: MemberCardProps) {
   const router = useRouter();
 
   const currentMember = useAppSelector(selectCurrentMember);
-  const member = useAppSelector((state) => selectMemberById(state, memberId));
+  const member = useAppSelector((state) => selectMemberById(state.members, memberId));
   
   let memberToDisplay: Member | null = null;
 
