@@ -18,7 +18,7 @@ type Props = {
 };
 
 export default function RecentChat({ chatId }: Props) {
-  const chat = useAppSelector((state) => selectChatById(state, chatId));
+  const chat = useAppSelector((state) => selectChatById(state.chats, chatId));
   const { chatPartnerId, unreadMessageCount } = chat;
   const lastMessageId = useAppSelector((state) =>
     selectLastMsgIdByChatId(state, chatId)
@@ -27,7 +27,7 @@ export default function RecentChat({ chatId }: Props) {
     selectMsgById(state, lastMessageId)
   )?.content;
   const chatPartner = useAppSelector((state) =>
-    selectMemberById(state, chatPartnerId)
+    selectMemberById(state.members, chatPartnerId)
   );
   const online = useAppSelector((state) =>
     selectMemberOnlineStatus(state, chatPartnerId)
