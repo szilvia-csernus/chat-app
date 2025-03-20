@@ -12,7 +12,7 @@ import { timeAgoDateTime } from "@/lib/utils";
 
 export default function CurrentChatPartner() {
   const chatPartnerId = useAppSelector(selectCurrentChatPartnerId);
-  const chatPartner = useAppSelector(state => selectMemberById(state, chatPartnerId));
+  const chatPartner = useAppSelector(state => selectMemberById(state.members, chatPartnerId));
   const online = !!(useAppSelector(state => selectMemberOnlineStatus(state, chatPartnerId)));
   const dispatch = useAppDispatch();
 
