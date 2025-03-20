@@ -5,15 +5,15 @@ import MemberCard from "./MemberCard";
 import { selectExistingMemberIds } from "@/redux-store/features/membersSlice";
 import { useEffect } from "react";
 import { fetchCurrentMember } from "@/redux-store/thunks";
-
+import { setChatVisible } from "@/redux-store/features/uiSlice";
 
 export default function MembersList() {
   const dispatch = useAppDispatch();
-  
+
   useEffect(() => {
     dispatch(fetchCurrentMember());
+    dispatch(setChatVisible(false));
   }, [dispatch]);
-
 
   const existingMemberIds = useAppSelector(selectExistingMemberIds);
 
