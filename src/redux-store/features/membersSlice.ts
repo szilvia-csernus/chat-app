@@ -29,7 +29,7 @@ const membersSlice = createSlice({
       action: PayloadAction<{ id: string; lastActive: string }>
     ) {
       if (state.members[action.payload.id]) {
-      state.members[action.payload.id].lastActive = action.payload.lastActive;
+        state.members[action.payload.id].lastActive = action.payload.lastActive;
       }
     },
     updateMemberWithDeletedStatus(state, action: PayloadAction<string>) {
@@ -72,10 +72,6 @@ const membersSlice = createSlice({
   },
   selectors: {
     selectMembers: (membersState) => membersState.members,
-    selectMemberById: (membersState, id: string | null): Member | null => {
-      const member = id && membersState.members[id];
-      return member || null;
-    },
     selectMemberOnlineStatus: (membersState, id: string | null) =>
       id && membersState.members[id] && membersState.members[id].online
         ? membersState.members[id].online
@@ -93,13 +89,20 @@ export const {
   updateOnlineStatus,
 } = membersSlice.actions;
 
-export const { selectMembers, selectMemberById, selectMemberOnlineStatus } =
+export const { selectMembers, selectMemberOnlineStatus } =
   membersSlice.selectors;
 
+  
 // Memoized selectors (created with createSelector)
 
 export const selectMemberIds = createSelector([selectMembers], (members) =>
   Object.keys(members)
+);
+
+export const selectMemberById = createSelector(
+  (state: MembersState) => state.members,
+  (state: MembersState, memberId: string | null) => memberId,
+  (members, memberId) => memberId ? members[memberId] : null
 );
 
 export const selectExistingMemberIds = createSelector(
@@ -114,6 +117,5 @@ export const selectExistingMemberIds = createSelector(
     return existingMemberIds;
   }
 );
-
 
 export default membersSlice.reducer;
