@@ -128,7 +128,7 @@ export default function EditProfileImage({
               <ModalBody>
                 <div className="w-full flex flex-col items-center justify-center relative">
                   {!uploadedImage && (
-                    <div className="absolute left-1/4 opacity-50 rounded-lg overflow-hidden border-1 border-slate-400 dark:border-slate-500">
+                    <div className="absolute left-[calc(1/2_-_100px] opacity-50 rounded-lg overflow-hidden border-1 border-slate-400 dark:border-slate-500">
                       <MemberImage
                         memberName={userName}
                         memberImage={photoUrl}
@@ -138,7 +138,7 @@ export default function EditProfileImage({
                       />
                     </div>
                   )}
-                  <div className="h-48 z-10">
+                  <div className="h-48 z-10 opacity-90">
                     <ProfileImageUpload
                       setValue={setValue}
                       getValues={getValues} 
