@@ -20,7 +20,7 @@ export default async function ProfilePage() {
     redirect("/profile/complete-profile");
   }
 
-  const userName = user?.name ?? "";
+  const userName = user?.name ?? "User";
   const profile = await getCurrentProfile();
 
   const photo = await getPhotoByUserId(session?.user.id as string);
@@ -28,7 +28,7 @@ export default async function ProfilePage() {
 
   return (
     <div className="w-full h-full p-10 bg-inherit text-slate-600 dark:text-slate-300 bg-zig-zag grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-12">
-      <ProfileImage session={session} photoUrl={photoUrl} />
+      <ProfileImage photoUrl={photoUrl} userName={userName} />
 
       <ProfileDetails userName={userName} profile={profile} />
 
