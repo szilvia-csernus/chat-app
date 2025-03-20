@@ -5,7 +5,6 @@ import React, { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
 import { selectMemberById } from "@/redux-store/features/membersSlice";
 import {
-  selectCurrentChat,
   selectCurrentChatId,
   selectCurrentChatMsgGroupChronList,
   selectCurrentChatPartnerId,
