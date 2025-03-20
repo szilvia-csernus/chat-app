@@ -75,8 +75,8 @@ export default function MemberCard({ memberId }: MemberCardProps) {
               onOpenChange={onOpenChange}
             />
           )}
-          <Card fullWidth>
-            <div className="border-1 border-gray-300 dark:border-gray-700 rounded-lg">
+          <Card fullWidth className="rounded-none bg-inherit">
+            <div className="border-1 border-gray-300 dark:border-gray-700 overflow-hidden rounded-2xl">
               <MemberImage
                 memberImage={memberImageUrl}
                 memberName={memberToDisplay ? memberToDisplay.name : ""}
@@ -103,12 +103,10 @@ export default function MemberCard({ memberId }: MemberCardProps) {
                 </div>
               )}
 
-              <CardFooter className="flex justify-start bg-dark-gradient overflow-hidden absolute bottom-0 z-10 pb-1 pt-12">
-                <div className="flex flex-col text-white">
-                  <span className="">
+              <CardFooter className="z-10 pb-1 bg-black/5 backdrop-blur-md bg-blend-darken before:bg-white/10 border-white/20 border-1 overflow-hidden py-0 absolute before:rounded-xl rounded-large bottom-1 w-[calc(100%_-_8px)] shadow-small ml-1">
+                  <span className="text-white shadodw-black drop-shadow-2xl m-auto">
                     {memberToDisplay ? memberToDisplay.name : ""}
                   </span>
-                </div>
               </CardFooter>
             </div>
           </Card>
