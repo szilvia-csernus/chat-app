@@ -15,10 +15,10 @@ import { updateUnreadMsgCount } from "@/redux-store/thunks";
 export default function ChatThread() {
   const dispatch = useAppDispatch();
 
-  const currentChat = useAppSelector(selectCurrentChat);
+  const currentChat = useAppSelector(state => selectCurrentChat(state.chats));
   const chatPartnerId = useAppSelector(selectCurrentChatPartnerId);
   const chatPartner = useAppSelector((state) =>
-    selectMemberById(state, chatPartnerId)
+    selectMemberById(state.members, chatPartnerId)
   );
   const messageGroupList = useAppSelector((state) =>
     selectCurrentChatMsgGroupChronList(state.chats)
