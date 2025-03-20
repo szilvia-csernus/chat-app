@@ -136,6 +136,7 @@ const chatsSlice = createSlice({
   },
   selectors: {
     selectChats: (chatsState) => chatsState.chats,
+    selectCurrentChatId: (chatsState) => chatsState.currentChatId,
     selectCurrentChatPartnerId: (chatsState) => {
       const chatId = chatsState.currentChatId;
       const chat = chatId ? chatsState.chats[chatId] : null;
@@ -183,6 +184,7 @@ export const {
 
 export const {
   selectChats,
+  selectCurrentChatId,
   selectCurrentChatPartnerId,
   selectLastMsgIdByChatId,
   selectAllUnreadMsgCount,
