@@ -23,11 +23,17 @@ const chatsSlice = createSlice({
           state.chats[chat.id] = chat;
         }
       });
+      const unreadCount = action.payload.reduce(
+        (acc, chat) => acc + chat.unreadMessageCount,
+        0
+      );
+      state.allUnreadMessageCount = unreadCount;
     },
     addNewChat(state, action: PayloadAction<ChatData>) {
       if (!state.chats[action.payload.id]) {
         state.chats[action.payload.id] = action.payload;
       }
+      state.allUnreadMessageCount += action.payload.unreadMessageCount;
     },
     setCurrentChat(state, action: PayloadAction<ChatData>) {
       state.chats[action.payload.id] = action.payload;
@@ -40,6 +46,7 @@ const chatsSlice = createSlice({
       const chat = state.chats[action.payload];
       const chatPartner = chat?.chatPartnerId;
       if (chat && chatPartner) {
+        state.allUnreadMessageCount -= chat.unreadMessageCount;
         chat.unreadMessageCount = 0;
         chat.inactive = true;
       }
@@ -54,21 +61,26 @@ const chatsSlice = createSlice({
       }>
     ) {
       const chat = state.chats[action.payload.chatId];
+      // find the last date in the chat
       const lastDate =
         chat.msgGroupData.msgGroupChronList[
           chat.msgGroupData.msgGroupChronList.length - 1
         ];
       const lastMsgGroupData = chat.msgGroupData.msgGroups[lastDate];
+      // find the last cluster in the last date (cluster by sender)
       const lastClusterId =
         lastMsgGroupData.clusterIds[lastMsgGroupData.clusterIds.length - 1];
       const lastCluster = lastMsgGroupData.msgClusters[lastClusterId];
       const lastSenderId = lastCluster.senderId;
 
       if (state.currentChatId === action.payload.chatId) {
+        // if msg is in the same date
         if (lastDate === action.payload.date) {
+          // if msg is from the same sender, add it to the last cluster
           if (lastSenderId === action.payload.senderId) {
             lastCluster.msgIds.push(action.payload.messageId);
           } else {
+            // if msg is from a new sender, create a new cluster
             lastMsgGroupData.msgClusters[action.payload.messageId] = {
               id: action.payload.messageId,
               senderId: action.payload.senderId,
@@ -77,6 +89,7 @@ const chatsSlice = createSlice({
             lastMsgGroupData.clusterIds.push(action.payload.messageId);
           }
         } else {
+          // if msg is in a new date, create a new msg group and cluster
           chat.msgGroupData.msgGroupChronList.push(action.payload.date);
           chat.msgGroupData.msgGroups[action.payload.date] = {
             msgClusters: {
@@ -90,10 +103,6 @@ const chatsSlice = createSlice({
           };
         }
       }
-    },
-    decrementChatUnreadCount(state, action: PayloadAction<string>) {
-      state.chats[action.payload].unreadMessageCount -= 1;
-      state.allUnreadMessageCount -= 1;
     },
     updateUnreadCount(
       state,
@@ -127,37 +136,11 @@ const chatsSlice = createSlice({
   },
   selectors: {
     selectChats: (chatsState) => chatsState.chats,
-    selectChatById: (chatsState, chatId: string) => chatsState.chats[chatId],
-    selectCurrentChat: (chatsState) =>
-      chatsState.currentChatId ? chatsState.chats[chatsState.currentChatId] : null,
     selectCurrentChatPartnerId: (chatsState) => {
       const chatId = chatsState.currentChatId;
       const chat = chatId ? chatsState.chats[chatId] : null;
       return chat ? chat.chatPartnerId : null;
     },
-    // selectCurrentChatMsgGroupChronList: (chatsState) => {
-    //   const chatId = chatsState.currentChatId;
-    //   const chat = chatId ? chatsState.chats[chatId] : null;
-    //   const msgGroupChronList = chat
-    //     ? chat.msgGroupData.msgGroupChronList
-    //     : ([] as string[]);
-    //   return msgGroupChronList;
-    // },
-    // selectCurrentChatMsgClustersDataByDate: (chatsState, date: string) => {
-    //   const chatId = chatsState.currentChatId;
-    //   const chat = chatId ? chatsState.chats[chatId] : null;
-    //   return chat ? chat.msgGroupData.msgGroups[date] : null;
-    // },
-    // selectCurrentChatMsgClusterById: (
-    //   chatsState,
-    //   date: string,
-    //   clusterId: string
-    // ) => {
-    //   const chatId = chatsState.currentChatId;
-    //   const chat = chatId ? chatsState.chats[chatId] : null;
-    //   const msgGroupData = chat?.msgGroupData.msgGroups[date];
-    //   return msgGroupData?.msgClusters[clusterId] || null;
-    // },
     selectLastMsgIdByChatId: (chatsState, chatId: string) => {
       const chat = chatsState.chats[chatId];
       if (
@@ -194,19 +177,13 @@ export const {
   setCurrentChatId,
   deactivateChat,
   addMsgId,
-  decrementChatUnreadCount,
   updateUnreadCount,
   resetChatUnreadCount,
 } = chatsSlice.actions;
 
 export const {
   selectChats,
-  selectChatById,
-  selectCurrentChat,
   selectCurrentChatPartnerId,
-  // selectCurrentChatMsgGroupChronList,
-  // selectCurrentChatMsgClustersDataByDate,
-  // selectCurrentChatMsgClusterById,
   selectLastMsgIdByChatId,
   selectAllUnreadMsgCount,
 } = chatsSlice.selectors;
@@ -218,6 +195,18 @@ export const selectChatIds = createSelector([selectChats], (chats) =>
 
 export const selectActiveChatIds = createSelector([selectChats], (chats) =>
   Object.keys(chats).filter((chatId) => !chats[chatId].inactive)
+);
+
+export const selectChatById = createSelector(
+  (state: ChatsState) => state.chats,
+  (state: ChatsState, chatId: string) => chatId,
+  (chats, chatId) => chats[chatId]
+);
+
+export const selectCurrentChat = createSelector(
+  (state: ChatsState) => state.currentChatId,
+  (state: ChatsState) => state.chats,
+  (currentChatId, chats) => (currentChatId ? chats[currentChatId] : null)
 );
 
 export const selectCurrentChatMsgClustersDataByDate = createSelector(
