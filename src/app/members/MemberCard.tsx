@@ -75,7 +75,7 @@ export default function MemberCard({ memberId }: MemberCardProps) {
               onOpenChange={onOpenChange}
             />
           )}
-          <Card fullWidth className="rounded-none bg-inherit">
+          <Card fullWidth className="bg-inherit">
             <div className="border-1 border-gray-300 dark:border-gray-700 overflow-hidden rounded-2xl">
               <MemberImage
                 memberImage={memberImageUrl}
@@ -103,10 +103,10 @@ export default function MemberCard({ memberId }: MemberCardProps) {
                 </div>
               )}
 
-              <CardFooter className="z-10 pb-1 bg-black/5 backdrop-blur-md bg-blend-darken before:bg-white/10 border-white/20 border-1 overflow-hidden py-0 absolute before:rounded-xl rounded-large bottom-1 w-[calc(100%_-_8px)] shadow-small ml-1">
-                  <span className="text-white shadodw-black drop-shadow-2xl m-auto">
-                    {memberToDisplay ? memberToDisplay.name : ""}
-                  </span>
+              <CardFooter className="z-10 py-0 px-1 absolute bottom-1 max-h-6">
+                <div className="backdrop-blur-md bg-blend-darken before:bg-white/10 border-white/20 border-1 before:rounded-xl rounded-large overflow-hidden text-center px-4 shadow-small text-white drop-shadow-md m-auto">
+                  {memberToDisplay ? memberToDisplay.name : ""}
+                </div>
               </CardFooter>
             </div>
           </Card>
