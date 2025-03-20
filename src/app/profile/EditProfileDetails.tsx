@@ -99,7 +99,7 @@ export default function EditProfileDetails({
                 <ModalBody>
                   <div className="space-y-4">
                     <Input
-                      label="Name"
+                      label="First Name"
                       isRequired
                       autoComplete="given-name"
                       variant="bordered"
