@@ -27,7 +27,7 @@ export default function MessageCluster({ clusterId, date }: Props) {
   const currentMember = useAppSelector(selectCurrentMember);
   const chatPartnerId = useAppSelector(selectCurrentChatPartnerId);
   const chatPartner = useAppSelector((state) =>
-    selectMemberById(state, chatPartnerId)
+    selectMemberById(state.members, chatPartnerId)
   );
 
   const isCurrentMemberSender = senderId === currentMember!.id;
