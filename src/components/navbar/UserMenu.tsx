@@ -27,7 +27,7 @@ export default function UserMenu({ userName, photoUrl }: UserMenuProps) {
   return (
     <Dropdown placement="bottom-end" className="shadow-sm shadow-foreground">
       <DropdownTrigger>
-        <div className="transition-transform cursor-pointer rounded-full">
+        <div className="transition-transform cursor-pointer">
           <PresenceAvatar
             imageWidth={50}
             imageHeight={50}
