@@ -103,7 +103,9 @@ export function addNewMessage(
     if (!chatVisible && message.senderId !== currentMemberId) {
       const unreadCount = await getUnreadMessageCount(chatId);
       console.log("addNewMessage: Updating unread count", unreadCount);
-      dispatch(updateUnreadCount({ chatId, count: unreadCount }));
+      if (unreadCount !== null) {
+        dispatch(updateUnreadCount({ chatId, count: unreadCount }));
+      }
     }
 
     // Receiver side: if the message is for the current chat and the chat is active,
