@@ -42,13 +42,13 @@ export default function ProfileImageUpload({
   };
 
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div className="flex flex-col items-center justify-center h-48">
       {uploadedImage && (
         <Image
           src={uploadedImage}
           alt="Uploaded Image"
-          width={100}
-          height={100}
+          width={200}
+          height={200}
           className="aspect-square object-cover my-4"
         />
       )}
@@ -56,7 +56,7 @@ export default function ProfileImageUpload({
         className={`${uploadDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
         onClick={onClickHandle}
       >
-        <ImageUploadButton onUploadImage={onUploadImage} />
+        {!uploadedImage && (<ImageUploadButton onUploadImage={onUploadImage} />)}
       </div>
     </div>
   );
