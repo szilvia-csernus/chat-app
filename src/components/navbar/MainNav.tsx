@@ -17,6 +17,7 @@ import NavLink from "./NavLink";
 import { HiOutlineChatBubbleLeftRight } from "react-icons/hi2";
 import { useAppSelector } from "@/redux-store/hooks";
 import { selectAllUnreadMsgCount } from "@/redux-store/features/chatsSlice";
+import UnreadCount from "../UnreadCount";
 
 type MainNavProps = {
   currentMemberId: string | null;
@@ -35,7 +36,7 @@ export default function MainNav({
 
   const menuItems = [
     { href: "/members", label: "Members" },
-    { href: "/chats", label: "Chats", badge: allUnreadMessageCount },
+    { href: "/chats", label: "Chats", unreadCount: allUnreadMessageCount },
   ];
 
   return (
@@ -48,12 +49,18 @@ export default function MainNav({
         item: ["text-m", "text-white", "data-[active=true]:text-orange-300"],
       }}
     >
-      <NavbarContent className="sm:hidden" justify="start">
+      <NavbarContent className="sm:hidden relative" justify="start">
         {currentMemberId && (
-          <NavbarMenuToggle
-            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-            className="text-white"
-          />
+          <>
+            <NavbarMenuToggle
+              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+              className="text-white"
+            />
+            {(<UnreadCount
+              unreadCount={allUnreadMessageCount}
+              className="absolute left-[28px]"
+            />)}
+          </>
         )}
       </NavbarContent>
       {/* Logo */}
@@ -77,10 +84,10 @@ export default function MainNav({
                 key={index}
                 href={item.href}
                 label={item.label}
-                badge={item.badge ? item.badge : null}
+                unreadCount={item.unreadCount ? item.unreadCount : null}
                 onClick={() => setIsMenuOpen(false)}
               />
-            </NavbarMenuItem>
+            </NavbarMenuItem >
           ))}
           <div className="my-4 text-center">*</div>
         </NavbarMenu>
@@ -93,7 +100,7 @@ export default function MainNav({
               key={index}
               href={item.href}
               label={item.label}
-              badge={item.badge ? item.badge : null}
+              unreadCount={item.unreadCount ? item.unreadCount : null}
               onClick={() => setIsMenuOpen(false)}
             />
           ))}
