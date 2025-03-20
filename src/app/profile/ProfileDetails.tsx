@@ -18,7 +18,7 @@ export default function ProfileDetails({
       <h1 className="text-xl font-bold">Personal Details</h1>
       <div className="flex flex-col gap-1 ml-3">
         <p className="font-bold">
-          Name: <span className="font-normal">{userName}</span>
+          First Name: <span className="font-normal">{userName}</span>
         </p>
         <p className="font-bold">
           Country:{" "}
