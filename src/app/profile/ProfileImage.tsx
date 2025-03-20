@@ -1,12 +1,10 @@
 "use client";
 
 import { Image } from "@heroui/react";
-// import { Session } from "next-auth";
 import React, { useState } from "react";
 import EditProfileImage from "./EditProfileImage";
 
 type ProfileImageProps = {
-  // session: Session | null;
   photoUrl: string;
   userName: string;
 };
@@ -26,7 +24,7 @@ export default function ProfileImage({ photoUrl, userName }: ProfileImageProps) 
           alt={userName}
           src={photoUrl || "/images/user.png"}
           width={180}
-          className="aspect-square object-cover my-2"
+          className="aspect-square object-cover my-2 border-1 border-slate-300 dark:border-slate-500"
         />
       </div>
       <EditProfileImage
