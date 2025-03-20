@@ -1,5 +1,6 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { SerializedMessage, SerializedMessages } from "@/types";
+import { select } from "@heroui/react";
 
 export type MessagesState = {
   messages: SerializedMessages;
@@ -40,13 +41,7 @@ const messagesSlice = createSlice({
         }
       });
     },
-  },
-  selectors: {
-    selectMsgById: (messagesState, id: string | null) => {
-      if (!id) return null;
-      return messagesState.messages[id];
-    },
-  },
+  }
 });
 
 export const {
@@ -56,6 +51,16 @@ export const {
   updateMsgsWithDeletedStatus,
 } = messagesSlice.actions;
 
-export const { selectMsgById } = messagesSlice.selectors;
+
+// Memoized selector
+
+export const selectMsgById = createSelector(
+  (state: MessagesState) => state.messages,
+  (state: MessagesState, id: string | null) => id,
+  (messages, id) => {
+    if (!id) return null;
+    return messages[id];
+  }
+)
 
 export default messagesSlice.reducer;
