@@ -41,7 +41,6 @@ export default function EditProfileImage({
     register,
     setValue,
     getValues,
-    // trigger,
     setError,
     handleSubmit,
     formState: { isSubmitting, isValid, errors },
@@ -127,37 +126,9 @@ export default function EditProfileImage({
             <>
               <ModalHeader>Upload New Profile Picture</ModalHeader>
               <ModalBody>
-                {/* {session?.user.provider && session?.user.image && (
-                  <div className="flex flex-col items-center">
-                    <div className="text-md mb-4">
-                      Would you like to use your{" "}
-                      <span className="">{session.user.provider}</span> profile
-                      picture?
-                    </div>
-                    <div className={isSocialImageSelected ? "" : "opacity-50"}>
-                      <Image
-                        alt={session.user.name || "user"}
-                        src={session.user.image}
-                        width={100}
-                        height={100}
-                        className="aspect-square object-cover"
-                      />
-                    </div>
-                    <div className="my-4">
-                      <Checkbox
-                        className="text-white rounded-lg"
-                        onChange={onSocialImageSelect}
-                      />
-                      <span className="text-medium font-light">
-                        Yes, use this picture
-                      </span>
-                    </div>
-                    <DividerOR />
-                  </div>
-                )} */}
                 <div className="w-full flex flex-col items-center justify-center relative">
                   {!uploadedImage && (
-                    <div className="absolute left-1/4 opacity-50">
+                    <div className="absolute left-1/4 opacity-50 rounded-lg overflow-hidden border-1 border-slate-400 dark:border-slate-500">
                       <MemberImage
                         memberName={userName}
                         memberImage={photoUrl}
@@ -170,10 +141,9 @@ export default function EditProfileImage({
                   <div className="h-48 z-10">
                     <ProfileImageUpload
                       setValue={setValue}
-                      getValues={getValues}
+                      getValues={getValues} 
                       uploadedImage={uploadedImage}
                       setUploadedImage={setUploadedImage}
-                      // uploadDisabled={isUploadDisabled}
                     />
                   </div>
                 </div>
