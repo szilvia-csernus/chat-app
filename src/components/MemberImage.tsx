@@ -23,7 +23,7 @@ const MemberImage: React.FC<MemberImageProps> = ({ memberName, memberImage, imag
       src={cloudinaryUrl}
       width={imageWidth || 300}
       height={imageHeight || 300}
-      className={className || "aspect-square object-cover transition-transform"}
+      className={`aspect-square object-cover transition-transform rounded-none ${className}`}
       crop="fill"
       gravity="faces"
       priority={true}
@@ -32,11 +32,10 @@ const MemberImage: React.FC<MemberImageProps> = ({ memberName, memberImage, imag
   } else {
   image = (
     <Image
-      isZoomed
       alt={memberName || "Image of member"}
       width={imageWidth || 300}
       src={memberImage || "/images/user.png"}
-      className={className || "aspect-square object-cover transition-transform"}
+      className={className || "aspect-square object-cover transition-transform rounded-none"}
     />
   );
   }
