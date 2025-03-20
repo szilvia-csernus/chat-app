@@ -2,7 +2,7 @@
 
 import { Card, CardHeader, CardBody } from "@heroui/card";
 import { Button } from "@heroui/button";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FiLock } from "react-icons/fi";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,6 +19,7 @@ import { completeProfile } from "@/app/actions/profileActions";
 import { Session } from "next-auth";
 import { useAppDispatch } from "@/redux-store/hooks";
 import { fetchCurrentMember } from "@/redux-store/thunks";
+import { setChatVisible } from "@/redux-store/features/uiSlice";
 
 const stepSchemas = [profileSchema, photoSchema];
 
@@ -35,6 +36,10 @@ export default function CompleteProfileForm({
   const router = useRouter();
   const dispatch = useAppDispatch();
 
+  useEffect(() => {
+    dispatch(setChatVisible(false));
+  }, [dispatch]);
+
   const methods = useForm<CompleteProfileSchema>({
     resolver: zodResolver(currentValidationSchema), // Commenting out this line will turn off client-side validation (to test server-side validation)
     mode: "onTouched",
@@ -47,13 +52,12 @@ export default function CompleteProfileForm({
     formState: { errors, isValid, isSubmitting },
   } = methods;
 
-
   const onSubmit = async () => {
     const result = await completeProfile(getValues());
 
     // const members = await getMembers();
     // dispatch(setMembers(members || []));
-    
+
     if (result.status === "success") {
       // dispatch(fetchAllMembers());
       dispatch(fetchCurrentMember());
@@ -82,7 +86,12 @@ export default function CompleteProfileForm({
       case 0:
         return <ProfileFormFirstStep session={session} />;
       case 1:
-        return <ProfileFormSecondStep session={session} setIsSubmitDisabled={setIsSubmitDisabled} />;
+        return (
+          <ProfileFormSecondStep
+            session={session}
+            setIsSubmitDisabled={setIsSubmitDisabled}
+          />
+        );
       default:
         return <p>Unknown step</p>;
     }
@@ -101,7 +110,10 @@ export default function CompleteProfileForm({
   };
 
   return (
-    <Card radius="none" className="min-w-80 w-full max-w-md mx-auto p-5 gap-4 bg-inherit shadow-none">
+    <Card
+      radius="none"
+      className="min-w-80 w-full max-w-md mx-auto p-5 gap-4 bg-inherit shadow-none"
+    >
       <CardHeader className="flex flex-col items-center justify-center">
         <div className="flex flex-col gap-4 items-center ">
           <div className="flex flex-row items-center gap-3">
