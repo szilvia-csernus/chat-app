@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
 import { selectMemberById } from "@/redux-store/features/membersSlice";
 import {
   selectCurrentChat,
+  selectCurrentChatId,
   selectCurrentChatMsgGroupChronList,
   selectCurrentChatPartnerId,
 } from "@/redux-store/features/chatsSlice";
@@ -15,7 +16,7 @@ import { updateUnreadMsgCount } from "@/redux-store/thunks";
 export default function ChatThread() {
   const dispatch = useAppDispatch();
 
-  const currentChat = useAppSelector(state => selectCurrentChat(state.chats));
+  const currentChatId = useAppSelector(selectCurrentChatId)
   const chatPartnerId = useAppSelector(selectCurrentChatPartnerId);
   const chatPartner = useAppSelector((state) =>
     selectMemberById(state.members, chatPartnerId)
@@ -25,16 +26,16 @@ export default function ChatThread() {
   );
 
   useEffect(() => {
-    if (currentChat) {
+    if (currentChatId) {
       // The user just opened this chat, meaning they can now see all previously
       // unread messages, therefore, we reset the unread count in the redux store.
-      dispatch(updateUnreadMsgCount(currentChat.id));
+      dispatch(updateUnreadMsgCount(currentChatId));
     }
-  }, [currentChat, dispatch]);
+  }, [currentChatId, dispatch]);
 
   return (
     <ul className="flex flex-col px-1 py-2">
-      {currentChat &&
+      {currentChatId &&
         chatPartner &&
         messageGroupList &&
         messageGroupList.length > 0 && (
@@ -48,7 +49,7 @@ export default function ChatThread() {
             })}
           </>
         )}
-      {currentChat &&
+      {currentChatId &&
         chatPartner &&
         messageGroupList &&
         messageGroupList.length === 0 && (
