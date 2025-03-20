@@ -55,14 +55,14 @@ export default function UserMenu({ userName, photoUrl }: UserMenuProps) {
         <DropdownItem
           key="profile"
           textValue="Profile"
-          className="hover:text-secondary hover:dark:text-teal-300 transition-all"
+          className="hover:text-white hover:dark:text-teal-300 transition-all"
           onPress={handleProfileClick}
         >
           Profile
         </DropdownItem>
         <DropdownItem
           key="signout"
-          className="hover:text-secondary hover:dark:text-teal-300 transition-all"
+          className="hover:text-white hover:dark:text-teal-300 transition-all"
           onPress={async () => signOutUser()}
         >
           Sign Out
