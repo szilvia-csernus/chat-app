@@ -10,20 +10,22 @@ import { useAppDispatch } from "@/redux-store/hooks";
 import { setCurrentChat } from "@/redux-store/features/chatsSlice";
 import { mapRawChatDataToChatAndMessages } from "@/lib/maps";
 import { setMessages } from "@/redux-store/features/messagesSlice";
+import { setChatVisible } from "@/redux-store/features/uiSlice";
 
 type Props = {
   initialChat: RawChatData | null;
 };
 
-export default function Chat({
-  initialChat,
-}: Props) {
+export default function Chat({ initialChat }: Props) {
   const dispatch = useAppDispatch();
   const initialized = useRef(false);
 
   useEffect(() => {
     if (!initialized.current && initialChat) {
-      console.log("Chat useEffect: Setting initial chat in store", initialChat.id);
+      console.log(
+        "Chat useEffect: Setting initial chat in store",
+        initialChat.id
+      );
       const result = mapRawChatDataToChatAndMessages(initialChat);
       if (result) {
         const { chat, messages } = result;
@@ -35,6 +37,10 @@ export default function Chat({
   }, [initialChat, dispatch]);
 
   const messageEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    dispatch(setChatVisible(true));
+  });
 
   useEffect(() => {
     if (messageEndRef.current) {
