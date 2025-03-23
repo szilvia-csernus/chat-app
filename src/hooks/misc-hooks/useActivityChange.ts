@@ -2,49 +2,49 @@
 
 import { selectIsActive, setIsActive } from "@/redux-store/features/currentMemberSlice";
 import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 
 export function useActivityChange(): boolean {
   const dispatch = useAppDispatch();
   const isActive = useAppSelector(selectIsActive);
   console.log("useActivityChange: activity state", isActive);
 
+  const handleFocus = useCallback(() => {
+    console.log("focus event fired");
+    dispatch(setIsActive(true));
+  }, [dispatch]);
+
+  const handleBlur = useCallback(() => {
+    console.log("blur event fired");
+    dispatch(setIsActive(false));
+  }, [dispatch]);
+
+  const handleOnline = useCallback(() => {
+    console.log("online event fired");
+    dispatch(setIsActive(document.visibilityState === "visible"));
+  }, [dispatch]);
+
+  const handleOffline = useCallback(() => {
+    console.log("offline event fired");
+    dispatch(setIsActive(false));
+  }, [dispatch]);
+
+  const handleFreeze = useCallback(() => {
+    console.log("freeze event fired");
+    dispatch(setIsActive(false));
+  }, [dispatch]);
+
+  const handleResume = useCallback(() => {
+    console.log("resume event fired");
+    dispatch(setIsActive(document.visibilityState === "visible"));
+  }, [dispatch]);
+
+  // const handleVisibilityChange = useCallback(() => {
+  //   console.log("visibility change event fired");
+  //   dispatch(setIsActive(document.visibilityState === "visible"));
+  // }, [dispatch]);
+
   useEffect(() => {
-    // const handleVisibilityChange = () => {
-    //   console.log("visibility change event fired");
-    //   dispatch(setIsActive(document.visibilityState === "visible"));
-    // };
-
-    const handleFocus = () => {
-      console.log("focus event fired");
-      dispatch(setIsActive(true));
-    };
-
-    const handleBlur = () => {
-      console.log("blur event fired");
-      dispatch(setIsActive(false));
-    };
-
-    const handleOnline = () => {
-      console.log("online event fired");
-      dispatch(setIsActive(document.visibilityState === "visible"));
-    };
-
-    const handleOffline = () => {
-      console.log("offline event fired");
-      dispatch(setIsActive(false));
-    };
-
-    const handleFreeze = () => {
-      console.log("freeze event fired");
-      dispatch(setIsActive(false));
-    };
-
-    const handleResume = () => {
-      console.log("resume event fired");
-      dispatch(setIsActive(document.visibilityState === "visible"));
-    };
-
     // Add event listeners
     // document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("focus", handleFocus);
@@ -64,7 +64,15 @@ export function useActivityChange(): boolean {
       document.removeEventListener("freeze", handleFreeze);
       document.removeEventListener("resume", handleResume);
     };
-  }, [dispatch]);
+  }, [
+    dispatch,
+    handleFocus,
+    handleBlur,
+    handleOnline,
+    handleOffline,
+    handleFreeze,
+    handleResume,
+  ]);
 
   return isActive;
 }
