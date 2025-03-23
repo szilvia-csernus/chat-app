@@ -9,6 +9,8 @@ import { nunito } from "@/app/fonts";
 import { getCurrentProfile } from "./actions/profileActions";
 import { mapProfileDataToCurrentMember } from "@/lib/maps";
 import Channels from "@/components/Channels";
+import InitialStore from "@/components/InitialStore";
+import { getMembers } from "./actions/memberActions";
 
 export const metadata: Metadata = {
   title: "Chat App",
@@ -59,11 +61,9 @@ export default async function RootLayout({
   const currentMember =
     currentProfile && mapProfileDataToCurrentMember(currentProfile);
 
-  console.log("currentMember", currentMember);
+  const membersData = await getMembers();
 
   const recentChats = await getRecentChats();
-
-  console.log("recentChats", recentChats);
 
   const currentChat = currentMember?.lastActiveConversationId
     ? await getChat(currentMember.lastActiveConversationId)
@@ -75,21 +75,24 @@ export default async function RootLayout({
       className={`h-full overflow-y-scroll overflow-x-hidden scrollbar-hide`}
     >
       <body className="font-body h-full bg-background">
-        <Providers
-          currentMember={currentMember}
-          recentChats={recentChats}
-          currentChat={currentChat}
-        >
-          <Channels>
-            <MainNav
-              currentMemberId={currentMember?.id || null}
-              userName={userName}
-              photoUrl={photoUrl}
-            />
-            <main className={`${nunito.className} h-full mx-auto w-full sm:max-w-4xl`}>
-              <div className="place-items-center">{children}</div>
-            </main>
-          </Channels>
+        <Providers>
+          <InitialStore
+            currentMember={currentMember}
+            membersData={membersData}
+            recentChats={recentChats}
+            currentChat={currentChat}
+          />
+          <Channels />
+          <MainNav
+            currentMemberId={currentMember?.id || null}
+            userName={userName}
+            photoUrl={photoUrl}
+          />
+          <main
+            className={`${nunito.className} h-full mx-auto w-full sm:max-w-4xl`}
+          >
+            <div className="place-items-center">{children}</div>
+          </main>
         </Providers>
       </body>
     </html>
