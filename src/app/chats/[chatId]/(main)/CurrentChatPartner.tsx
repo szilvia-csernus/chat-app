@@ -4,16 +4,22 @@ import React from "react";
 import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
 import { IoIosArrowBack } from "react-icons/io";
 import PresenceAvatar from "@/components/PresenceAvatar";
-import { selectMemberById, selectMemberOnlineStatus } from "@/redux-store/features/membersSlice";
+import {
+  selectMemberById,
+  selectMemberOnlineStatus,
+} from "@/redux-store/features/membersSlice";
 import { selectCurrentChatPartnerId } from "@/redux-store/features/chatsSlice";
 import { openSidebar } from "@/redux-store/features/uiSlice";
-import { timeAgoDateTime } from "@/lib/utils";
-
+import LastSeen from "@/components/LastSeen";
 
 export default function CurrentChatPartner() {
   const chatPartnerId = useAppSelector(selectCurrentChatPartnerId);
-  const chatPartner = useAppSelector(state => selectMemberById(state.members, chatPartnerId));
-  const online = !!(useAppSelector(state => selectMemberOnlineStatus(state, chatPartnerId)));
+  const chatPartner = useAppSelector((state) =>
+    selectMemberById(state.members, chatPartnerId)
+  );
+  const online = !!useAppSelector((state) =>
+    selectMemberOnlineStatus(state, chatPartnerId)
+  );
   const dispatch = useAppDispatch();
 
   return (
@@ -49,11 +55,8 @@ export default function CurrentChatPartner() {
             </div>
 
             {!online && (
-              <div
-                suppressHydrationWarning={true}
-                className="text-xs text-gray-400 min-w-full relative"
-              >
-                Last seen: {chatPartner && timeAgoDateTime(chatPartner.lastActive)}
+              <div className="text-xs text-gray-400 min-w-full relative">
+                Last seen: <LastSeen dateString={chatPartner.lastActive} />
               </div>
             )}
           </div>
