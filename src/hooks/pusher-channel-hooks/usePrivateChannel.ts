@@ -18,7 +18,7 @@ import { selectCurrentMemberId } from "@/redux-store/features/currentMemberSlice
 
 
 // Singleton constant is used for the channel to prevent the creation of 
-// multiple channels when the component re-renders
+// multiple channels when the component re-renders (useRef would be equally valid)
 const privateChannelRef: { [key: string]: Channel | null } = {};
 
 export const usePrivateChannel = () => {
@@ -144,5 +144,5 @@ export const usePrivateChannel = () => {
     handleDeleteMember,
   ]);
 
-  return privateChannelRef;
+  return null;
 };
