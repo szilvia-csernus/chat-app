@@ -40,6 +40,10 @@ export function formatShortTime(date: Date) {
   return dayjs(date).format("H:mm");
 }
 
+export function formatShortDateTime(dateString: string) {
+  return dayjs(dateString).format("dddd, D MMMM, H:mm");
+}
+
 export function timeAgoDate(date: string) {
   dayjs.extend(isToday);
   dayjs.extend(isYesterday);
@@ -59,5 +63,3 @@ export function timeAgoDateTime(date: string) {
   dayjs.extend(relativeTime);
   return dayjs(date).fromNow();
 }
-
-
