@@ -15,7 +15,7 @@ import { selectActiveChatIds } from "@/redux-store/features/chatsSlice";
 
 
 // Singleton constant is used for the channel reference to prevent the creation of 
-// multiple channels when the component re-renderss
+// multiple channels when the component re-renders (useRef would be equally valid)
 const chatChannelRefs: { [key: string]: Channel | null } = {};
 
 export const usePrivateChatChannels = () => {
@@ -98,5 +98,5 @@ export const usePrivateChatChannels = () => {
     };
   }, [activeChatIds, currentMemberId, handleNewMessage, handleMessageRead]);
 
-  return chatChannelRefs;
+  return null;
 };
