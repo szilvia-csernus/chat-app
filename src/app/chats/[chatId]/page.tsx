@@ -1,7 +1,6 @@
 import React from "react";
 import Chat from "./(main)/Chat";
-import { getChat } from "@/app/actions/chatActions";
-import { RawChatData } from "@/types";
+import { updateLastChatId } from "@/app/actions/chatActions";
 
 export const dynamic = "force-dynamic";
 
@@ -11,16 +10,12 @@ type Params = {
 
 export default async function ChatsPage({ params }: Params) {
   const { chatId } = await params;
-
-  let initialChat: RawChatData | null = null;
   
-  if (chatId) {
-    initialChat = await getChat(chatId);
-  }
+  await updateLastChatId(chatId);
 
   return (
-    <div className="w-full sm:col-span-7 relative">
-      <Chat initialChat={initialChat} />
+    <div className="w-full sm:col-span-7 relative">  
+        <Chat chatId={chatId}/>
     </div>
   );
 }
