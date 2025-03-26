@@ -1,26 +1,27 @@
 "use client";
 
-import { timeAgoDate } from "@/lib/utils";
 import { useAppSelector } from "@/redux-store/hooks";
-import { selectCurrentChatMsgClustersDataByDate } from "@/redux-store/features/chatsSlice";
+import { selectAllMsgsLoadedForCurrentChat, selectCurrentChatMsgClustersDataByDate } from "@/redux-store/features/chatsSlice";
 import MessageCluster from "./MessageCluster";
 import MessagesDate from "./MessagesDate";
 
 type Props = {
   date: string;
+  first: boolean;
 };
 
-export default function MessageGroup({ date }: Props) {
+export default function MessageGroup({ date, first }: Props) {
   const messageClustersData = useAppSelector((state) =>
     selectCurrentChatMsgClustersDataByDate(state.chats, date)
   );
 
   const msgClusterIds = messageClustersData?.clusterIds || [];
+  const allMsgsLoadedForCurrentChat = useAppSelector(selectAllMsgsLoadedForCurrentChat);
 
   return (
-    <>
-      {date && (
-        <div className="flex justify-center mt-6 mb-4">
+    <div className="mb-4">
+      {date && !(!allMsgsLoadedForCurrentChat && first) && (
+        <div className="flex justify-center mt-2 mb-4">
           <div
             className="py-1 px-12 h-[26px] text-xs font-semibold border-1 text-secondary dark:text-teal-300 rounded-full border-slate-300 dark:border-slate-500 bg-white/5"
           >
@@ -36,6 +37,6 @@ export default function MessageGroup({ date }: Props) {
           </li>
         ))}
       </ul>
-    </>
+    </div>
   );
 }
