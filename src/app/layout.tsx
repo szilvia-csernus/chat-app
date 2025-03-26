@@ -4,7 +4,7 @@ import Providers from "@/components/Providers";
 import MainNav from "@/components/navbar/MainNav";
 import { getCurrentUser } from "./actions/authActions";
 import { getPhotoByUserId } from "./actions/photoActions";
-import { getChat, getRecentChats } from "./actions/chatActions";
+import { getRecentChats } from "./actions/chatActions";
 import { nunito } from "@/app/fonts";
 import { getCurrentProfile } from "./actions/profileActions";
 import { mapProfileDataToCurrentMember } from "@/lib/maps";
@@ -60,14 +60,8 @@ export default async function RootLayout({
   const currentProfile = await getCurrentProfile();
   const currentMember =
     currentProfile && mapProfileDataToCurrentMember(currentProfile);
-
   const membersData = await getMembers();
-
   const recentChats = await getRecentChats();
-
-  const currentChat = currentMember?.lastActiveConversationId
-    ? await getChat(currentMember.lastActiveConversationId)
-    : null;
 
   return (
     <html
@@ -80,7 +74,6 @@ export default async function RootLayout({
             currentMember={currentMember}
             membersData={membersData}
             recentChats={recentChats}
-            currentChat={currentChat}
           />
           <Channels />
           <MainNav
