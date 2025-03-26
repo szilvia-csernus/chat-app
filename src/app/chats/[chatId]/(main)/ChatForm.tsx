@@ -10,7 +10,11 @@ import { useParams } from "next/navigation";
 import { createMessage } from "@/app/actions/messageActions";
 import { handleFormServerErrors } from "@/lib/utils";
 
-export default function ChatForm() {
+type Props = {
+  jumpToBottom: () => void;
+};
+
+export default function ChatForm({ jumpToBottom }: Props) {
   const params = useParams<{ chatId: string }>();
   const chatId = params.chatId;
   const {
@@ -31,11 +35,15 @@ export default function ChatForm() {
 
   const onSubmit = async (data: MessageSchema) => {
     const result = await createMessage(chatId, data);
+
     if (result.status === "error") {
       handleFormServerErrors(result, setError);
     } else {
       reset();
-      setTimeout(() => setFocus("content"), 50);
+      setTimeout(() => {
+        setFocus("content");
+        jumpToBottom();
+      }, 50);
     }
   };
 
