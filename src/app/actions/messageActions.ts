@@ -6,7 +6,7 @@ import { getCurrentProfileId } from "./profileActions";
 import { prisma } from "@/prisma";
 import { Message } from "@prisma/client";
 import { pusherServer } from "@/lib/pusher";
-import { authWithError } from "./authActions";
+import { authWithError, getCurrentUserId } from "./authActions";
 import { serializeMessage } from "@/lib/serialize";
 
 /** Creates a message in the given chat. */
@@ -87,7 +87,7 @@ export async function createMessage(
 }
 
 /** Updates all messages with a read:true status in a given
- * chat as if the current member has just read them. */
+ * chat as if the current member has read them. */
 export async function updateMessagesWithReadStatus(chatId: string) {
   await authWithError();
 
@@ -159,5 +159,54 @@ export async function updateReadStatus(messageId: string) {
   } catch (error) {
     console.error(error);
     return null;
+  }
+}
+
+export async function getMoreMessages(chatId: string, cursor?: string) {
+  const currentUserId = await getCurrentUserId();
+  if (!currentUserId) return null;
+
+  const currentProfileId = await getCurrentProfileId();
+  if (!currentProfileId) return null;
+
+  try {
+    const chat = await prisma.conversation.findUnique({
+      where: {
+        id: chatId,
+      },
+      select: {
+        profiles: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+
+    // If the chat doesn't exist or the current user is not a participant
+    if (!chat || !chat.profiles.some((p) => p.id === currentProfileId)) {
+      return null;
+    }
+
+    const messages = await prisma.message.findMany({
+      where: {
+        conversationId: chatId,
+      },
+      orderBy: {
+        createdAt: "desc", // Fetch the most recent messages first
+      },
+      take: 10, // Limit to 20 messages
+      ...(cursor && {
+        cursor: {
+          id: cursor, // Use the cursor to fetch messages before this ID
+        },
+        skip: 1, // Skip the cursor itself
+      }),
+    });
+
+    return messages;
+  } catch (error) {
+    console.error("Error fetching messages:", error);
+    throw error;
   }
 }
