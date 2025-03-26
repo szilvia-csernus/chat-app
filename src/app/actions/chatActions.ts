@@ -6,7 +6,6 @@ import { authWithError, getCurrentUser, getCurrentUserId } from "./authActions";
 import { getCurrentProfile, getCurrentProfileId } from "./profileActions";
 import { pusherServer } from "@/lib/pusher";
 
-
 /** Fetches the list of recent chats for the "Your Chats" sidebar. */
 export async function getRecentChats() {
   const currentUserId = await getCurrentUserId();
@@ -48,9 +47,9 @@ export async function getRecentChats() {
             deleted: true,
           },
           orderBy: {
-            createdAt: "desc",
+            createdAt: "desc", // Order messages within each conversation by createdAt
           },
-          take: 1,
+          take: 20, // Only fetch the most recent messages
         },
         _count: {
           select: {
@@ -67,102 +66,57 @@ export async function getRecentChats() {
           },
         },
       },
+      orderBy: {
+        updatedAt: "desc", // Order conversations by the most recent update
+      },
     });
 
-    return conversations
-    ;
+    // Reverse the messages array for each conversation to return them in ascending order
+    const conversationsWithReversedMessages = conversations.map(
+      (conversation) => ({
+        ...conversation,
+        messages: conversation.messages.reverse(),
+      })
+    );
+
+    return conversationsWithReversedMessages;
   } catch (error) {
     throw error;
   }
 }
 
-/** Fetches chat data */
-export async function getChat(chatId: string) {
-  const currentUserId = await getCurrentUserId();
-  if (!currentUserId) return null;
+/** Updates the Last chat Id */
+export async function updateLastChatId(chatId: string) {
+  const currentProfileId = await getCurrentProfileId();
+  if (!currentProfileId) return null;
 
-  try {
-    const currentProfileId = await getCurrentProfileId();
-    if (!currentProfileId) return redirect("/profile/complete-profile");
-
-    const chat = await prisma.conversation.findUnique({
-      where: {
-        id: chatId,
-      },
-      select: {
-        profiles: {
-          select: {
-            id: true,
-          },
+  const chat = await prisma.conversation.findUnique({
+    where: {
+      id: chatId,
+    },
+    select: {
+      profiles: {
+        select: {
+          id: true,
         },
       },
-    });
+    },
+  });
 
-    // If the chat doesn't exist or the current user is not a participant
-    if (!chat || !chat.profiles.some((p) => p.id === currentProfileId)) {
-      return null;
-    }
-
-    // Update the last active chat id for the current user
-    await prisma.profile.update({
-      where: {
-        id: currentProfileId,
-      },
-      data: {
-        lastActiveConversationId: chatId,
-      },
-    });
-
-    // Fetch the chat data
-    const conversation = await prisma.conversation.findUnique({
-      where: {
-        id: chatId,
-      },
-      include: {
-        profiles: {
-          where: {
-            id: {
-              not: currentProfileId,
-            },
-          },
-          select: {
-            id: true,
-          },
-        },
-        messages: {
-          select: {
-            id: true,
-            content: true,
-            createdAt: true,
-            senderId: true,
-            read: true,
-            deleted: true,
-          },
-          orderBy: {
-            createdAt: "asc",
-          },
-        },
-        _count: {
-          select: {
-            messages: {
-              where: {
-                AND: {
-                  senderId: {
-                    not: currentProfileId,
-                  },
-                  read: false,
-                },
-              },
-            },
-          },
-        },
-      },
-    });
-
-    return conversation;
-  } catch (error) {
-    throw error;
+  // If the chat doesn't exist or the current user is not a participant
+  if (!chat || !chat.profiles.some((p) => p.id === currentProfileId)) {
+    return null;
   }
+
+  // Update the last active chat id for the current user
+  await prisma.profile.update({
+    where: {
+      id: currentProfileId,
+    },
+    data: {
+      lastActiveConversationId: chatId,
+    },
+  });
 }
 
 /** Fetches current member's last chatId */
@@ -199,10 +153,9 @@ export async function createChat(memberId: string) {
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser) return redirect("/login");
-    
+
     const currentProfileId = await getCurrentProfileId();
-    if (!currentProfileId)
-      return redirect("/profile/complete-profile");
+    if (!currentProfileId) return redirect("/profile/complete-profile");
 
     const chatPartner = await prisma.profile.findUnique({
       where: {
