@@ -128,3 +128,12 @@ select:-moz-autofill {
   border-color: var(--foreground) !important;
   opacity: unset;
 }
+
+/** Loading Container styles*/
+.loading-container-expanded {
+  /* transition-height duration-300 ease-in-out; */
+  transition: height 0.3s ease-out;
+}
+.loading-container-collapsed {
+  transition: none;
+}
