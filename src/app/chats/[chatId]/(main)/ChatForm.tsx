@@ -11,10 +11,10 @@ import { createMessage } from "@/app/actions/messageActions";
 import { handleFormServerErrors } from "@/lib/utils";
 
 type Props = {
-  jumpToBottom: () => void;
+  scrollToBottom: () => void;
 };
 
-export default function ChatForm({ jumpToBottom }: Props) {
+export default function ChatForm({ scrollToBottom }: Props) {
   const params = useParams<{ chatId: string }>();
   const chatId = params.chatId;
   const {
@@ -42,7 +42,7 @@ export default function ChatForm({ jumpToBottom }: Props) {
       reset();
       setTimeout(() => {
         setFocus("content");
-        jumpToBottom();
+        scrollToBottom();
       }, 50);
     }
   };
