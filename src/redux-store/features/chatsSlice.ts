@@ -1,16 +1,23 @@
 import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ChatData, ChatsData } from "@/types";
+import { ChatData, ChatsData, MessageData, SerializedMessage } from "@/types";
+
 
 export type ChatsState = {
   chats: ChatsData;
+  chatIds: string[];
   currentChatId: string | null;
   allUnreadMessageCount: number;
+  populated: boolean;
+  allMsgsLoaded: {[key: string]: boolean};
 };
 
 const initialState: ChatsState = {
   chats: {} as ChatsData,
+  chatIds: [],
   currentChatId: null,
   allUnreadMessageCount: 0,
+  populated: false,
+  allMsgsLoaded: {},
 };
 
 const chatsSlice = createSlice({
@@ -21,6 +28,8 @@ const chatsSlice = createSlice({
       action.payload.forEach((chat) => {
         if (!state.chats[chat.id]) {
           state.chats[chat.id] = chat;
+          state.chatIds.push(chat.id);
+          state.populated = true;
         }
       });
       const unreadCount = action.payload.reduce(
@@ -32,6 +41,7 @@ const chatsSlice = createSlice({
     addNewChat(state, action: PayloadAction<ChatData>) {
       if (!state.chats[action.payload.id]) {
         state.chats[action.payload.id] = action.payload;
+        state.chatIds.push(action.payload.id);
       }
       state.allUnreadMessageCount += action.payload.unreadMessageCount;
     },
@@ -51,7 +61,7 @@ const chatsSlice = createSlice({
         chat.inactive = true;
       }
     },
-    addMsgId(
+    appendMsgId(
       state,
       action: PayloadAction<{
         chatId: string;
@@ -104,6 +114,55 @@ const chatsSlice = createSlice({
         }
       }
     },
+    prependMsgId(
+      state,
+      action: PayloadAction<{ message: SerializedMessage, date: string, chatId: string }>
+    ) {
+      const message = action.payload.message;
+      if (!message.senderId) return;
+
+      const chat = state.chats[action.payload.chatId];
+      // find the first date in the chat
+      const firstDate = chat.msgGroupData.msgGroupChronList[0];
+      const firstMsgGroupData = chat.msgGroupData.msgGroups[firstDate];
+      const firstClusterId = firstMsgGroupData.clusterIds[0];
+      const firstCluster = firstMsgGroupData.msgClusters[firstClusterId];
+      const firstSenderId = firstCluster.senderId;
+      const msgDate = action.payload.date;
+
+      if (state.currentChatId === action.payload.chatId) {
+       
+        if (firstDate === msgDate) {
+          if (firstSenderId === message.senderId) {
+            firstCluster.msgIds.unshift(message.id);
+          } else {
+            firstMsgGroupData.msgClusters[message.id] = {
+              id: message.id,
+              senderId: message.senderId,
+              msgIds: [message.id],
+            };
+            firstMsgGroupData.clusterIds.unshift(message.id);
+          }
+        } else {
+          chat.msgGroupData.msgGroupChronList.unshift(msgDate);
+          chat.msgGroupData.msgGroups[msgDate] = {
+            msgClusters: {
+              [message.id]: {
+                id: message.id,
+                senderId: message.senderId,
+                msgIds: [message.id],
+              },
+            },
+            clusterIds: [message.id],
+          };
+        }
+      }
+    },
+    setAllMsgsLoadedForChatId(state, action: PayloadAction<string | null>) {
+      if (action.payload) {
+        state.allMsgsLoaded[action.payload] = true;
+      }
+    },
     updateUnreadCount(
       state,
       action: PayloadAction<{ chatId: string; count: number }>
@@ -136,6 +195,7 @@ const chatsSlice = createSlice({
   },
   selectors: {
     selectChats: (chatsState) => chatsState.chats,
+    selectChatIds: (chatsState) => chatsState.chatIds,
     selectCurrentChatId: (chatsState) => chatsState.currentChatId,
     selectCurrentChatPartnerId: (chatsState) => {
       const chatId = chatsState.currentChatId;
@@ -167,7 +227,32 @@ const chatsSlice = createSlice({
       const lastMessageId = lastCluster.msgIds[lastCluster.msgIds.length - 1];
       return lastMessageId;
     },
+    selectFirstLoadedMsgIdByChatId: (chatsState, chatId: string | null) => {
+      if (!chatId) return null;
+      const chat = chatsState.chats[chatId];
+      if (
+        !chat ||
+        !chat.msgGroupData ||
+        !chat.msgGroupData.msgGroupChronList ||
+        chat.msgGroupData.msgGroupChronList.length === 0
+      )
+        return null;
+
+      const firstDate = chat.msgGroupData.msgGroupChronList[0];
+      const firstMsgGroupData = chat.msgGroupData.msgGroups[firstDate];
+      if (!firstMsgGroupData) return null;
+
+      const firstClusterId = firstMsgGroupData.clusterIds[0];
+      const firstCluster = firstMsgGroupData.msgClusters[firstClusterId];
+      if (!firstCluster) return null;
+
+      const firstMessageId = firstCluster.msgIds[0];
+      return firstMessageId;
+    },
+    selectAllMsgsLoadedForCurrentChat: (chatsState) =>
+      chatsState.allMsgsLoaded[chatsState.currentChatId || ""],
     selectAllUnreadMsgCount: (chatsState) => chatsState.allUnreadMessageCount,
+    selectChatsPopulated: (chatsState) => chatsState.populated,
   },
 });
 
@@ -177,23 +262,29 @@ export const {
   addNewChat,
   setCurrentChatId,
   deactivateChat,
-  addMsgId,
+  appendMsgId,
+  prependMsgId,
+  setAllMsgsLoadedForChatId,
   updateUnreadCount,
   resetChatUnreadCount,
 } = chatsSlice.actions;
 
 export const {
   selectChats,
+  selectChatIds,
   selectCurrentChatId,
   selectCurrentChatPartnerId,
   selectLastMsgIdByChatId,
+  selectFirstLoadedMsgIdByChatId,
+  selectAllMsgsLoadedForCurrentChat,
   selectAllUnreadMsgCount,
+  selectChatsPopulated,
 } = chatsSlice.selectors;
 
 // memoized selectors
-export const selectChatIds = createSelector([selectChats], (chats) =>
-  Object.keys(chats)
-);
+// export const selectChatIds = createSelector([selectChats], (chats) =>
+//   Object.keys(chats)
+// );
 
 export const selectActiveChatIds = createSelector([selectChats], (chats) =>
   Object.keys(chats).filter((chatId) => !chats[chatId].inactive)
