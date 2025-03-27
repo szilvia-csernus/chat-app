@@ -2,16 +2,27 @@
 
 import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
 import MemberCard from "./MemberCard";
-import { selectExistingMemberIds } from "@/redux-store/features/membersSlice";
+import {
+  selectExistingMemberIds,
+  selectMembersPopulated,
+} from "@/redux-store/features/membersSlice";
 import { useEffect } from "react";
-import { fetchCurrentMember } from "@/redux-store/thunks";
+import { fetchDataAndPopulateStore } from "@/redux-store/thunks";
 import { setChatVisible } from "@/redux-store/features/uiSlice";
 
 export default function MembersList() {
   const dispatch = useAppDispatch();
 
+  // check if members have already been populated (usually happening in InitialStore.tsx)
+  const populated = useAppSelector(selectMembersPopulated);
   useEffect(() => {
-    dispatch(fetchCurrentMember());
+    if (!populated) {
+      dispatch(fetchDataAndPopulateStore());
+    }
+  }, [dispatch, populated]);
+
+  // Marking the chat as not visible, used to determine how a new message should be handled
+  useEffect(() => {
     dispatch(setChatVisible(false));
   }, [dispatch]);
 
