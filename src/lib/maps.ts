@@ -51,7 +51,7 @@ export function mapRawChatDataListToChatsAndMessages(
   return { chats, messages };
 }
 
-export function mapRawChatDataToChatAndMessages(
+function mapRawChatDataToChatAndMessages(
   rawChatData: RawChatData | null
 ): { chat: ChatData; messages: SerializedMessage[] } | null {
   if (!rawChatData) return null;
