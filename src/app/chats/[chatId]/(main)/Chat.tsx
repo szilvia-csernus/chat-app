@@ -50,14 +50,14 @@ export default function Chat({ chatId }: { chatId: string }) {
   }, [firstLoadedMsgId]);
 
   const messageEndRef = useRef<HTMLDivElement>(null);
-  function jumpToBottom() {
+  function scrollToBottom() {
     if (messageEndRef.current) {
       messageEndRef.current.scrollIntoView({ behavior: "auto" });
     }
   }
 
   useEffect(() => {
-    jumpToBottom();
+    scrollToBottom();
   }, []);
 
   return (
@@ -91,7 +91,7 @@ export default function Chat({ chatId }: { chatId: string }) {
             This chat is inactive. Your chat partner has deleted their account.
           </div>
         )}
-        {!currentChat?.inactive && <ChatForm jumpToBottom={jumpToBottom} />}
+        {!currentChat?.inactive && <ChatForm scrollToBottom={scrollToBottom} />}
       </div>
     </Card>
   );
