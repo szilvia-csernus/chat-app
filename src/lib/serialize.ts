@@ -15,6 +15,10 @@ export function serializeMessage(message: MessageData): SerializedMessage {
   };
 }
 
+export function serializeMessages(messages: MessageData[]): SerializedMessage[] {
+  return messages.map((message) => serializeMessage(message));
+}
+
 export function serializeProfileDataToMember(profile: ProfileData): Member {
   return {
     id: profile.id,
