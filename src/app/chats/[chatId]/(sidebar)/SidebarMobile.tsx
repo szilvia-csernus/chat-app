@@ -10,7 +10,6 @@ import clsx from "clsx";
 
 export default function SidebarMobile() {
   const currentMember = useAppSelector(selectCurrentMember);
-  console.log("SidebarMobile currentMember", currentMember);
   const isSidebarOpen = useAppSelector(selectIsSidebarOpen);
 
   return (
