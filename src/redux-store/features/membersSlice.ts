@@ -3,10 +3,12 @@ import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export type MembersState = {
   members: Members;
+  populated: boolean;
 };
 
 const initialState: MembersState = {
   members: {} as Members,
+  populated: false,
 };
 
 const membersSlice = createSlice({
@@ -19,6 +21,7 @@ const membersSlice = createSlice({
           return;
         }
         state.members[member.id] = member;
+        state.populated = true;
       });
     },
     addMember(state, action: PayloadAction<Member>) {
@@ -72,6 +75,7 @@ const membersSlice = createSlice({
   },
   selectors: {
     selectMembers: (membersState) => membersState.members,
+    selectMembersPopulated: (membersState) => membersState.populated,
     selectMemberOnlineStatus: (membersState, id: string | null) =>
       id && membersState.members[id] && membersState.members[id].online
         ? membersState.members[id].online
@@ -89,7 +93,7 @@ export const {
   updateOnlineStatus,
 } = membersSlice.actions;
 
-export const { selectMembers, selectMemberOnlineStatus } =
+export const { selectMembers, selectMembersPopulated, selectMemberOnlineStatus } =
   membersSlice.selectors;
 
   
