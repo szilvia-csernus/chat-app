@@ -68,7 +68,9 @@ export default function Chat({ chatId }: { chatId: string }) {
       <div className="sticky space-x-2 sm:hidden">
         <CurrentChatPartner />
       </div>
-      <div className="flex flex-col-reverse h-svh overflow-y-scroll overscroll-y-contain touch-pan-y scrollbar-hide scroll-smooth">
+      <div
+        className="flex flex-col-reverse h-svh overflow-y-scroll scrollbar-hide scroll-smooth"
+      >
         {/* Pullable space */}
         <PullableSpace
           onPull={handlePull}
