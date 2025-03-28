@@ -1,4 +1,4 @@
-import { Member, MessageData, SerializedMessage } from "@/types";
+import { Member, SerializedMessage } from "@/types";
 import { AppThunk, RootState } from "./store";
 import {
   appendMsgId,
@@ -16,7 +16,7 @@ import {
   updateMessagesWithReadStatus,
   updateReadStatus,
 } from "@/app/actions/messageActions";
-import { addNewMsg, selectMsgById } from "./features/messagesSlice";
+import { addNewMsg } from "./features/messagesSlice";
 import {
   getCurrentProfile,
   updateProfileLastActive,
@@ -32,7 +32,7 @@ import {
   setMembers,
   updateMemberWithLastActiveTime,
 } from "./features/membersSlice";
-import { useAppSelector, usePopulateStore } from "./hooks";
+import { usePopulateStore } from "./hooks";
 import { serializeMessage } from "@/lib/serialize";
 
 export function fetchCurrentMember(): AppThunk {
