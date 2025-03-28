@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Spinner } from "@heroui/react";
-import { useDebounce } from "@/hooks/misc-hooks/useDebounce";
+import { useDebouncedCallback } from "use-debounce";
 
 type Props = {
   onPull: () => void; // Callback triggered when pull threshold is reached
   threshold?: number; // Pull distance threshold to trigger the callback
-  distanceFromTop?: number; // Distance from the top of the screen to the top of the pullable space
+  distanceFromTop: number; // Distance from the top of the screen to the top of the pullable space
   debounceDelay?: number; // Delay for the debounce function
   allMessagesLoaded: boolean;
   children?: React.ReactNode;
@@ -14,8 +14,8 @@ type Props = {
 export default function PullableSpace({
   onPull,
   threshold = 100, // Threshold is how far the user needs to pull down to trigger the callback
-  distanceFromTop = 147,
-  debounceDelay = 300,
+  distanceFromTop,
+  debounceDelay = 1000,
   allMessagesLoaded,
   children,
 }: Props) {
@@ -28,7 +28,7 @@ export default function PullableSpace({
   const beginningRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const loadingRef = useRef(false); // Synchronous loading state to prevent race conditions
-  const finalCheckTimeoutRef = useRef<NodeJS.Timeout | null>(null); // Ref for checking if the scroll is at the top (neccessary, because debouncing skips many scroll events)
+  const scrollStopTimeoutRef = useRef<NodeJS.Timeout | null>(null); // Ref for detecting scroll stop
 
   // Helper function to check if `beginningRef` is rendered at the top
   const checkIfAtTop = () => {
@@ -58,53 +58,42 @@ export default function PullableSpace({
     setContainerHeight(0);
   };
 
+  // Debounced function for message loading
+  const debouncedOnPull = useDebouncedCallback(() => {
+    if (allMessagesLoaded)
+      return;
+    onPull(); // Trigger the onPull callback
+    timeoutRef.current = setTimeout(() => {
+      setLoadingOff();
+      if (scrollContainerRef.current) {
+        scrollContainerRef.current.scrollTop += 1; // Scroll back slightly to enable scrolling upwards again
+      }
+    }, 1000); // Simulate loading time
+  }, debounceDelay);
+
   // Handle the scroll event
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    if (loadingRef.current) return; // Prevent scroll event if loading
+  const handleScroll = useCallback(() => {
+    if (allMessagesLoaded)
+      return;
     console.log("Scroll event fired");
-    // if (loadingRef.current || allMessagesLoaded) return;
-    if (allMessagesLoaded) return;
-    if (checkIfAtTop()) {
-      setLoadingOn(); // Set loading state if at the top
-      onPull(); // Trigger the onPull callback
-      timeoutRef.current = setTimeout(() => {
-        setLoadingOff();
-        if (scrollContainerRef.current) {
-          scrollContainerRef.current.scrollTop += 1;
-        }
-        // Reset scrolling behavior after loading
-      }, 2000); // Simulate loading time
-    }
-  };
 
-  // Debounce the handleScroll function
-  const debouncedHandleScroll = useDebounce(handleScroll, debounceDelay);
-
-  // Perform a final check after scrolling stops
-  const handleFinalCheck = () => {
-    if (loadingRef.current || allMessagesLoaded) return;
-    if (checkIfAtTop()) {
+    if (checkIfAtTop() && !loadingRef.current) {
       setLoadingOn();
-      onPull(); // Trigger the onPull callback
-      timeoutRef.current = setTimeout(() => {
-        setLoadingOff();
-        if (scrollContainerRef.current) {
-          scrollContainerRef.current.scrollTop += 1; // Scroll back slightly
-        }
-      }, 2000); // Simulate loading time
     }
-  };
 
-  // Attach the final check after scrolling stops
-  const handleScrollWithFinalCheck = (e: React.UIEvent<HTMLDivElement>) => {
-    debouncedHandleScroll(e); // Call the debounced scroll handler
-    if (finalCheckTimeoutRef.current) {
-      clearTimeout(finalCheckTimeoutRef.current); // Clear any existing timeout
+    // Clear any existing timeout for detecting scroll stop
+    if (scrollStopTimeoutRef.current) {
+      clearTimeout(scrollStopTimeoutRef.current);
     }
-    finalCheckTimeoutRef.current = setTimeout(() => {
-      handleFinalCheck(); // Perform the final check
-    }, debounceDelay + 100); // Add a small buffer to the debounce delay
-  };
+
+    // Set a timeout to detect when scrolling stops
+    scrollStopTimeoutRef.current = setTimeout(() => {
+      console.log("Scrolling stopped");
+      if (checkIfAtTop() && !allMessagesLoaded) {
+        debouncedOnPull(); // Call the debounced function
+      }
+    }, debounceDelay); 
+  }, [allMessagesLoaded, debouncedOnPull]);
 
   // Handle touch events
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
@@ -142,7 +131,7 @@ export default function PullableSpace({
       timeoutRef.current = setTimeout(() => {
         isOverThresholdRef.current = false;
         setLoadingOff();
-      }, 2000);
+      }, 1000);
     } else {
       // Reset loading if it doesn't exceed the threshold or there's no more message
       setLoadingOff();
@@ -158,6 +147,9 @@ export default function PullableSpace({
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current); // Cleanup timeout on unmount
       }
+      if (scrollStopTimeoutRef.current) {
+        clearTimeout(scrollStopTimeoutRef.current);
+      }
     };
   }, []);
 
@@ -165,7 +157,7 @@ export default function PullableSpace({
     <div
       ref={scrollContainerRef}
       className="pointer-events-auto flex flex-col overflow-y-scroll touch-pan-y scrollbar-hide scroll-smooth"
-      onScroll={handleScrollWithFinalCheck}
+      onScroll={handleScroll}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -181,7 +173,7 @@ export default function PullableSpace({
           height: `${containerHeight}px`, // Dynamically set the height inlined
         }}
       >
-        {loadingRef.current && <Spinner />}
+        {loadingRef.current && <Spinner size="lg" className="mt-2"/>}
       </div>
       {children}
     </div>
