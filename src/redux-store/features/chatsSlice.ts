@@ -1,5 +1,5 @@
 import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ChatData, ChatsData, MessageData, SerializedMessage } from "@/types";
+import { ChatData, ChatsData, SerializedMessage } from "@/types";
 
 
 export type ChatsState = {
@@ -282,9 +282,6 @@ export const {
 } = chatsSlice.selectors;
 
 // memoized selectors
-// export const selectChatIds = createSelector([selectChats], (chats) =>
-//   Object.keys(chats)
-// );
 
 export const selectActiveChatIds = createSelector([selectChats], (chats) =>
   Object.keys(chats).filter((chatId) => !chats[chatId].inactive)
