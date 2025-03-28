@@ -4,7 +4,6 @@ import { useDebouncedCallback } from "use-debounce";
 
 type Props = {
   onPull: () => void; // Callback triggered when pull threshold is reached
-  threshold?: number; // Pull distance threshold to trigger the callback
   distanceFromTop: number; // Distance from the top of the screen to the top of the pullable space
   debounceDelay?: number; // Delay for the debounce function
   allMessagesLoaded: boolean;
@@ -13,7 +12,6 @@ type Props = {
 
 export default function PullableSpace({
   onPull,
-  threshold = 100, // Threshold is how far the user needs to pull down to trigger the callback
   distanceFromTop,
   debounceDelay = 1000,
   allMessagesLoaded,
@@ -29,7 +27,7 @@ export default function PullableSpace({
   const scrollStopTimeoutRef = useRef<NodeJS.Timeout | null>(null); // Ref for detecting scroll stop
 
   // Helper function to check if `beginningRef` is rendered at the top
-  const checkIfAtTop = () => {
+  const checkIfAtTop = useCallback(() => {
     const container = beginningRef.current;
     if (container) {
       const rect = container.getBoundingClientRect();
@@ -37,7 +35,7 @@ export default function PullableSpace({
       return isAtTop;
     }
     return false;
-  };
+  }, [distanceFromTop]);
 
 
   // Debounced function for message loading
@@ -61,7 +59,7 @@ export default function PullableSpace({
 
     if (checkIfAtTop() && !loadingRef.current) {
       loadingRef.current = true;
-      setContainerHeight(threshold);
+      setContainerHeight(150);
     }
 
     // Clear any existing timeout for detecting scroll stop
@@ -75,7 +73,7 @@ export default function PullableSpace({
         debouncedOnPull(); // Call the debounced function
       }
     }, debounceDelay); 
-  }, [allMessagesLoaded, debouncedOnPull]);
+  }, [allMessagesLoaded, debouncedOnPull,  checkIfAtTop, debounceDelay]);
 
 
   // Cleanup the timeout on unmount
