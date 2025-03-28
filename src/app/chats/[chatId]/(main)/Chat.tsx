@@ -75,6 +75,7 @@ export default function Chat({ chatId }: { chatId: string }) {
         <PullableSpace
           onPull={handlePull}
           allMessagesLoaded={allMessagesLoaded}
+          distanceFromTop={147}
         >
           {allMessagesLoaded && (
             <div className="text-center text-xs pt-4">
