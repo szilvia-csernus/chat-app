@@ -17,7 +17,7 @@ import {
   fetchDataAndPopulateStore,
   loadMoreMessages,
 } from "@/redux-store/thunks";
-import PullableSpace from "@/components/PullableSpace";
+import InfiniteScroll from "@/components/InfiniteScroll";
 
 
 export default function Chat({ chatId }: { chatId: string }) {
@@ -28,6 +28,8 @@ export default function Chat({ chatId }: { chatId: string }) {
   const firstLoadedMsgId = useAppSelector((state) =>
     selectFirstLoadedMsgIdByChatId(state, currentChat?.id || null)
   );
+  // This is the ID of the first/oldest message that was loaded.
+  // It's used to load more messages
   const [cursor, setCursor] = useState<string | null>(firstLoadedMsgId);
   const allMessagesLoaded = useAppSelector(selectAllMsgsLoadedForCurrentChat);
 
@@ -72,7 +74,7 @@ export default function Chat({ chatId }: { chatId: string }) {
         className="flex flex-col-reverse h-svh overflow-y-scroll scrollbar-hide scroll-smooth"
       >
         {/* Pullable space */}
-        <PullableSpace
+        <InfiniteScroll
           onPull={handlePull}
           allMessagesLoaded={allMessagesLoaded}
           distanceFromTop={147}
@@ -85,7 +87,7 @@ export default function Chat({ chatId }: { chatId: string }) {
           <ChatThread />
           {/* Ref to mark the end of the conversation */}
           <div ref={messageEndRef} />
-        </PullableSpace>
+        </InfiniteScroll>
         {/* Chat thread */}
       </div>
       <div className="sticky mb-3">
