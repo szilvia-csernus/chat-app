@@ -10,7 +10,7 @@ type Props = {
   children?: React.ReactNode;
 };
 
-export default function PullableSpace({
+export default function InfiniteScroll({
   onPull,
   distanceFromTop,
   debounceDelay = 1000,
