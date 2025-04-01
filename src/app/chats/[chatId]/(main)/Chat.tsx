@@ -7,7 +7,7 @@ import ChatForm from "./ChatForm";
 import CurrentChatPartner from "./CurrentChatPartner";
 import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
 import {
-  selectAllMsgsLoadedForCurrentChat,
+  selectAllOldMsgsLoadedForCurrentChat,
   selectChatsPopulated,
   selectCurrentChat,
   selectFirstLoadedMsgIdByChatId,
@@ -18,6 +18,7 @@ import {
   loadMoreMessages,
 } from "@/redux-store/thunks";
 import InfiniteScroll from "@/components/InfiniteScroll";
+import { selectLastMessageInFocus, setLastMessageInFocus } from "@/redux-store/features/uiSlice";
 
 
 export default function Chat({ chatId }: { chatId: string }) {
@@ -28,10 +29,11 @@ export default function Chat({ chatId }: { chatId: string }) {
   const firstLoadedMsgId = useAppSelector((state) =>
     selectFirstLoadedMsgIdByChatId(state, currentChat?.id || null)
   );
-  // This is the ID of the first/oldest message that was loaded.
+  // This is the ID of the oldest message that was loaded.
   // It's used to load more messages
   const [cursor, setCursor] = useState<string | null>(firstLoadedMsgId);
-  const allMessagesLoaded = useAppSelector(selectAllMsgsLoadedForCurrentChat);
+  const allMessagesLoaded = useAppSelector(selectAllOldMsgsLoadedForCurrentChat);
+  const lastMessageInFocus = useAppSelector(selectLastMessageInFocus);
 
   // used for the first time the chat is opened (if user was not originally
   // signed in when the app first loaded and this is the first page they visit)
@@ -45,6 +47,7 @@ export default function Chat({ chatId }: { chatId: string }) {
   const handlePull = () => {
     if (allMessagesLoaded || !cursor || !currentChat) return;
     dispatch(loadMoreMessages(currentChat.id, cursor)); // Fetch more messages when scrolled to the top
+    dispatch(setLastMessageInFocus(false));
   };
 
   useEffect(() => {
@@ -59,8 +62,10 @@ export default function Chat({ chatId }: { chatId: string }) {
   }
 
   useEffect(() => {
-    scrollToBottom();
-  }, []);
+    if (lastMessageInFocus) {
+      scrollToBottom();
+    }
+  }, [lastMessageInFocus]);
 
   return (
     <Card
@@ -96,7 +101,7 @@ export default function Chat({ chatId }: { chatId: string }) {
             This chat is inactive. Your chat partner has deleted their account.
           </div>
         )}
-        {!currentChat?.inactive && <ChatForm scrollToBottom={scrollToBottom} />}
+        {!currentChat?.inactive && <ChatForm />}
       </div>
     </Card>
   );
