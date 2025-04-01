@@ -3,11 +3,13 @@ import { createSlice } from "@reduxjs/toolkit";
 type UiState = {
   isSidebarOpen: boolean;
   chatVisible: boolean;
+  lastMessageInFocus: boolean;
 };
 
 const initialState: UiState = {
   isSidebarOpen: false,
   chatVisible: false,
+  lastMessageInFocus: false,
 };
 
 const uiSlice = createSlice({
@@ -25,15 +27,19 @@ const uiSlice = createSlice({
     setChatVisible(state, action) {
       state.chatVisible = action.payload;
     },
+    setLastMessageInFocus(state, action) {
+      state.lastMessageInFocus = action.payload;
+    },
   },
   selectors: {
     selectIsSidebarOpen: (uiState) => uiState.isSidebarOpen,
     selectChatVisible: (uiState) => uiState.chatVisible,
+    selectLastMessageInFocus: (uiState) => uiState.lastMessageInFocus,
   },
 });
 
-export const { openSidebar, closeSidebar, setChatVisible } = uiSlice.actions;
+export const { openSidebar, closeSidebar, setChatVisible, setLastMessageInFocus } = uiSlice.actions;
 
-export const { selectIsSidebarOpen, selectChatVisible } = uiSlice.selectors;
+export const { selectIsSidebarOpen, selectChatVisible, selectLastMessageInFocus } = uiSlice.selectors;
 
 export default uiSlice.reducer;
