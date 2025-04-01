@@ -62,7 +62,7 @@ type RawChatData = {
 type ChatData = {
   id: string;
   chatPartnerId: string;
-  msgGroupData: MsgGroupData;
+  msgGroupsData: MsgGroupsData;
   inactive: boolean;
   unreadMessageCount: number;
 };
@@ -87,50 +87,39 @@ type SerializedMessage = {
   senderId: string | null;
   read: boolean;
   deleted: boolean;
+  createdAt: string;
 };
 
 type SerializedMessages = {
   [key: string]: SerializedMessage;
 };
 
+// MsgGroup ids (dates) are in chronological order in msgGroupChronList
+type MsgGroupsData = {
+  msgGroups: MsgGroups;
+  msgGroupChronList: string[];
+}
+
 // Messages are grouped by date
 type MsgGroups = {
   [date: string]: MsgClustersData;
 };
 
-// MsgGroup ids (dates) are in chronological order in msgGroupChronList
-type MsgGroupData = {
-  msgGroups: MsgGroups;
-  msgGroupChronList: string[];
+// MsgCluster ids are in chronological order in clusterIds
+type MsgClustersData = {
+  msgClusters: MsgClusters;
+  clusterIdsChronList: string[];
 }
-
-// Inside message groups, messages are clustered by senderId
-// the cluster's id is the first message's id
-type MsgCluster = {
-  id: string;
-  senderId: string;
-  msgIds: string[];
-};
 
 type MsgClusters = {
   [key: string]: MsgCluster;
 };
 
-// MsgCluster ids are in chronological order in clusterIds
-type MsgClustersData = {
-  msgClusters: MsgClusters;
-  clusterIds: string[];
-}
-
-type MsgGroups = {
-  [date: string]: {
-    msgClusters: {
-      [key: string]: {
-        id: string;
-        senderId: string;
-        msgIds: string[];
-      };
-    };
-    clusterIds: string[];
-  };
+// Inside message groups, messages are clustered by senderId
+// the cluster's id is the first message's id that was added to the cluster
+// which is not necessarily the first message in the cluster
+type MsgCluster = {
+  id: string;
+  senderId: string;
+  msgIds: string[];
 };
