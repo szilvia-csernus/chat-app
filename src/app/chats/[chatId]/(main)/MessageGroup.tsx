@@ -1,7 +1,7 @@
 "use client";
 
 import { useAppSelector } from "@/redux-store/hooks";
-import { selectAllMsgsLoadedForCurrentChat, selectCurrentChatMsgClustersDataByDate } from "@/redux-store/features/chatsSlice";
+import { selectAllOldMsgsLoadedForCurrentChat, selectCurrentChatMsgClustersDataByDate } from "@/redux-store/features/chatsSlice";
 import MessageCluster from "./MessageCluster";
 import MessagesDate from "./MessagesDate";
 
@@ -15,8 +15,8 @@ export default function MessageGroup({ date, first }: Props) {
     selectCurrentChatMsgClustersDataByDate(state.chats, date)
   );
 
-  const msgClusterIds = messageClustersData?.clusterIds || [];
-  const allMsgsLoadedForCurrentChat = useAppSelector(selectAllMsgsLoadedForCurrentChat);
+  const msgClusterIds = messageClustersData?.clusterIdsChronList || [];
+  const allMsgsLoadedForCurrentChat = useAppSelector(selectAllOldMsgsLoadedForCurrentChat);
 
   return (
     <div className="mb-4">
