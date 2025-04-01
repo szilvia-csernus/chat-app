@@ -10,11 +10,8 @@ import { useParams } from "next/navigation";
 import { createMessage } from "@/app/actions/messageActions";
 import { handleFormServerErrors } from "@/lib/utils";
 
-type Props = {
-  scrollToBottom: () => void;
-};
 
-export default function ChatForm({ scrollToBottom }: Props) {
+export default function ChatForm() {
   const params = useParams<{ chatId: string }>();
   const chatId = params.chatId;
   const {
@@ -42,7 +39,6 @@ export default function ChatForm({ scrollToBottom }: Props) {
       reset();
       setTimeout(() => {
         setFocus("content");
-        scrollToBottom();
       }, 50);
     }
   };
