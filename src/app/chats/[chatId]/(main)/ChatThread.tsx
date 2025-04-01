@@ -10,8 +10,9 @@ import {
   selectCurrentChatPartnerId,
 } from "@/redux-store/features/chatsSlice";
 import MessageGroup from "./MessageGroup";
-import { updateUnreadMsgCount } from "@/redux-store/thunks";
+import { resetUnreadMsgCount } from "@/redux-store/thunks";
 import { setChatVisible } from "@/redux-store/features/uiSlice";
+
 
 export default function ChatThread() {
   const dispatch = useAppDispatch();
@@ -28,7 +29,7 @@ export default function ChatThread() {
     if (currentChatId) {
       // The user just opened this chat, meaning they can now see all previously
       // unread messages, therefore, we reset the unread count in the redux store.
-      dispatch(updateUnreadMsgCount(currentChatId));
+      dispatch(resetUnreadMsgCount(currentChatId));
     }
   }, [currentChatId, dispatch]);
 
