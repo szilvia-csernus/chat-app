@@ -162,7 +162,7 @@ export async function updateReadStatus(messageId: string) {
   }
 }
 
-export async function getMoreMessages(chatId: string, cursor?: string) {
+export async function getMoreOldMessages(chatId: string, cursor?: string) {
   const currentUserId = await getCurrentUserId();
   if (!currentUserId) return null;
 
@@ -195,7 +195,7 @@ export async function getMoreMessages(chatId: string, cursor?: string) {
       orderBy: {
         createdAt: "desc", // Fetch the most recent messages first
       },
-      take: 10, // Limit to 20 messages
+      take: 10, // Limit the number of messages
       ...(cursor && {
         cursor: {
           id: cursor, // Use the cursor to fetch messages before this ID
