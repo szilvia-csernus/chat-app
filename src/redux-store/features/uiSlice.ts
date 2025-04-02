@@ -9,7 +9,7 @@ type UiState = {
 const initialState: UiState = {
   isSidebarOpen: false,
   chatVisible: false,
-  lastMessageInFocus: false,
+  lastMessageInFocus: true,
 };
 
 const uiSlice = createSlice({
