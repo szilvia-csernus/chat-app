@@ -10,7 +10,7 @@ import {
   MsgClusters,
   MessageData,
   MsgClustersData,
-  MsgGroupData,
+  MsgGroupsData,
 } from "@/types";
 import {
   serializeCurrentProfileDataToCurrentMember,
@@ -57,12 +57,12 @@ function mapRawChatDataToChatAndMessages(
   if (!rawChatData) return null;
 
   const messages = rawChatData.messages.map((message) => serializeMessage(message));
-  const msgGroupData = groupMessagesByDate(rawChatData.messages);
+  const msgGroupsData = groupMessagesByDate(rawChatData.messages);
 
   const chat = {
     id: rawChatData.id,
     chatPartnerId: rawChatData.profiles[0].id,
-    msgGroupData,
+    msgGroupsData,
     inactive: rawChatData.inactive,
     unreadMessageCount: rawChatData._count.messages,
   };
@@ -91,10 +91,10 @@ function clusterMessagesBySender(messages: MessageData[]): MsgClustersData {
     }
   });
 
-  return { msgClusters, clusterIds };
+  return { msgClusters, clusterIdsChronList: clusterIds };
 }
 
-function groupMessagesByDate(mesages: MessageData[]): MsgGroupData {
+function groupMessagesByDate(mesages: MessageData[]): MsgGroupsData {
   if (mesages.length === 0) {
     return {
       msgGroups: {} as MsgGroups,
