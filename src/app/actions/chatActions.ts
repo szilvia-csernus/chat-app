@@ -246,6 +246,102 @@ export async function getUnreadMessageCount(chatId: string) {
     });
   } catch (error) {
     console.error(error);
-    throw error;
+    return null;
   }
 }
+
+export async function loadNewMessagesAndUnreadCount(
+  chatId: string,
+  cursor: string | null
+) {
+  if (!cursor) return null;
+
+  const currentUserId = await getCurrentUserId();
+  if (!currentUserId) return null;
+
+  const currentProfileId = await getCurrentProfileId();
+  if (!currentProfileId) return null;
+
+  try {
+    const chat = await prisma.conversation.findUnique({
+      where: {
+        id: chatId,
+      },
+      include: {
+        profiles: {
+          select: {
+            id: true,
+          },
+        },
+        _count: {
+          select: {
+            messages: {
+              where: {
+                senderId: {
+                  not: currentProfileId,
+                },
+                read: false,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // If the chat doesn't exist or the current user is not a participant
+    if (!chat || !chat.profiles.some((p) => p.id === currentProfileId)) {
+      return null;
+    }
+
+    const messages = await prisma.message.findMany({
+      where: {
+        conversationId: chatId,
+        createdAt: {
+          gt: new Date(cursor), // Fetch messages created after the cursor
+        },
+      },
+      orderBy: {
+        createdAt: "asc", // Fetch the most recent messages first
+      },
+      take: 20, // Fetch the most recent messages
+    });
+
+    return { messages, unreadCount: chat._count.messages };
+  } catch (error) {
+    console.error("Error refreshing chat:", error);
+    return null;
+  }
+}
+
+// export async function getAllUnreadMessageCount() {
+//   await authWithError();
+
+//   const currentProfileId = await getCurrentProfileId();
+//   if (!currentProfileId) return null;
+
+//   try {
+//     const conversationsData = await prisma.conversation.findMany({
+//       where: {
+//         profiles: {
+//           some: {
+//             id: currentProfileId}
+//         }
+//       }
+//     })
+//     const chatIds = conversationsData.map((chat) => chat.id);
+//     return prisma.message.count({
+//       where: {
+//         conversationId: {
+//           in: chatIds,
+//         },
+//         senderId: {
+//           not: currentProfileId,
+//         },
+//         read: false,
+//       },
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     return null;
+//   }
+// }
