@@ -109,7 +109,7 @@ export const usePrivateChatChannels = () => {
         }
       });
     };
-  }, [activeChatIds, currentMemberId, handleNewMessage, handleMessageRead]);
+  }, [activeChatIds, currentMemberId, handleNewMessage, handleMessageRead, handleRefreshChat]);
 
   return null;
 };
