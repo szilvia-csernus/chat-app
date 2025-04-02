@@ -8,11 +8,10 @@ import { SerializedMessage } from "@/types";
 import {
   updateMsgReadStatus,
 } from "@/redux-store/features/messagesSlice";
-import { addNewMessage } from "@/redux-store/thunks";
+import { addNewMessage, refreshChat } from "@/redux-store/thunks";
 import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
 import { selectCurrentMemberId } from "@/redux-store/features/currentMemberSlice";
-import { selectActiveChatIds } from "@/redux-store/features/chatsSlice";
-
+import { selectActiveChatIds, selectChatsPopulated } from "@/redux-store/features/chatsSlice";
 
 // Singleton constant is used for the channel reference to prevent the creation of 
 // multiple channels when the component re-renders (useRef would be equally valid)
@@ -24,6 +23,8 @@ export const usePrivateChatChannels = () => {
   const dispatch = useAppDispatch();
   const currentMemberId = useAppSelector(selectCurrentMemberId);
   const activeChatIds = useAppSelector(selectActiveChatIds)
+  const populated = useAppSelector(selectChatsPopulated);
+  
 
   const handleNewMessage = useCallback(
     (chatId: string, message: SerializedMessage, date: string) => {
@@ -40,12 +41,20 @@ export const usePrivateChatChannels = () => {
     [dispatch]
   );
 
+  const handleRefreshChat = useCallback(
+    (chatId: string) => {
+      if (!populated) return;
+      dispatch(refreshChat(chatId));
+    },
+    [dispatch, populated]
+  );
+
   useEffect(() => {
     const previousChatIds = Object.keys(chatChannelRefs);
 
     if (currentMemberId) {
       // Subscribe to channels for each chat
-      activeChatIds.forEach((id) => {
+      for (const id of activeChatIds)  {
         if (!chatChannelRefs[id] || !chatChannelRefs[id].subscribed) {
           const channel = pusherClient.subscribe(`private-chat-${id}`);
           console.log(
@@ -68,9 +77,13 @@ export const usePrivateChatChannels = () => {
             // console.log("Message read event received", data);
             handleMessageRead(data.messageId);
           });
+          channel.bind("pusher:subscription_succeeded", () => {
+            console.log("Subscription succeeded for channel", `private-chat-${id}`);
+            handleRefreshChat(id);
+          });
           chatChannelRefs[id] = channel;
         }
-      });
+      };
     }
     // Unsubscribe from channels that are no longer active
     previousChatIds.forEach((id) => {
