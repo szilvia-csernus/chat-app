@@ -20,7 +20,7 @@ import {
   updateMessagesWithReadStatus,
   updateReadStatus,
 } from "@/app/actions/messageActions";
-import { addNewMsg } from "./features/messagesSlice";
+import { addNewMsg, selectMsgById } from "./features/messagesSlice";
 import {
   getCurrentProfile,
   updateProfileLastActive,
@@ -220,7 +220,6 @@ export function loadMoreMessages(
       }
       if (!isMsgAlreadyInStore) {
         const serializedMessage = serializeMessage(message);
-        const date = message.createdAt.toISOString().split("T")[0];
         dispatch(addNewMsg(serializedMessage));
         dispatch(insertMsgId(message, chatId));
       }
@@ -236,8 +235,11 @@ export function refreshChat(chatId: string | null): AppThunk {
 
     const state = getState();
     const latestMsgId = selectLastMsgIdByChatId(state, chatId);
+    const lastMsgDate = selectMsgById(state.messages, latestMsgId)?.createdAt || null;
 
-    const result = await loadNewMessagesAndUnreadCount(chatId, latestMsgId);
+    console.log("Last message date:", lastMsgDate);
+
+    const result = await loadNewMessagesAndUnreadCount(chatId, lastMsgDate);
     if (!result) {
       console.log("No new messages or unread count available.");
       return null;
@@ -280,8 +282,7 @@ export function refreshChat(chatId: string | null): AppThunk {
 
 
 export function insertMsgId(message: MessageData, chatId: string): AppThunk {
-  return async (dispatch, getState) => {
-    const chat = getState().chats.chats[chatId];
+  return async (dispatch) => {
     const dateString = message.createdAt.toISOString().split("T")[0];
     dispatch(addNewMsgGroup({chatId, dateString}));
     dispatch(insertMsgIdIntoGroup(chatId, dateString, message))
