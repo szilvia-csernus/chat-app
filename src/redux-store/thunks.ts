@@ -1,18 +1,22 @@
-import { Member, SerializedMessage } from "@/types";
+import { Member, MessageData, SerializedMessage } from "@/types";
 import { AppThunk, RootState } from "./store";
 import {
+  addNewMsgGroup,
   appendMsgId,
-  prependMsgId,
   resetChatUnreadCount,
+  selectLastMsgIdByChatId,
   setAllMsgsLoadedForChatId,
   updateUnreadCount,
 } from "./features/chatsSlice";
 import {
+  // getAllUnreadMessageCount,
   getRecentChats,
   getUnreadMessageCount,
+  loadNewMessagesAndUnreadCount,
 } from "@/app/actions/chatActions";
 import {
-  getMoreMessages,
+  // getMoreNewMessages,
+  getMoreOldMessages,
   updateMessagesWithReadStatus,
   updateReadStatus,
 } from "@/app/actions/messageActions";
@@ -34,6 +38,10 @@ import {
 } from "./features/membersSlice";
 import { usePopulateStore } from "./hooks";
 import { serializeMessage } from "@/lib/serialize";
+import { setLastMessageInFocus } from "./features/uiSlice";
+import {
+  insertMsgIdIntoGroup,
+} from "./utilityFunctions";
 
 export function fetchCurrentMember(): AppThunk {
   return async (dispatch) => {
@@ -129,11 +137,18 @@ export function addNewMessage(
       );
       await updateReadStatus(message.id);
     }
+
+    // Both sides: if the message is for the current chat and the chat is active,
+    // scroll the new message into view
+    if (chatVisible && currentChatId === chatId) {
+      console.log("addNewMessage: Scrolling into view for message");
+      dispatch(setLastMessageInFocus(true));
+    }
   };
 }
 
-// when user opens a chat, update the unread count
-export function updateUnreadMsgCount(chatId: string): AppThunk {
+// when user opens a chat, reset the unread count for that chat
+export function resetUnreadMsgCount(chatId: string): AppThunk {
   return async (dispatch) => {
     // Reset the unread count for the chat
     dispatch(resetChatUnreadCount(chatId));
@@ -142,9 +157,20 @@ export function updateUnreadMsgCount(chatId: string): AppThunk {
   };
 }
 
+// export function updateUnreadCount(): AppThunk {
+//   return async (dispatch, getState) => {
+//     const state = getState();
+//     const currentChatId = state.chats.currentChatId;
+//     const unreadCount = await getAllUnreadMessageCount();
+//     console.log("updateUnreadCount: Unread count", unreadCount);
+//     if (unreadCount !== null) {
+//       dispatch(updateUnreadCount({ chatId: currentChatId, count: unreadCount }));
+//     }
+//   }
+// }
+
 export function fetchDataAndPopulateStore(): AppThunk {
   return async () => {
-    console.log("thunks: Fetching data for populating store");
     const currentProfile = await getCurrentProfile();
     const currentMember =
       currentProfile && mapProfileDataToCurrentMember(currentProfile);
@@ -169,8 +195,8 @@ export function loadMoreMessages(
 
     if (!chatId) return null;
 
-    const messages = await getMoreMessages(chatId, oldestMsgId);
-    console.log("Messages fetched in loadMoreMessages:", messages);
+    const messages = await getMoreOldMessages(chatId, oldestMsgId);
+    console.log("Messages fetched in loadMoreOldMessages:", messages);
 
     if (!messages) {
       return null;
@@ -188,14 +214,76 @@ export function loadMoreMessages(
     const messagesState = getState().messages.messages;
 
     for (const message of messages) {
-     const isMsgAlreadyInStore = messagesState[message.id];
-     if (!isMsgAlreadyInStore) {
-       const serializedMessage = serializeMessage(message);
-       const date = message.createdAt.toISOString().split("T")[0];
-       dispatch(addNewMsg(serializedMessage));
-       dispatch(prependMsgId({ message: serializedMessage, date, chatId }));
-     }
+      const isMsgAlreadyInStore = messagesState[message.id];
+      if (!!isMsgAlreadyInStore) {
+        continue;
+      }
+      if (!isMsgAlreadyInStore) {
+        const serializedMessage = serializeMessage(message);
+        const date = message.createdAt.toISOString().split("T")[0];
+        dispatch(addNewMsg(serializedMessage));
+        dispatch(insertMsgId(message, chatId));
+      }
     }
   };
 }
 
+export function refreshChat(chatId: string | null): AppThunk {
+  return async (dispatch, getState) => {
+    console.log("refreshWidhNewMessages called with chatId:", chatId);
+
+    if (!chatId) return null;
+
+    const state = getState();
+    const latestMsgId = selectLastMsgIdByChatId(state, chatId);
+
+    const result = await loadNewMessagesAndUnreadCount(chatId, latestMsgId);
+    if (!result) {
+      console.log("No new messages or unread count available.");
+      return null;
+    }
+    const { messages, unreadCount } = result;
+    console.log("Messages fetched in loadMoreNewMessages:", messages);
+
+    if (!messages) {
+      return null;
+    }
+
+    if (messages.length === 0) {
+      console.log("No more messages to load.");
+      return null;
+    }
+
+    const messagesState = getState().messages;
+
+    for (const message of messages) {
+      const isMsgAlreadyInStore = messagesState.messages[message.id];
+      console.log(
+        "Is Message already in store?",
+        message.id,
+        !!isMsgAlreadyInStore
+      );
+      if (!!isMsgAlreadyInStore) {
+        continue;
+      }
+      if (!isMsgAlreadyInStore) {
+        console.log("Adding new message to store", message.id);
+        const serializedMessage = serializeMessage(message);
+        dispatch(addNewMsg(serializedMessage));
+        dispatch(insertMsgId(message, chatId));
+      }
+    }
+
+    dispatch(updateUnreadCount({ chatId, count: unreadCount }));
+  };
+}
+
+
+export function insertMsgId(message: MessageData, chatId: string): AppThunk {
+  return async (dispatch, getState) => {
+    const chat = getState().chats.chats[chatId];
+    const dateString = message.createdAt.toISOString().split("T")[0];
+    dispatch(addNewMsgGroup({chatId, dateString}));
+    dispatch(insertMsgIdIntoGroup(chatId, dateString, message))
+  };
+}
