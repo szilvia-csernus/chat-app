@@ -12,6 +12,7 @@ export function serializeMessage(message: MessageData): SerializedMessage {
     senderId: message.senderId || null,
     read: message.read,
     deleted: message.deleted,
+    createdAt: message.createdAt.toISOString(),
   };
 }
 
