@@ -1,5 +1,5 @@
 import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ChatData, ChatsData, SerializedMessage } from "@/types";
+import { ChatData, ChatsData, MsgClustersData } from "@/types";
 
 
 export type ChatsState = {
@@ -8,7 +8,7 @@ export type ChatsState = {
   currentChatId: string | null;
   allUnreadMessageCount: number;
   populated: boolean;
-  allMsgsLoaded: {[key: string]: boolean};
+  allOldMsgsLoaded: { [key: string]: boolean };
 };
 
 const initialState: ChatsState = {
@@ -17,7 +17,7 @@ const initialState: ChatsState = {
   currentChatId: null,
   allUnreadMessageCount: 0,
   populated: false,
-  allMsgsLoaded: {},
+  allOldMsgsLoaded: {},
 };
 
 const chatsSlice = createSlice({
@@ -61,6 +61,34 @@ const chatsSlice = createSlice({
         chat.inactive = true;
       }
     },
+    addNewMsgGroup(state, action: PayloadAction<{chatId: string, dateString: string}>) {
+      const chat = state.chats[action.payload.chatId];
+      const msgGroupData = chat.msgGroupsData;
+      const newDate = new Date(action.payload.dateString);
+      // Check if the date is already in the list
+      if (!msgGroupData.msgGroups[action.payload.dateString]) {
+        msgGroupData.msgGroups[action.payload.dateString] = {
+          msgClusters: {},
+          clusterIdsChronList: [],
+        };
+        const chronList = msgGroupData.msgGroupChronList;
+        for (let i = 0; i < chronList.length; i++) {
+          const groupDate = new Date(chronList[i]);
+          // If the date is less than group date, insert it before
+          if (newDate < groupDate) {
+            // Insert the date in the right position
+            chronList.splice(i, 0, action.payload.dateString);
+            return;
+          }
+        }
+        // If the date is greater than all the dates in the list, push it to the end
+        chronList.push(action.payload.dateString);
+      }
+    },
+    updateMsgGroup(state, action: PayloadAction<{chatId: string, date: string, msgGroup: MsgClustersData}>) {
+      const chat = state.chats[action.payload.chatId];
+      chat.msgGroupsData.msgGroups[action.payload.date] = action.payload.msgGroup;
+    },
     appendMsgId(
       state,
       action: PayloadAction<{
@@ -73,13 +101,15 @@ const chatsSlice = createSlice({
       const chat = state.chats[action.payload.chatId];
       // find the last date in the chat
       const lastDate =
-        chat.msgGroupData.msgGroupChronList[
-          chat.msgGroupData.msgGroupChronList.length - 1
+        chat.msgGroupsData.msgGroupChronList[
+          chat.msgGroupsData.msgGroupChronList.length - 1
         ];
-      const lastMsgGroupData = chat.msgGroupData.msgGroups[lastDate];
+      const lastMsgGroupData = chat.msgGroupsData.msgGroups[lastDate];
       // find the last cluster in the last date (cluster by sender)
       const lastClusterId =
-        lastMsgGroupData.clusterIds[lastMsgGroupData.clusterIds.length - 1];
+        lastMsgGroupData.clusterIdsChronList[
+          lastMsgGroupData.clusterIdsChronList.length - 1
+        ];
       const lastCluster = lastMsgGroupData.msgClusters[lastClusterId];
       const lastSenderId = lastCluster.senderId;
 
@@ -96,12 +126,12 @@ const chatsSlice = createSlice({
               senderId: action.payload.senderId,
               msgIds: [action.payload.messageId],
             };
-            lastMsgGroupData.clusterIds.push(action.payload.messageId);
+            lastMsgGroupData.clusterIdsChronList.push(action.payload.messageId);
           }
         } else {
           // if msg is in a new date, create a new msg group and cluster
-          chat.msgGroupData.msgGroupChronList.push(action.payload.date);
-          chat.msgGroupData.msgGroups[action.payload.date] = {
+          chat.msgGroupsData.msgGroupChronList.push(action.payload.date);
+          chat.msgGroupsData.msgGroups[action.payload.date] = {
             msgClusters: {
               [action.payload.messageId]: {
                 id: action.payload.messageId,
@@ -109,58 +139,14 @@ const chatsSlice = createSlice({
                 msgIds: [action.payload.messageId],
               },
             },
-            clusterIds: [action.payload.messageId],
-          };
-        }
-      }
-    },
-    prependMsgId(
-      state,
-      action: PayloadAction<{ message: SerializedMessage, date: string, chatId: string }>
-    ) {
-      const message = action.payload.message;
-      if (!message.senderId) return;
-
-      const chat = state.chats[action.payload.chatId];
-      // find the first date in the chat
-      const firstDate = chat.msgGroupData.msgGroupChronList[0];
-      const firstMsgGroupData = chat.msgGroupData.msgGroups[firstDate];
-      const firstClusterId = firstMsgGroupData.clusterIds[0];
-      const firstCluster = firstMsgGroupData.msgClusters[firstClusterId];
-      const firstSenderId = firstCluster.senderId;
-      const msgDate = action.payload.date;
-
-      if (state.currentChatId === action.payload.chatId) {
-       
-        if (firstDate === msgDate) {
-          if (firstSenderId === message.senderId) {
-            firstCluster.msgIds.unshift(message.id);
-          } else {
-            firstMsgGroupData.msgClusters[message.id] = {
-              id: message.id,
-              senderId: message.senderId,
-              msgIds: [message.id],
-            };
-            firstMsgGroupData.clusterIds.unshift(message.id);
-          }
-        } else {
-          chat.msgGroupData.msgGroupChronList.unshift(msgDate);
-          chat.msgGroupData.msgGroups[msgDate] = {
-            msgClusters: {
-              [message.id]: {
-                id: message.id,
-                senderId: message.senderId,
-                msgIds: [message.id],
-              },
-            },
-            clusterIds: [message.id],
+            clusterIdsChronList: [action.payload.messageId],
           };
         }
       }
     },
     setAllMsgsLoadedForChatId(state, action: PayloadAction<string | null>) {
       if (action.payload) {
-        state.allMsgsLoaded[action.payload] = true;
+        state.allOldMsgsLoaded[action.payload] = true;
       }
     },
     updateUnreadCount(
@@ -202,25 +188,29 @@ const chatsSlice = createSlice({
       const chat = chatId ? chatsState.chats[chatId] : null;
       return chat ? chat.chatPartnerId : null;
     },
-    selectLastMsgIdByChatId: (chatsState, chatId: string) => {
+    selectLastMsgIdByChatId: (chatsState, chatId: string | null) => {
+      if (!chatId) return null;
+
       const chat = chatsState.chats[chatId];
       if (
         !chat ||
-        !chat.msgGroupData ||
-        !chat.msgGroupData.msgGroupChronList ||
-        chat.msgGroupData.msgGroupChronList.length === 0
+        !chat.msgGroupsData ||
+        !chat.msgGroupsData.msgGroupChronList ||
+        chat.msgGroupsData.msgGroupChronList.length === 0
       )
         return null;
 
       const lastDate =
-        chat.msgGroupData.msgGroupChronList[
-          chat.msgGroupData.msgGroupChronList.length - 1
+        chat.msgGroupsData.msgGroupChronList[
+          chat.msgGroupsData.msgGroupChronList.length - 1
         ];
-      const lastMsgGroupData = chat.msgGroupData.msgGroups[lastDate];
+      const lastMsgGroupData = chat.msgGroupsData.msgGroups[lastDate];
       if (!lastMsgGroupData) return null;
 
       const lastClusterId =
-        lastMsgGroupData.clusterIds[lastMsgGroupData.clusterIds.length - 1];
+        lastMsgGroupData.clusterIdsChronList[
+          lastMsgGroupData.clusterIdsChronList.length - 1
+        ];
       const lastCluster = lastMsgGroupData.msgClusters[lastClusterId];
       if (!lastCluster) return null;
 
@@ -232,25 +222,25 @@ const chatsSlice = createSlice({
       const chat = chatsState.chats[chatId];
       if (
         !chat ||
-        !chat.msgGroupData ||
-        !chat.msgGroupData.msgGroupChronList ||
-        chat.msgGroupData.msgGroupChronList.length === 0
+        !chat.msgGroupsData ||
+        !chat.msgGroupsData.msgGroupChronList ||
+        chat.msgGroupsData.msgGroupChronList.length === 0
       )
         return null;
 
-      const firstDate = chat.msgGroupData.msgGroupChronList[0];
-      const firstMsgGroupData = chat.msgGroupData.msgGroups[firstDate];
+      const firstDate = chat.msgGroupsData.msgGroupChronList[0];
+      const firstMsgGroupData = chat.msgGroupsData.msgGroups[firstDate];
       if (!firstMsgGroupData) return null;
 
-      const firstClusterId = firstMsgGroupData.clusterIds[0];
+      const firstClusterId = firstMsgGroupData.clusterIdsChronList[0];
       const firstCluster = firstMsgGroupData.msgClusters[firstClusterId];
       if (!firstCluster) return null;
 
       const firstMessageId = firstCluster.msgIds[0];
       return firstMessageId;
     },
-    selectAllMsgsLoadedForCurrentChat: (chatsState) =>
-      chatsState.allMsgsLoaded[chatsState.currentChatId || ""],
+    selectAllOldMsgsLoadedForCurrentChat: (chatsState) =>
+      chatsState.allOldMsgsLoaded[chatsState.currentChatId || ""],
     selectAllUnreadMsgCount: (chatsState) => chatsState.allUnreadMessageCount,
     selectChatsPopulated: (chatsState) => chatsState.populated,
   },
@@ -262,8 +252,9 @@ export const {
   addNewChat,
   setCurrentChatId,
   deactivateChat,
+  addNewMsgGroup,
+  updateMsgGroup,
   appendMsgId,
-  prependMsgId,
   setAllMsgsLoadedForChatId,
   updateUnreadCount,
   resetChatUnreadCount,
@@ -276,7 +267,7 @@ export const {
   selectCurrentChatPartnerId,
   selectLastMsgIdByChatId,
   selectFirstLoadedMsgIdByChatId,
-  selectAllMsgsLoadedForCurrentChat,
+  selectAllOldMsgsLoadedForCurrentChat,
   selectAllUnreadMsgCount,
   selectChatsPopulated,
 } = chatsSlice.selectors;
@@ -305,7 +296,7 @@ export const selectCurrentChatMsgClustersDataByDate = createSelector(
   (state: ChatsState) => state.chats,
   (currentChatId, date, chats) => {
     const chat = currentChatId ? chats[currentChatId] : null;
-    return chat ? chat.msgGroupData.msgGroups[date] : null;
+    return chat ? chat.msgGroupsData.msgGroups[date] : null;
   }
 );
 
@@ -316,7 +307,7 @@ export const selectCurrentChatMsgClusterById = createSelector(
   (state: ChatsState) => state.chats,
   (currentChatId, date, clusterId, chats) => {
     const chat = currentChatId ? chats[currentChatId] : null;
-    const msgGroupData = chat?.msgGroupData.msgGroups[date];
+    const msgGroupData = chat?.msgGroupsData.msgGroups[date];
     return msgGroupData?.msgClusters[clusterId] || null;
   }
 );
@@ -326,7 +317,7 @@ export const selectCurrentChatMsgGroupChronList = createSelector(
   (state: ChatsState) => state.chats,
   (currentChatId, chats) => {
     const chat = currentChatId ? chats[currentChatId] : null;
-    return chat ? chat.msgGroupData.msgGroupChronList : [];
+    return chat ? chat.msgGroupsData.msgGroupChronList : [];
   }
 );
 
