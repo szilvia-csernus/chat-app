@@ -19,20 +19,23 @@ import {
 } from "@/redux-store/thunks";
 import InfiniteScroll from "@/components/InfiniteScroll";
 import { selectLastMessageInFocus, setLastMessageInFocus } from "@/redux-store/features/uiSlice";
+import { updateLastChatId } from "@/app/actions/chatActions";
 
 
 export default function Chat({ chatId }: { chatId: string }) {
   const populated = useAppSelector(selectChatsPopulated);
   const dispatch = useAppDispatch();
 
-  const currentChat = useAppSelector(state => selectCurrentChat(state.chats));
+  const currentChat = useAppSelector((state) => selectCurrentChat(state.chats));
   const firstLoadedMsgId = useAppSelector((state) =>
     selectFirstLoadedMsgIdByChatId(state, currentChat?.id || null)
   );
   // This is the ID of the oldest message that was loaded.
   // It's used to load more messages
   const [cursor, setCursor] = useState<string | null>(firstLoadedMsgId);
-  const allMessagesLoaded = useAppSelector(selectAllOldMsgsLoadedForCurrentChat);
+  const allMessagesLoaded = useAppSelector(
+    selectAllOldMsgsLoadedForCurrentChat
+  );
   const lastMessageInFocus = useAppSelector(selectLastMessageInFocus);
 
   // used for the first time the chat is opened (if user was not originally
@@ -65,19 +68,25 @@ export default function Chat({ chatId }: { chatId: string }) {
     if (lastMessageInFocus) {
       scrollToBottom();
     }
-  }, [lastMessageInFocus]);
+  }); // No dependency array! This is because we want to scroll to the bottom whenever
+  // a new message is sent or received, not only when the focus changes.
+
+  useEffect(() => {
+    const updateChatId = async () => {
+      await updateLastChatId(chatId);
+    };
+    updateChatId();
+  }, [chatId]);
 
   return (
     <Card
       radius="none"
       className="h-[calc(100dvh-80px)] m-0 border-1 border-slate-300 dark:border-slate-700 bg-zig-zag"
     >
-      <div className="sticky space-x-2 sm:hidden">
+      <div className="sticky space-x-2">
         <CurrentChatPartner />
       </div>
-      <div
-        className="flex flex-col-reverse h-svh overflow-y-scroll scrollbar-hide scroll-smooth"
-      >
+      <div className="flex flex-col-reverse h-svh overflow-y-scroll scrollbar-hide scroll-smooth">
         {/* Pullable space */}
         <InfiniteScroll
           onPull={handlePull}
