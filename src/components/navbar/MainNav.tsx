@@ -56,10 +56,12 @@ export default function MainNav({
               aria-label={isMenuOpen ? "Close menu" : "Open menu"}
               className="text-white"
             />
-            {(<UnreadCount
-              unreadCount={allUnreadMessageCount}
-              className="absolute left-[28px]"
-            />)}
+            {
+              <UnreadCount
+                unreadCount={allUnreadMessageCount}
+                className="absolute left-[28px]"
+              />
+            }
           </>
         )}
       </NavbarContent>
@@ -68,7 +70,7 @@ export default function MainNav({
         <HiOutlineChatBubbleLeftRight size={40} className="text-teal-200" />
         <div className="font-bold text-xl  p-1">
           <span className="text-white">Chat</span>
-          <span className="text-accent">APP</span>
+          <span className="text-accent font-extrabold">APP</span>
         </div>
       </NavbarBrand>
       {/* Mobile Menu */}
@@ -87,7 +89,7 @@ export default function MainNav({
                 unreadCount={item.unreadCount ? item.unreadCount : null}
                 onClick={() => setIsMenuOpen(false)}
               />
-            </NavbarMenuItem >
+            </NavbarMenuItem>
           ))}
           <div className="my-4 text-center">*</div>
         </NavbarMenu>
