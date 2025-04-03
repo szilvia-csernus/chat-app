@@ -17,13 +17,13 @@ const images = [
     image: completeProfilePage1,
     alt: "Screenshot of the complete profile page (step 1)", subtitle: "2. Complete your profile",
   },
-  // {
-  //   image: completeProfilePage2,
-  //   alt: "Screenshot of the complete profile page (step 2)",
-  // },
-  { image: membersPageImg, alt: "Screenshot of an example members page", subtitle: "3. Find a friendly chat partner" },
-  { image: newChatPageImg, alt: "Screenshot of an example new chat modal", subtitle: "4. Start a new chat" },
-  { image: chatPageImg, alt: "Screenshot of an example chat page", subtitle: "5. Start chatting" },
+  {
+    image: completeProfilePage2,
+    alt: "Screenshot of the complete profile page (step 2)", subtitle: "3. Upload a profile picture",
+  },
+  { image: membersPageImg, alt: "Screenshot of an example members page", subtitle: "4. Find a friendly chat partner" },
+  { image: newChatPageImg, alt: "Screenshot of an example new chat modal", subtitle: "5. Start a new chat" },
+  { image: chatPageImg, alt: "Screenshot of an example chat page", subtitle: "6. Start chatting" },
 ];
 
 export default function ImageSlideshow() {
