@@ -59,7 +59,7 @@ export default function InfiniteScroll({
 
     if (checkIfAtTop() && !loadingRef.current) {
       loadingRef.current = true;
-      setContainerHeight(150);
+      setContainerHeight(80);
     }
 
     // Clear any existing timeout for detecting scroll stop
