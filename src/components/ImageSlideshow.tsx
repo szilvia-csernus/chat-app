@@ -51,7 +51,7 @@ export default function ImageSlideshow() {
               transform:
                 index === currentImageIndex
                   ? "translateX(-50%) translateY(0%)"
-                  : " translateY(100%) ",
+                  : "translateX(-20%) translateY(100%) ",
               opacity: index === currentImageIndex ? 1 : 0,
               left: "50%", // Center horizontally
               color: "inherit",
