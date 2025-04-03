@@ -86,7 +86,6 @@ export function updateMemberLastActive(id: string): AppThunk {
 export function addNewMessage(
   chatId: string,
   message: SerializedMessage,
-  date: string
 ): AppThunk {
   return async (dispatch, getState) => {
     const state: RootState = getState();
@@ -281,6 +280,6 @@ export function insertMsgId(message: SerializedMessage, chatId: string): AppThun
   return async (dispatch) => {
     const dateString = message.createdAt.split("T")[0];
     dispatch(addNewMsgGroup({ chatId, dateString }));
-    dispatch(insertMsgIdIntoGroup(chatId, dateString, message));
+    dispatch(insertMsgIdIntoGroup(chatId, message));
   };
 }
