@@ -1,8 +1,8 @@
-import { Member, MessageData, SerializedMessage } from "@/types";
+import { Member, SerializedMessage } from "@/types";
 import { AppThunk, RootState } from "./store";
 import {
   addNewMsgGroup,
-  appendMsgId,
+  // appendMsgId,
   resetChatUnreadCount,
   selectLastMsgIdByChatId,
   setAllMsgsLoadedForChatId,
@@ -99,14 +99,15 @@ export function addNewMessage(
 
     // Both sides: add the message to the store
     dispatch(addNewMsg(message));
-    dispatch(
-      appendMsgId({
-        chatId,
-        senderId: message.senderId!,
-        messageId: message.id,
-        date,
-      })
-    );
+    dispatch(insertMsgId(message, chatId));
+    // dispatch(
+    //   appendMsgId({
+    //     chatId,
+    //     senderId: message.senderId!,
+    //     messageId: message.id,
+    //     date,
+    //   })
+    // );
 
     // Receiver side: if chat is not visible,
     // update the unread count for that chat
@@ -216,7 +217,7 @@ export function loadMoreMessages(
       if (!isMsgAlreadyInStore) {
         const serializedMessage = serializeMessage(message);
         dispatch(addNewMsg(serializedMessage));
-        dispatch(insertMsgId(message, chatId));
+        dispatch(insertMsgId(serializedMessage, chatId));
       }
     }
   };
@@ -268,7 +269,7 @@ export function refreshChat(chatId: string | null): AppThunk {
         console.log("Adding new message to store", message.id);
         const serializedMessage = serializeMessage(message);
         dispatch(addNewMsg(serializedMessage));
-        dispatch(insertMsgId(message, chatId));
+        dispatch(insertMsgId(serializedMessage, chatId));
       }
     }
 
@@ -276,9 +277,9 @@ export function refreshChat(chatId: string | null): AppThunk {
   };
 }
 
-export function insertMsgId(message: MessageData, chatId: string): AppThunk {
+export function insertMsgId(message: SerializedMessage, chatId: string): AppThunk {
   return async (dispatch) => {
-    const dateString = message.createdAt.toISOString().split("T")[0];
+    const dateString = message.createdAt.split("T")[0];
     dispatch(addNewMsgGroup({ chatId, dateString }));
     dispatch(insertMsgIdIntoGroup(chatId, dateString, message));
   };
