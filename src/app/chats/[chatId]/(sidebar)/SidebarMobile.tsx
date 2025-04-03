@@ -14,9 +14,11 @@ export default function SidebarMobile() {
 
   return (
     <div
-      className={clsx(`absolute top-[80px] bottom-0 transition-all duration-400 items-center h-screen m-0 border-1 border-slate-300 dark:border-slate-700 bg-zig-zag z-10`,
-        {"left-0 inset-x-0 size-auto": isSidebarOpen},
-        {"-left-[200vw]": !isSidebarOpen})}
+      className={clsx(
+        `absolute top-[80px] bottom-0 h-[calc(100%-80px)] transition-all duration-400 items-center m-0 border-1 border-slate-300 dark:border-slate-700 bg-zig-zag z-10`,
+        { "left-0 inset-x-0 size-auto": isSidebarOpen },
+        { "-left-[200vw]": !isSidebarOpen }
+      )}
     >
       <Card radius="none" className="bg-background">
         <CardBody className="flex flex-col h-full items-center p-0">
