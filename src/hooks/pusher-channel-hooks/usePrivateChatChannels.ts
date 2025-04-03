@@ -27,9 +27,9 @@ export const usePrivateChatChannels = () => {
   
 
   const handleNewMessage = useCallback(
-    (chatId: string, message: SerializedMessage, date: string) => {
+    (chatId: string, message: SerializedMessage) => {
       console.log("Handling new message", chatId);
-      dispatch(addNewMessage(chatId, message, date));
+      dispatch(addNewMessage(chatId, message));
     },
     [dispatch]
   );
@@ -67,10 +67,9 @@ export const usePrivateChatChannels = () => {
             (data: {
               chatId: string;
               message: SerializedMessage;
-              date: string;
             }) => {
               // console.log("New message received", data.chatId, data.message);
-              handleNewMessage(data.chatId, data.message, data.date);
+              handleNewMessage(data.chatId, data.message);
             }
           );
           channel.bind("message-read", (data: { messageId: string }) => {
