@@ -9,7 +9,6 @@ import completeProfilePage2 from "@/assets/complete-profile-page-2.jpeg";
 import membersPageImg from "@/assets/members-page.jpeg";
 import newChatPageImg from "@/assets/new-chat-page.jpeg";
 import chatPageImg from "@/assets/chat-page.jpeg";
-import { sub } from "framer-motion/client";
 
 const images = [
   { image: loginPage, alt: "Screenshot of the login page", subtitle: "1. Sign up" },
