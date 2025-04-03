@@ -202,13 +202,13 @@ export async function deleteUser(id: string) {
     });
     console.log("Profile data deleted");
 
-    // Trigger presence channel to remove user from online list
-    pusherServer.trigger("presence-chat-app", "remove_member", profileId);
-
     // Trigger private channel to remove user from members list
     pusherServer.trigger(`private-${profileId}`, "delete-member", {
       memberId: profileId,
     });
+
+    // Trigger presence channel to remove user from online list
+    pusherServer.trigger("presence-chat-app", "remove_member", profileId);
 
     revalidateTag("all-members");
 
