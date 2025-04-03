@@ -3,11 +3,21 @@
 import { useCallback, useEffect, useRef } from "react";
 import { Channel, Members, PresenceChannel } from "pusher-js";
 import { pusherClient } from "@/lib/pusher";
-import { setMembersOnlineStatus, updateOnlineStatus } from "@/redux-store/features/membersSlice";
-import { updateMemberLastActive } from "@/redux-store/thunks";
+import {
+  setMembersOnlineStatus,
+  updateOnlineStatus,
+} from "@/redux-store/features/membersSlice";
+import {
+  resetUnreadMsgCount,
+  updateMemberLastActive,
+} from "@/redux-store/thunks";
 import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
-import { selectCurrentMemberId, selectIsActive } from "@/redux-store/features/currentMemberSlice";
-
+import {
+  selectCurrentMemberId,
+  selectIsActive,
+} from "@/redux-store/features/currentMemberSlice";
+import { selectCurrentChatId } from "@/redux-store/features/chatsSlice";
+import { selectChatVisible } from "@/redux-store/features/uiSlice";
 
 export const usePresenceChannel = () => {
   console.log("Presence");
@@ -19,13 +29,26 @@ export const usePresenceChannel = () => {
   const dispatch = useAppDispatch();
   const currentMemberId = useAppSelector(selectCurrentMemberId);
   const isActive = useAppSelector(selectIsActive);
+  const currentChatId = useAppSelector(selectCurrentChatId);
+  const chatVisible = useAppSelector(selectChatVisible);
 
   const handleSetMembers = useCallback(
     (memberIds: string[]) => {
       console.log("Setting members' online list", memberIds);
       dispatch(setMembersOnlineStatus({ memberIds }));
+      // if the member has a chat open, update the messages' read status
+      // and reset the unread message count
+      console.log(
+        "usePresenceChannel: currentChatId",
+        currentChatId,
+        "chatVisible",
+        chatVisible
+      );
+      if (currentChatId && chatVisible) {
+        dispatch(resetUnreadMsgCount(currentChatId));
+      }
     },
-    [dispatch]
+    [dispatch, currentChatId, chatVisible]
   );
 
   const handleAddMember = useCallback(
