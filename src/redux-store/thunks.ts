@@ -39,9 +39,7 @@ import {
 import { usePopulateStore } from "./hooks";
 import { serializeMessage } from "@/lib/serialize";
 import { setLastMessageInFocus } from "./features/uiSlice";
-import {
-  insertMsgIdIntoGroup,
-} from "./utilityFunctions";
+import { insertMsgIdIntoGroup } from "./utilityFunctions";
 
 export function fetchCurrentMember(): AppThunk {
   return async (dispatch) => {
@@ -99,22 +97,18 @@ export function addNewMessage(
     const currentMemberId = state.currentMember.currentMember?.id;
     console.log("addNewMessage: Current member id", currentMemberId);
 
-    // If the message is for the current chat, add it to the chat
-    // on either or both the sender and receiver side
-    if (currentChatId === chatId) {
-      console.log("addNewMessage: Adding message to current chat");
-      dispatch(addNewMsg(message));
-      dispatch(
-        appendMsgId({
-          chatId,
-          senderId: message.senderId!,
-          messageId: message.id,
-          date,
-        })
-      );
-    }
+    // Both sides: add the message to the store
+    dispatch(addNewMsg(message));
+    dispatch(
+      appendMsgId({
+        chatId,
+        senderId: message.senderId!,
+        messageId: message.id,
+        date,
+      })
+    );
 
-    // Receiver side: if chat is not active,
+    // Receiver side: if chat is not visible,
     // update the unread count for that chat
     if (!chatVisible && message.senderId !== currentMemberId) {
       const unreadCount = await getUnreadMessageCount(chatId);
@@ -124,7 +118,7 @@ export function addNewMessage(
       }
     }
 
-    // Receiver side: if the message is for the current chat and the chat is active,
+    // Receiver side: if the message is for the current chat and the chat is visible,
     // update the read status of the message in the database
     if (
       chatVisible &&
@@ -138,7 +132,7 @@ export function addNewMessage(
       await updateReadStatus(message.id);
     }
 
-    // Both sides: if the message is for the current chat and the chat is active,
+    // Both sides: if the message is for the current chat and the chat is visible,
     // scroll the new message into view
     if (chatVisible && currentChatId === chatId) {
       console.log("addNewMessage: Scrolling into view for message");
@@ -147,13 +141,14 @@ export function addNewMessage(
   };
 }
 
-// when user opens a chat, reset the unread count for that chat
+// when user opens a chat, mark the messages as "read" and 
+// reset the unread count for that chat
 export function resetUnreadMsgCount(chatId: string): AppThunk {
   return async (dispatch) => {
-    // Reset the unread count for the chat
-    dispatch(resetChatUnreadCount(chatId));
     // Update the read status of the messages in the database
     await updateMessagesWithReadStatus(chatId);
+    // Reset the unread count for the chat
+    dispatch(resetChatUnreadCount(chatId));
   };
 }
 
@@ -235,7 +230,8 @@ export function refreshChat(chatId: string | null): AppThunk {
 
     const state = getState();
     const latestMsgId = selectLastMsgIdByChatId(state, chatId);
-    const lastMsgDate = selectMsgById(state.messages, latestMsgId)?.createdAt || null;
+    const lastMsgDate =
+      selectMsgById(state.messages, latestMsgId)?.createdAt || null;
 
     console.log("Last message date:", lastMsgDate);
 
@@ -280,11 +276,10 @@ export function refreshChat(chatId: string | null): AppThunk {
   };
 }
 
-
 export function insertMsgId(message: MessageData, chatId: string): AppThunk {
   return async (dispatch) => {
     const dateString = message.createdAt.toISOString().split("T")[0];
-    dispatch(addNewMsgGroup({chatId, dateString}));
-    dispatch(insertMsgIdIntoGroup(chatId, dateString, message))
+    dispatch(addNewMsgGroup({ chatId, dateString }));
+    dispatch(insertMsgIdIntoGroup(chatId, dateString, message));
   };
 }
