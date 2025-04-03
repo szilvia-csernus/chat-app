@@ -81,11 +81,18 @@ export async function signOutUser() {
 }
 
 /** Delete User */
-export async function deleteUser(userId: string) {
+export async function deleteUser(id: string) {
   try {
+    // Find the user's id
+    const user = await prisma.user.findFirst({
+      where: { profile: { id } },
+    });
+    if (!user) {
+      throw new Error("User not found");
+    }
     // Find the user's profile
     const profile = await prisma.profile.findUnique({
-      where: { userId },
+      where: { id },
     });
 
     if (!profile) {
@@ -151,7 +158,7 @@ export async function deleteUser(userId: string) {
 
     // Find the user's photo
     const userPhoto = await prisma.photo.findFirst({
-      where: { userId },
+      where: { userId: user.id },
     });
 
     console.log("User photo found: ", userPhoto);
@@ -165,7 +172,7 @@ export async function deleteUser(userId: string) {
 
     // Delete the user account
     await prisma.user.delete({
-      where: { id: userId },
+      where: { id: user.id },
     });
 
     console.log("User deleted");
