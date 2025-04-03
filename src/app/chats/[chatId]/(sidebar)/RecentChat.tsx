@@ -20,15 +20,19 @@ type Props = {
 export default function RecentChat({ chatId }: Props) {
   const chat = useAppSelector((state) => selectChatById(state.chats, chatId));
   const { chatPartnerId, unreadMessageCount } = chat;
+  const chatPartner = useAppSelector((state) =>
+    selectMemberById(state.members, chatPartnerId)
+  );
   const lastMessageId = useAppSelector((state) =>
     selectLastMsgIdByChatId(state, chatId)
   );
   const lastMessage = useAppSelector((state) =>
     selectMsgById(state.messages, lastMessageId)
-  )?.content;
-  const chatPartner = useAppSelector((state) =>
-    selectMemberById(state.members, chatPartnerId)
-  );
+  )
+  const lastMessageContent = lastMessage?.content;
+  const lastMessageSenderId = lastMessage?.senderId;
+  const lastMessageSenderName = lastMessageSenderId === chatPartnerId ? chatPartner?.name : "You";
+  
   const online = useAppSelector((state) =>
     selectMemberOnlineStatus(state, chatPartnerId)
   );
@@ -53,8 +57,18 @@ export default function RecentChat({ chatId }: Props) {
               <div>
                 {chatPartner.deleted ? "Deleted User" : chatPartner.name}
               </div>
-              <div className="text-xs text-gray-400 line-clamp-2">
-                {lastMessage || "No message to show"}
+              <div className="text-xs text-gray-400 line-clamp-2 italic">
+                {lastMessage ? (
+                  <>
+                    <span className="">
+                      [{lastMessageSenderName}]:
+                      {" "}
+                    </span>
+                    <span className="font-bold">{lastMessageContent}</span>
+                  </>
+                ) : (
+                  "No message to show"
+                )}
                 {unreadMessageCount > 0 && (
                   <div className="absolute bottom-6 right-[30px] sm:right-[10px] bg-secondary rounded-full text-white text-xs w-5 h-5 flex items-center justify-center">
                     {unreadMessageCount}
