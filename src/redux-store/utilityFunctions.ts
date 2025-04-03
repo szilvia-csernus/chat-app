@@ -1,17 +1,17 @@
-import { MessageData, SerializedMessage } from "@/types";
+import { SerializedMessage } from "@/types";
 import { AppThunk } from "./store";
 import { updateMsgGroup } from "./features/chatsSlice";
 import { produce } from "immer";
 
 export function insertMsgIdIntoGroup(
   chatId: string,
-  date: string,
   message: SerializedMessage
 ): AppThunk {
   return async (dispatch, getState) => {
     if (!message.senderId) return;
 
     const chat = getState().chats.chats[chatId];
+    const date = message.createdAt.split("T")[0];
     const originalMsgGroup = chat.msgGroupsData.msgGroups[date];
     // with Immer, we can modify the draft object directly
     // and it will produce a new object with the changes
