@@ -68,7 +68,7 @@ export default async function RootLayout({
       lang="en"
       className={`h-full overflow-y-scroll overflow-x-hidden scrollbar-hide`}
     >
-      <body className="font-body h-full bg-background">
+      <body className={`${nunito.className} font-body h-full bg-background`}>
         <Providers>
           <InitialStore
             currentMember={currentMember}
@@ -82,7 +82,7 @@ export default async function RootLayout({
             photoUrl={photoUrl}
           />
           <main
-            className={`${nunito.className} h-full mx-auto w-full sm:max-w-4xl`}
+            className="h-full mx-auto w-full sm:max-w-4xl"
           >
             <div className="place-items-center">{children}</div>
           </main>
