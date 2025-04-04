@@ -112,7 +112,7 @@ export default function CompleteProfileForm({
   return (
     <Card
       radius="none"
-      className="min-w-80 w-full max-w-md mx-auto p-5 gap-4 bg-inherit shadow-none"
+      className="min-w-80 w-full max-w-md mx-auto p-5 gap-4 bg-inherit shadow-none overflow-scroll scrollbar-hide"
     >
       <CardHeader className="flex flex-col items-center justify-center">
         <div className="flex flex-col gap-4 items-center ">
