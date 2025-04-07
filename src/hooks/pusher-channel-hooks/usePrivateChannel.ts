@@ -73,7 +73,7 @@ export const usePrivateChannel = () => {
       console.log("usePrivateChannel: Deleting member", memberId);
       const currentMembers = await getMembers();
       const allMemberIds = currentMembers?.map((m) => m.id);
-      console.log("usePrivateChannel: All member ids", allMemberIds);
+      console.log("usePrivateChannel: All member ids in handleDeleteMember", allMemberIds);
       console.log("usePrivateChannel: dispatching removeMember: ", memberId);
       dispatch(updateMemberWithDeletedStatus(memberId));
     },
