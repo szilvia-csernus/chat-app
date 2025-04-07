@@ -103,13 +103,18 @@ export async function deleteUser(id: string) {
 
     const profileId = profile.id;
 
+    const messagesToUpdate = await prisma.message.findMany({
+      where: { senderId: profileId },
+      select: { id: true }, // Only fetch the IDs
+    });
+
+    const messageIds = messagesToUpdate.map((message) => message.id);
+
     // Mark user's messages as deleted
     const messages = await prisma.message.updateMany({
       where: { senderId: profileId },
       data: { content: "Deleted message", deleted: true },
     });
-
-    const messageIds = Object.keys(messages);
 
     console.log("Messages marked as deleted", messageIds);
 
