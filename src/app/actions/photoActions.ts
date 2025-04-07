@@ -106,10 +106,25 @@ export async function deleteImageFromCloudinary(cloudinaryImageId: string) {
 
   try {
     await cloudinary.v2.uploader.destroy(cloudinaryImageId);
+    await invalidateCloudinaryCache(cloudinaryImageId);
   } catch (error) {
     console.error(
       `Error deleting ${cloudinaryImageId} from Cloudinary. Error: ${error}`
     );
+  }
+}
+
+export async function invalidateCloudinaryCache(publicId: string) {
+  try {
+    const result = await cloudinary.v2.uploader.explicit(publicId, {
+      type: "upload",
+      invalidate: true,
+    });
+    console.log("Cloudinary cache invalidation result:", result);
+    return result;
+  } catch (error) {
+    console.error("Error invalidating Cloudinary cache:", error);
+    throw error;
   }
 }
 
