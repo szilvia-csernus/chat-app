@@ -83,12 +83,15 @@ export default function ContactMe() {
 
   return (
     <>
-      <Button
-        className="bg-transparent text-md text-accent underline cursor-pointer p-0 m-0 justify-start"
-        onPress={onOpen}
-      >
-        here
-      </Button>
+      <span>
+        Contact me
+        <Button
+          className="bg-transparent text-md text-accent underline cursor-pointer pl-1 m-0 justify-start"
+          onPress={onOpen}
+        >
+          here
+        </Button>
+      </span>
       <Modal
         placement={"center"}
         isDismissable={true}
@@ -107,10 +110,9 @@ export default function ContactMe() {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader>Got Questions?</ModalHeader>
+              <ModalHeader>Contact Me</ModalHeader>
               <form onSubmit={handleSubmit(onSubmit)}>
                 <ModalBody>
-                  <h2>Send me a message.</h2>
                   <div className="space-y-4">
                     <Input
                       label="Your Emaill"
