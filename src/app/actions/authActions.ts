@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { deleteImageFromCloudinary } from "./photoActions";
 import { pusherServer } from "@/lib/pusher";
 import { revalidateTag } from "next/cache";
+import { getMemberIdsServerFn } from "./memberActions";
 
 /** Authentication function that returns null if
  * user is authenticated, otherwise redirects to login */
@@ -206,6 +207,20 @@ export async function deleteUser(id: string) {
       },
     });
     console.log("Profile data deleted");
+
+    const members = await getMemberIdsServerFn();
+
+    if (members) {
+      for (const member of members) {
+        if (member.id === profileId) {
+          continue;
+        }
+        // Trigger chat partners' browsers to update inactivated chats and deleted user profile
+        pusherServer.trigger(`private-${member.id}`, "delete-member", {
+          memberId: profileId,
+        });
+      }
+    }
 
     // Trigger private channel to remove user from members list
     pusherServer.trigger(`private-${profileId}`, "delete-member", {
