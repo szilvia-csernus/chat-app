@@ -209,7 +209,7 @@ export async function createChat(memberId: string) {
     // Notify the other member of the new chat
     const newChatData = {
       id: newChat.id,
-      chatPartnerId: chatPartner.id,
+      chatPartnerId: currentProfileId,
       msgGroupsData: { msgGroups: {}, msgGroupChronList: [] },
       inactive: false,
       unreadMessageCount: 0,
