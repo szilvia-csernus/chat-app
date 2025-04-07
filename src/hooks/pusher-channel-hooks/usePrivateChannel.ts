@@ -10,7 +10,6 @@ import {
   updateChatting,
   updateMemberWithDeletedStatus,
 } from "@/redux-store/features/membersSlice";
-import { getMembers } from "@/app/actions/memberActions";
 import { addNewChat, deactivateChat } from "@/redux-store/features/chatsSlice";
 import { updateMsgsWithDeletedStatus } from "@/redux-store/features/messagesSlice";
 import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
@@ -71,10 +70,6 @@ export const usePrivateChannel = () => {
     async (memberId: string) => {
       // remove member from redux store on other people's devices
       console.log("usePrivateChannel: Deleting member", memberId);
-      const currentMembers = await getMembers();
-      const allMemberIds = currentMembers?.map((m) => m.id);
-      console.log("usePrivateChannel: All member ids in handleDeleteMember", allMemberIds);
-      console.log("usePrivateChannel: dispatching removeMember: ", memberId);
       dispatch(updateMemberWithDeletedStatus(memberId));
     },
     [dispatch]
