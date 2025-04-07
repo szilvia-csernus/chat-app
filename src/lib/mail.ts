@@ -3,20 +3,19 @@ import { Resend } from "resend";
 const resend = new Resend(process.env.AUTH_RESEND_KEY);
 
 
-export async function sendOTPEmail(email: string, token: string) {
+export async function sendEmail(email: string, message: string) {
   if (!process.env.EMAIL_FROM) {
     throw new Error("EMAIL_FROM is not set");
   }
 
   return resend.emails.send({
-    from: `NextJS AuthJS Prisma Template <${process.env.EMAIL_FROM}>`,
+    from: `Chat APP <${process.env.EMAIL_FROM}>`,
     to: email,
-    subject: `Your verification code is ${token}`,
+    subject: `New contact form submission`,
     html: `
-      <h2>The verification code you have requested is</h2>
-      <h1>${token}</h1>
+      <h2>New message from ${email}</h2>
       <br>
-      <p>If you didn't initiate this request, please ignore this email.</p>
+      <div>${message}</div>
     `,
   });
 }
