@@ -39,7 +39,7 @@ export default function ImageSlideshow() {
   }, []);
 
   return (
-    <div className="relative w-full h-full rounded-lg my-3">
+    <div className="relative w-full h-full rounded-lg mt-3">
       {images.map((image, index) => (
         <div key={index}>
           <h2
@@ -61,7 +61,7 @@ export default function ImageSlideshow() {
           </h2>
           <Image
             src={image.image}
-            className="w-auto h-full object-cover absolute top-0 left-0 scale-110 -translate-x-1 transition-all duration-1000 ease-in-out 
+            className="w-auto h-[420px] sm:h-full object-cover absolute top-0 left-0 scale-110 -translate-x-1 transition-all duration-1000 ease-in-out 
             border-1 border-slate-300 dark:border-slate-700"
             style={{
               zIndex: index === currentImageIndex ? 1 : 0,
