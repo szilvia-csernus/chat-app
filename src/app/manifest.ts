@@ -8,6 +8,9 @@ import type { MetadataRoute } from "next";
     description: "ChatApp is a simple chat application",
     start_url: "/",
     display: "fullscreen",
+    orientation: "portrait",
+    scope: "/",
+    lang: "en",
     theme_color: "#344664",
     background_color: "#344664",
     icons: [
