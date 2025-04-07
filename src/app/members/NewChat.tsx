@@ -54,6 +54,7 @@ export default function NewChat({
   return (
     <>
       <Modal
+        placement={"center"}
         isDismissable={false}
         isKeyboardDismissDisabled={true}
         backdrop="opaque"
