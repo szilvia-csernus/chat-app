@@ -65,6 +65,7 @@ export default function ContactMe() {
             setError(fieldName, { message: e.message });
           });
         } else {
+          console.error("Server error while sending email:", result.error);
           setError("root.serverError", {
             message: JSON.stringify(result.error),
           });
@@ -72,6 +73,7 @@ export default function ContactMe() {
       }
     } catch (error) {
       // Handle other errors
+      console.error("Error sending email:", error);
       setError("root.serverError", {
         message:
           "An error occurred while sending message. Please try again later.",
