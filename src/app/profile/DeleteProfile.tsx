@@ -42,6 +42,7 @@ export default function DeleteProfile() {
 
   const ConfirmDelete = (
     <Modal
+      placement={"center"}
       isDismissable={false}
       isKeyboardDismissDisabled={true}
       backdrop="opaque"

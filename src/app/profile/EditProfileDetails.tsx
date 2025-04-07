@@ -78,6 +78,7 @@ export default function EditProfileDetails({
         Edit Details
       </Button>
       <Modal
+        placement={"center"}
         isDismissable={false}
         isKeyboardDismissDisabled={true}
         backdrop="opaque"
@@ -118,7 +119,6 @@ export default function EditProfileDetails({
                       isInvalid={!!errors.country}
                       errorMessage={errors.country?.message as string}
                     />
-                    
                   </div>
                 </ModalBody>
                 <ModalFooter>

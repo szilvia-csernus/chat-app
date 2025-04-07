@@ -108,6 +108,7 @@ export default function EditProfileImage({
         {userHasImage ? "Replace this image" : "Add new profile image"}
       </Button>
       <Modal
+        placement={"center"}
         isDismissable={false}
         isKeyboardDismissDisabled={true}
         backdrop="opaque"
@@ -141,7 +142,7 @@ export default function EditProfileImage({
                   <div className="h-48 z-10 opacity-90">
                     <ProfileImageUpload
                       setValue={setValue}
-                      getValues={getValues} 
+                      getValues={getValues}
                       uploadedImage={uploadedImage}
                       setUploadedImage={setUploadedImage}
                     />
