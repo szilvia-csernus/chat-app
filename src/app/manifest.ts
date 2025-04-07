@@ -7,7 +7,7 @@ import type { MetadataRoute } from "next";
     short_name: "ChatApp",
     description: "ChatApp is a simple chat application",
     start_url: "/",
-    display: "standalone",
+    display: "fullscreen",
     theme_color: "#344664",
     background_color: "#344664",
     icons: [
