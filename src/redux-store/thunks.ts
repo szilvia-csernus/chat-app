@@ -5,7 +5,7 @@ import {
   // appendMsgId,
   resetChatUnreadCount,
   selectLastMsgIdByChatId,
-  setAllMsgsLoadedForChatId,
+  setAllOldMsgsLoadedForChatId,
   updateUnreadCount,
 } from "./features/chatsSlice";
 import {
@@ -203,7 +203,7 @@ export function loadMoreMessages(
     }
 
     if (messages.length < 10) {
-      dispatch(setAllMsgsLoadedForChatId(chatId));
+      dispatch(setAllOldMsgsLoadedForChatId(chatId));
     }
 
     const messagesState = getState().messages.messages;

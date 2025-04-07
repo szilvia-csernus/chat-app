@@ -44,6 +44,7 @@ const chatsSlice = createSlice({
         state.chatIds.push(action.payload.id);
       }
       state.allUnreadMessageCount += action.payload.unreadMessageCount;
+      state.allOldMsgsLoaded[action.payload.id] = true;
     },
     setCurrentChat(state, action: PayloadAction<ChatData>) {
       state.chats[action.payload.id] = action.payload;
@@ -89,62 +90,64 @@ const chatsSlice = createSlice({
       const chat = state.chats[action.payload.chatId];
       chat.msgGroupsData.msgGroups[action.payload.date] = action.payload.msgGroup;
     },
-    appendMsgId(
-      state,
-      action: PayloadAction<{
-        chatId: string;
-        senderId: string;
-        messageId: string;
-        date: string;
-      }>
-    ) {
-      const chat = state.chats[action.payload.chatId];
-      // find the last date in the chat
-      const lastDate =
-        chat.msgGroupsData.msgGroupChronList[
-          chat.msgGroupsData.msgGroupChronList.length - 1
-        ];
-      const lastMsgGroupData = chat.msgGroupsData.msgGroups[lastDate];
-      // find the last cluster in the last date (cluster by sender)
-      const lastClusterId =
-        lastMsgGroupData.clusterIdsChronList[
-          lastMsgGroupData.clusterIdsChronList.length - 1
-        ];
-      const lastCluster = lastMsgGroupData.msgClusters[lastClusterId];
-      const lastSenderId = lastCluster.senderId;
+    // appendMsgId(
+    //   state,
+    //   action: PayloadAction<{
+    //     chatId: string;
+    //     senderId: string;
+    //     messageId: string;
+    //     date: string;
+    //   }>
+    // ) {
+    //   const chat = state.chats[action.payload.chatId];
+    //   // find the last date in the chat
+    //   const lastDate =
+    //     chat.msgGroupsData.msgGroupChronList.length >= 1 ?
+    //     chat.msgGroupsData.msgGroupChronList[
+    //       chat.msgGroupsData.msgGroupChronList.length - 1
+    //     ] : null;
+    //   const lastMsgGroupData = lastDate ? chat.msgGroupsData.msgGroups[lastDate]:
+    //   chat.msgGroupsData.msgGroups[action.payload.date];
+    //   // find the last cluster in the last date (cluster by sender)
+    //   const lastClusterId =
+    //     lastMsgGroupData.clusterIdsChronList[
+    //       lastMsgGroupData.clusterIdsChronList.length - 1
+    //     ];
+    //   const lastCluster = lastMsgGroupData.msgClusters[lastClusterId];
+    //   const lastSenderId = lastCluster.senderId;
 
-      if (state.currentChatId === action.payload.chatId) {
-        // if msg is in the same date
-        if (lastDate === action.payload.date) {
-          // if msg is from the same sender, add it to the last cluster
-          if (lastSenderId === action.payload.senderId) {
-            lastCluster.msgIds.push(action.payload.messageId);
-          } else {
-            // if msg is from a new sender, create a new cluster
-            lastMsgGroupData.msgClusters[action.payload.messageId] = {
-              id: action.payload.messageId,
-              senderId: action.payload.senderId,
-              msgIds: [action.payload.messageId],
-            };
-            lastMsgGroupData.clusterIdsChronList.push(action.payload.messageId);
-          }
-        } else {
-          // if msg is in a new date, create a new msg group and cluster
-          chat.msgGroupsData.msgGroupChronList.push(action.payload.date);
-          chat.msgGroupsData.msgGroups[action.payload.date] = {
-            msgClusters: {
-              [action.payload.messageId]: {
-                id: action.payload.messageId,
-                senderId: action.payload.senderId,
-                msgIds: [action.payload.messageId],
-              },
-            },
-            clusterIdsChronList: [action.payload.messageId],
-          };
-        }
-      }
-    },
-    setAllMsgsLoadedForChatId(state, action: PayloadAction<string | null>) {
+    //   if (state.currentChatId === action.payload.chatId) {
+    //     // if msg is in the same date
+    //     if (lastDate === action.payload.date) {
+    //       // if msg is from the same sender, add it to the last cluster
+    //       if (lastSenderId === action.payload.senderId) {
+    //         lastCluster.msgIds.push(action.payload.messageId);
+    //       } else {
+    //         // if msg is from a new sender, create a new cluster
+    //         lastMsgGroupData.msgClusters[action.payload.messageId] = {
+    //           id: action.payload.messageId,
+    //           senderId: action.payload.senderId,
+    //           msgIds: [action.payload.messageId],
+    //         };
+    //         lastMsgGroupData.clusterIdsChronList.push(action.payload.messageId);
+    //       }
+    //     } else {
+    //       // if msg is in a new date, create a new msg group and cluster
+    //       chat.msgGroupsData.msgGroupChronList.push(action.payload.date);
+    //       chat.msgGroupsData.msgGroups[action.payload.date] = {
+    //         msgClusters: {
+    //           [action.payload.messageId]: {
+    //             id: action.payload.messageId,
+    //             senderId: action.payload.senderId,
+    //             msgIds: [action.payload.messageId],
+    //           },
+    //         },
+    //         clusterIdsChronList: [action.payload.messageId],
+    //       };
+    //     }
+    //   }
+    // },
+    setAllOldMsgsLoadedForChatId(state, action: PayloadAction<string | null>) {
       if (action.payload) {
         state.allOldMsgsLoaded[action.payload] = true;
       }
@@ -254,8 +257,8 @@ export const {
   deactivateChat,
   addNewMsgGroup,
   updateMsgGroup,
-  appendMsgId,
-  setAllMsgsLoadedForChatId,
+  // appendMsgId,
+  setAllOldMsgsLoadedForChatId,
   updateUnreadCount,
   resetChatUnreadCount,
 } = chatsSlice.actions;
