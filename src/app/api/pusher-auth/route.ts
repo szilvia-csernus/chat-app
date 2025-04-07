@@ -1,12 +1,12 @@
-import { getCurrentProfileId } from "@/app/actions/profileActions";
+import { getCurrentProfile } from "@/app/actions/profileActions";
 import { pusherServer } from "@/lib/pusher";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   try {
-    const currentProfileId = await getCurrentProfileId()
+    const currentProfile = await getCurrentProfile();
 
-    if (!currentProfileId) {
+    if (!currentProfile || currentProfile.deleted ) {
       return new Response("Unauthorised", { status: 401 });
     }
 
@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     const socketId = body.get("socket_id") as string;
     const channel = body.get("channel_name") as string;
     const data = {
-      user_id: currentProfileId,
+      user_id: currentProfile.id,
     };
 
     const authResponse = pusherServer.authorizeChannel(socketId, channel, data);
