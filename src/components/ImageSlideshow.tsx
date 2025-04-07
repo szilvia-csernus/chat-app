@@ -22,7 +22,7 @@ const images = [
   },
   { image: membersPageImg, alt: "Screenshot of an example members page", subtitle: "4. Find a friendly chat partner" },
   { image: newChatPageImg, alt: "Screenshot of an example new chat modal", subtitle: "5. Start a new chat" },
-  { image: chatPageImg, alt: "Screenshot of an example chat page", subtitle: "6. Start chatting" },
+  { image: chatPageImg, alt: "Screenshot of an example chat page", subtitle: "6. Send messages" },
 ];
 
 export default function ImageSlideshow() {
@@ -51,7 +51,7 @@ export default function ImageSlideshow() {
               transform:
                 index === currentImageIndex
                   ? "translateX(-50%) translateY(0%)"
-                  : "translateX(-20%) translateY(100%) ",
+                  : "translateX(-40%) translateY(100%) ",
               opacity: index === currentImageIndex ? 1 : 0,
               left: "50%", // Center horizontally
               color: "inherit",
@@ -74,7 +74,7 @@ export default function ImageSlideshow() {
               color: "inherit",
             }}
             alt={image.alt}
-            priority
+            priority={index === 0}
           />
         </div>
       ))}
