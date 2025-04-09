@@ -1,11 +1,15 @@
 "use server";
 
-import { Resend } from "resend"; 
+import { CreateEmailResponse, Resend } from "resend"; 
 
 const resend = new Resend(process.env.RESEND_KEY);
 
+type Props = {
+  email: string;
+  message: string;
+}
 
-export async function sendEmail({email, message}: {email: string, message: string}) {
+export async function sendEmail({email, message}: Props): Promise<CreateEmailResponse> {
   if (!process.env.RESEND_KEY) {
     throw new Error("Missing Resend API key");
   }
