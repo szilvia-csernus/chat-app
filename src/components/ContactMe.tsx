@@ -67,7 +67,7 @@ export default function ContactMe() {
         } else {
           console.error("Server error while sending email:", result.error);
           setError("root.serverError", {
-            message: JSON.stringify(result.error),
+            message: JSON.stringify(result.error?.message),
           });
         }
       }
@@ -133,6 +133,11 @@ export default function ContactMe() {
                       isInvalid={!!errors.message}
                       errorMessage={errors.message?.message as string}
                     />
+                    {errors.root?.serverError && (
+                      <p className="text-danger text-sm">
+                        Error:  {errors.root.serverError.message?.slice(1, -1)}.
+                      </p>
+                    )}
                   </div>
                 </ModalBody>
                 <ModalFooter>
