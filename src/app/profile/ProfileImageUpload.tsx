@@ -34,10 +34,10 @@ export default function ProfileImageUpload({
   const onClickHandle = async () => {
     const cloudinaryImageId = getValues("cloudinaryImageId");
     if (cloudinaryImageId.length > 0) {
-      await deleteImageFromCloudinary(cloudinaryImageId);
       setValue("imageUrl", "");
       setValue("cloudinaryImageId", "");
       setUploadedImage(null);
+      await deleteImageFromCloudinary(cloudinaryImageId);
     }
   };
 
