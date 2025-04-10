@@ -1,16 +1,26 @@
 "use client";
 
 import { Button } from "@heroui/button";
-
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { signIn as socialSignIn } from "next-auth/react";
 
-export default function SocialLogins() {
+
+type Props = {
+  setLoading: (loading: boolean) => void;
+}
+
+export default function SocialLogins({setLoading}: Props) {
   const socialClick = (provider: "google" | "github" | "linkedin") => {
-    socialSignIn(provider, {
-      redirectTo: "/members",
-    });
+    setLoading(true); 
+    try {
+      socialSignIn(provider, {
+        redirectTo: "/members", 
+      });
+    } catch (error) {
+      console.error("Social sign-in failed:", error);
+      setLoading(false); 
+    }
   };
 
   return (
