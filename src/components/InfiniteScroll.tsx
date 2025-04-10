@@ -107,7 +107,9 @@ export default function InfiniteScroll({
           height: `${containerHeight}px`, // Dynamically set the height inlined
         }}
       >
-        {loadingRef.current && <Spinner size="lg" className="mt-2"/>}
+        {loadingRef.current && (
+          <Spinner size="lg" className="mt-2" variant="spinner" />
+        )}
       </div>
       {children}
     </div>
