@@ -5,15 +5,18 @@ import EditProfileDetails from "./EditProfileDetails";
 import { useAppDispatch } from "@/redux-store/hooks";
 import { useEffect } from "react";
 import { setChatVisible } from "@/redux-store/features/uiSlice";
+import { formatShortDate } from "@/lib/utils";
 
 type ProfileDetailsProps = {
   userName: string;
   profile: Profile | null;
+  email?: string | null;
 };
 
 export default function ProfileDetails({
   userName,
   profile,
+  email
 }: ProfileDetailsProps) {
   const dispatch = useAppDispatch();
 
@@ -53,8 +56,16 @@ export default function ProfileDetails({
           Date of Birth:{" "}
           <span className="font-normal">
             {profile && profile.dateOfBirth ? (
-              new Date(profile.dateOfBirth).toDateString()
+              formatShortDate(profile.dateOfBirth)
             ) : (
+              <span className="text-warning">missing</span>
+            )}
+          </span>
+        </p>
+        <p className="font-bold">
+          Email:{" "}
+          <span className="font-normal">
+            {email ? email : (
               <span className="text-warning">missing</span>
             )}
           </span>
