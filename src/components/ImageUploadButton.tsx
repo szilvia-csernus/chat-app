@@ -15,6 +15,9 @@ export default function ImageUploadButton({ onUploadImage }: ImageUploadButtonPr
     <CldUploadButton
       options={{ maxFiles: 1 }}
       onSuccess={onUploadImage}
+      onQueuesEnd={(result, { widget }) => {
+        widget.close();
+      }}
       signatureEndpoint="/api/sign-image"
       uploadPreset="chat-app"
       className={`flex items-center gap-2 bg-secondary text-white text-medium font-light rounded-lg py-2 px-4 hover:bg-secondary/70}`}
