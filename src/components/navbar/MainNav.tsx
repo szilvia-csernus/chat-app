@@ -35,8 +35,7 @@ export default function MainNav({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   // for the disclaimer modal
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [disclaimerState, setDisclaimerState] = useState(false);
-  const [disclaimerAccepted, setDisclaimerAccepted] = useState(disclaimerState);
+  const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
 
   const allUnreadMessageCount = useAppSelector(selectAllUnreadMsgCount);
 
@@ -48,9 +47,9 @@ export default function MainNav({
   useEffect(() => {
     const localStorageDisclaimerAccepted = localStorage.getItem("disclaimerAccepted");
     if (localStorageDisclaimerAccepted === "true") {
-      setDisclaimerState(true);
+      setDisclaimerAccepted(true);
     } else {
-      setDisclaimerState(false);
+      setDisclaimerAccepted(false);
     }
   }, []);
 
