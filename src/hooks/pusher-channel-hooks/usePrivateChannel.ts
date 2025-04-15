@@ -8,6 +8,7 @@ import { ChatData, Member } from "@/types";
 import {
   addMember,
   updateChatting,
+  updateMember,
   updateMemberWithDeletedStatus,
 } from "@/redux-store/features/membersSlice";
 import { addNewChat, deactivateChat } from "@/redux-store/features/chatsSlice";
@@ -65,6 +66,21 @@ export const usePrivateChannel = () => {
     [dispatch]
   );
 
+  const handleUpdateMember = useCallback(
+    async (member: Member) => {
+      // update member data in redux store on other people's devices
+      console.log("usePrivateChannel: Updating member data", member);
+      if (member) {
+        console.log(
+          "usePrivateChannel: Dispatching updateMember for updated member",
+          member
+        );
+        dispatch(updateMember(member));
+      }
+    },
+    [dispatch]
+  )
+
   // when a member is deleted from the database
   const handleDeleteMember = useCallback(
     async (memberId: string) => {
@@ -109,6 +125,13 @@ export const usePrivateChannel = () => {
           );
           handleNewMember(data.newMember);
         });
+        privateChannel.bind("update-member", (data: { member: Member }) => {
+          console.log(
+            "usePrivateChannel: Update member event received",
+            data.member
+          );
+          handleUpdateMember(data.member);
+        });
         privateChannel.bind("delete-member", (data: { memberId: string }) => {
           console.log(
             "usePrivateChannel: Member deleted event received",
@@ -136,6 +159,7 @@ export const usePrivateChannel = () => {
     handleNewChat,
     handleChatInactive,
     handleNewMember,
+    handleUpdateMember,
     handleDeleteMember,
   ]);
 
