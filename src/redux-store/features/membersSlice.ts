@@ -46,6 +46,14 @@ const membersSlice = createSlice({
         };
       }
     },
+    updateMember(state, action: PayloadAction<Member>) {
+      if (state.members[action.payload.id]) {
+        state.members[action.payload.id] = {
+          ...state.members[action.payload.id],
+          ...action.payload,
+        };
+      }
+    },
     updateChatting(
       state,
       action: PayloadAction<{ memberId: string; chatId: string }>
@@ -88,6 +96,7 @@ export const {
   addMember,
   updateMemberWithLastActiveTime,
   updateMemberWithDeletedStatus,
+  updateMember,
   updateChatting,
   setMembersOnlineStatus,
   updateOnlineStatus,
