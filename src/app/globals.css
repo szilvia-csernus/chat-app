@@ -40,6 +40,15 @@ body {
   background-image: var(--background-image);
 }
 
+/* gradient dark-transparent background for image cards */
+.bg-gradient-for-image-overlay {
+  background: linear-gradient(
+    0deg,
+    rgba(88, 99, 99, 0.3) 0%,
+    rgba(254, 254, 254, 0) 30%
+  );
+}
+
 .wide-text-shadow {
   text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
 }
