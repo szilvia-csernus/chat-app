@@ -15,6 +15,8 @@ import { Profile } from "@prisma/client";
 import { editProfileDetails } from "@/app/actions/profileActions";
 import { useRouter } from "next/navigation";
 import { EditProfileSchema, editProfileSchema } from "@/lib/schemas/editProfileSchema";
+import { useAppDispatch } from "@/redux-store/hooks";
+import { updateCurrentMemberWithName } from "@/redux-store/features/currentMemberSlice";
 
 type EditProfileDetailsProps = {
   userName: string;
@@ -41,6 +43,8 @@ export default function EditProfileDetails({
     mode: "onTouched",
   });
 
+  const dispatch = useAppDispatch();
+
   const router = useRouter();
 
   function onCancel(callback: () => void) {
@@ -49,8 +53,13 @@ export default function EditProfileDetails({
   }
 
   const onSubmit = async () => {
+    const nameValue = getValues("name");
+    const newName = nameValue === userName
     const result = await editProfileDetails(getValues());
     if (result?.status === "success") {
+      if (!newName) {
+        dispatch(updateCurrentMemberWithName({name: nameValue}));
+      }
       router.refresh();
       reset();
       onClose();
