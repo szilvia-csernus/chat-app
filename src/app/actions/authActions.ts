@@ -231,6 +231,8 @@ export async function deleteUser(id: string) {
     pusherServer.trigger("presence-chat-app", "remove_member", profileId);
 
     revalidateTag("all-members");
+    revalidateTag("all-memberIds");
+    revalidateTag("user-photo");
 
     return profileId;
   } catch (error) {
