@@ -1,13 +1,12 @@
 "use server";
 
 import { prisma } from "@/prisma";
-import {
-  photoSchema,
-} from "@/lib/schemas/completeProfileSchema";
+import { photoSchema } from "@/lib/schemas/completeProfileSchema";
 import { cloudinary } from "@/lib/cloudinary";
 import { UploadApiResponse } from "cloudinary";
 import { unstable_cache as nextCache, revalidateTag } from "next/cache";
-import { authWithError, getCurrentUserId } from "./authActions";  
+import { authWithError, getCurrentUserId } from "./authActions";
+import { triggerMemberUpdateForAllMembers } from "./memberActions";
 
 /** Fetches the photo for a given user */
 async function getPhotoByUserIdFn(userId: string) {
@@ -76,7 +75,11 @@ export async function addPhotoToDatabase(
     }
 
     revalidateTag("user-photo");
-    revalidateTag("members");
+    revalidateTag("all-members");
+
+    await triggerMemberUpdateForAllMembers({memberData: {
+      image: imageUrl,
+    }});
 
     return { status: "success", data: "Photo saved successfully." };
   } catch (error) {
@@ -144,13 +147,12 @@ export async function deletePhotoFromDatabase(cloudinaryImageId: string) {
       },
     });
 
-
     await prisma.user.update({
       where: { id: result.userId },
       data: {
         image: null,
       },
-    })
+    });
     revalidateTag("user-photo");
     revalidateTag("members");
   } catch (error) {
