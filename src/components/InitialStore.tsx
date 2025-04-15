@@ -23,6 +23,15 @@ export default function InitialStore({
   recentChats,
 }: Props) {
   const initialized = useRef(false);
+
+  // The dispatch functions below are not in a useEffect because
+  // in useEffect they would be called on client-side only,
+  // which would cause hydration errors.
+  // This way, they are executed server-side first, 
+  // then re-hydrated on the client.
+  // This is a workaround to avoid hydration errors
+  // when the user is already signed in when the app loads.
+
   const dispatch = useAppDispatch();
 
   if (initialized.current || !currentMember) return null;
