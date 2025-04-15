@@ -24,6 +24,22 @@ const currentMemberSlice = createSlice({
     setIsActive(state, action: PayloadAction<boolean>) {
       state.isActive = action.payload;
     },
+    updateCurrentMemberWithPhotoUrl(
+      state,
+      action: PayloadAction<{ photoUrl: string }>
+    ) {
+      if (state.currentMember) {
+        state.currentMember.image = action.payload.photoUrl;
+      }
+    },
+    updateCurrentMemberWithName(
+      state,
+      action: PayloadAction<{ name: string }>
+    ) {
+      if (state.currentMember) {
+        state.currentMember.name = action.payload.name;
+      }
+    },
   },
   selectors: {
     selectCurrentMember: (currentMemberState) =>
@@ -34,8 +50,13 @@ const currentMemberSlice = createSlice({
   },
 });
 
-export const { setCurrentMember, resetCurrentMember, setIsActive } =
-  currentMemberSlice.actions;
+export const {
+  setCurrentMember,
+  resetCurrentMember,
+  setIsActive,
+  updateCurrentMemberWithPhotoUrl,
+  updateCurrentMemberWithName,
+} = currentMemberSlice.actions;
 
 export const { selectCurrentMember, selectCurrentMemberId, selectIsActive } =
   currentMemberSlice.selectors;
