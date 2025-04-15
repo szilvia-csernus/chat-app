@@ -12,9 +12,12 @@ import {
   editProfileSchema,
   EditProfileSchema,
 } from "@/lib/schemas/editProfileSchema";
-import { getCurrentUserId } from "./authActions";
-import { getMemberIdsServerFn, triggerUpdateAboutNewMember } from "./memberActions";
-
+import { getCurrentUser, getCurrentUserId } from "./authActions";
+import {
+  getMemberIdsServerFn,
+  triggerMemberUpdateForAllMembers,
+  triggerUpdateAboutNewMember,
+} from "./memberActions";
 
 export async function updateProfileLastActive(profileId: string | null) {
   if (!profileId) return null;
@@ -62,7 +65,6 @@ export async function getCurrentProfileId() {
     return null;
   }
 }
-
 
 /** Returns the authenticated user's profile */
 export async function getCurrentProfile() {
@@ -160,26 +162,33 @@ export async function completeProfile(
     });
 
     revalidateTag("user-photo");
-    revalidateTag("all-members");
+    revalidateTag("all-memberIds");
 
     const memberIds = await getMemberIdsServerFn();
     const newMemberId = user.profile?.id;
     if (memberIds && newMemberId) {
-      memberIds.forEach(async (data: {id: string}) => {
+      memberIds.forEach(async (data: { id: string }) => {
         if (data.id !== newMemberId) {
-          console.log("profileActions: Triggering update for member after new signup", data.id, user.profile?.id);
+          console.log(
+            "profileActions: Triggering update for member after new signup",
+            data.id,
+            user.profile?.id
+          );
           await triggerUpdateAboutNewMember({
-          profileId: data.id,
-          newMember: {
-            id: newMemberId,
-            name: user.name || "",
-            image: user.image,
-            lastActive: (user.profile?.lastActive || new Date()).toISOString(),
-            deleted: user.profile?.deleted || false,
-            online: true,
-          }
-        });}
-      })
+            profileId: data.id,
+            newMember: {
+              id: newMemberId,
+              name: user.name || "",
+              image: user.image,
+              lastActive: (
+                user.profile?.lastActive || new Date()
+              ).toISOString(),
+              deleted: user.profile?.deleted || false,
+              online: true,
+            },
+          });
+        }
+      });
     }
 
     return { status: "success", data: user.profile?.id || "" };
@@ -193,9 +202,9 @@ export async function completeProfile(
 export async function editProfileDetails(
   data: EditProfileSchema
 ): Promise<ActionResult<string>> {
-  const currentUserId = await getCurrentUserId();
+  const currentUser = await getCurrentUser();
 
-  if (!currentUserId) return { status: "error", error: "User not found" };
+  if (!currentUser) return { status: "error", error: "User not found" };
 
   try {
     // Safe parse and validate data with Zod
@@ -204,8 +213,9 @@ export async function editProfileDetails(
       return { status: "error", error: "Invalid data" };
     }
 
+
     await prisma.user.update({
-      where: { id: currentUserId },
+      where: { id: currentUser.id },
       data: {
         name: data.name,
         profile: {
@@ -219,7 +229,15 @@ export async function editProfileDetails(
 
     revalidateTag("user");
     revalidateTag("user-photo");
-    revalidateTag("members");
+    revalidateTag("all-members");
+
+    if (currentUser.name !== data.name) {
+      await triggerMemberUpdateForAllMembers({
+        memberData: {
+          name: data.name,
+        },
+      });
+    }
 
     return { status: "success", data: "Profile updated successfully." };
   } catch (error) {
