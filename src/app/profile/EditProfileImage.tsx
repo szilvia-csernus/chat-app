@@ -19,6 +19,11 @@ import {
   useDisclosure,
 } from "@heroui/react";
 import MemberImage from "@/components/MemberImage";
+import { useAppDispatch } from "@/redux-store/hooks";
+import {
+  updateCurrentMemberWithPhotoUrl,
+} from "@/redux-store/features/currentMemberSlice";
+
 
 type EditProfileImageProps = {
   photoUrl: string;
@@ -52,15 +57,12 @@ export default function EditProfileImage({
   // State to show the preview of the uploaded image
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [isCancelling, setIsCancelling] = useState(false);
+  const dispatch = useAppDispatch();
 
-  function resetImgUploadValues() {
+  function resetAll() {
     setValue("imageUrl", "");
     setValue("cloudinaryImageId", "");
     setError("root.serverError", { message: "" });
-  }
-
-  function resetAll() {
-    resetImgUploadValues();
     setUploadedImage(null);
   }
 
@@ -75,13 +77,15 @@ export default function EditProfileImage({
   };
 
   const onSubmit = async () => {
+    const imageUrl = getValues("imageUrl");
     const result = await addPhotoToDatabase(
-      getValues("imageUrl"),
+      imageUrl,
       getValues("cloudinaryImageId")
     );
 
     if (result?.status === "success") {
       setUserHasImage(true);
+      dispatch(updateCurrentMemberWithPhotoUrl({ photoUrl: imageUrl }));
       resetAll();
       onClose();
     } else {
