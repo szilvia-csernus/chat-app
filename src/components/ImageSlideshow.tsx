@@ -9,6 +9,7 @@ import completeProfilePage2 from "@/assets/complete-profile-page-2.jpeg";
 import membersPageImg from "@/assets/members-page.jpeg";
 import newChatPageImg from "@/assets/new-chat-page.jpeg";
 import chatPageImg from "@/assets/chat-page.jpeg";
+import { MdArrowBackIosNew, MdArrowForwardIos } from "react-icons/md";
 
 const images = [
   { image: loginPage, alt: "Screenshot of the login page", subtitle: "1. Sign up" },
@@ -27,16 +28,44 @@ const images = [
 
 export default function ImageSlideshow() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex) =>
-        prevIndex < images.length - 1 ? prevIndex + 1 : 0
-      );
-    }, 5000);
+// Function to start the automatic image slideshow
+const startInterval = () => {
+  const id = setInterval(() => {
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex < images.length - 1 ? prevIndex + 1 : 0
+    );
+  }, 5000);
+  setIntervalId(id);
+};
 
-    return () => clearInterval(interval);
-  }, []);
+// Automatically start the slideshow when the component mounts
+useEffect(() => {
+  startInterval();
+  return () => {
+    if (intervalId) clearInterval(intervalId);
+  };
+}, []);
+
+// Handle manual navigations
+
+const goToPrevious = () => {
+  if (intervalId) clearInterval(intervalId); // Clear the interval
+  setCurrentImageIndex((prevIndex) =>
+    prevIndex === 0 ? images.length - 1 : prevIndex - 1
+  );
+  startInterval(); // Restart the interval
+};
+
+const goToNext = () => {
+  if (intervalId) clearInterval(intervalId); 
+  setCurrentImageIndex((prevIndex) =>
+    prevIndex === images.length - 1 ? 0 : prevIndex + 1
+  );
+  startInterval();
+};
+
 
   return (
     <div className="relative w-full h-full rounded-lg mt-3">
@@ -61,7 +90,9 @@ export default function ImageSlideshow() {
           </h2>
           <Image
             src={image.image}
-            className="w-auto h-[420px] sm:h-full object-cover absolute top-0 left-0 scale-110 -translate-x-1 transition-all duration-1000 ease-in-out 
+            className="w-auto max-w-[calc(100%-100px)] max-h-[calc(100dvh-330px)] sm:h-full sm:max-h-[600px] 
+            object-cover absolute top-0 left-0 scale-110 -translate-x-1 
+            transition-all duration-1000 ease-in-out 
             border-1 border-slate-300 dark:border-slate-700"
             style={{
               zIndex: index === currentImageIndex ? 1 : 0,
@@ -78,6 +109,37 @@ export default function ImageSlideshow() {
           />
         </div>
       ))}
+
+      {/* Navigation Buttons */}
+      <button
+        onClick={goToPrevious}
+        className="absolute -left-2 sm:left-10 top-1/3 transform -translate-y-1/2
+         bg-secondary text-white rounded-full p-2 sm:p-4 z-20 
+         hover:bg-gray-500 transition-background"
+      >
+        <MdArrowBackIosNew /> {/* Left Arrow */}
+      </button>
+      <button
+        onClick={goToNext}
+        className="absolute -right-2 sm:right-10 top-1/3 transform -translate-y-1/2 
+        bg-secondary text-white rounded-full p-2 sm:p-4 z-20 
+        hover:bg-gray-500 transition-background"
+      >
+        <MdArrowForwardIos /> {/* Right Arrow */}
+      </button>
+
+      {/* Dots */}
+      <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 flex space-x-2">
+        {images.map((_, index) => (
+          <div
+            key={index}
+            className={`w-2 h-2 rounded-full cursor-pointer transition-all duration-300 ${
+              currentImageIndex === index ? "bg-secondary" : "bg-gray-400"
+            }`}
+            onClick={() => setCurrentImageIndex(index)}
+          ></div>
+        ))}
+      </div>
     </div>
   );
 }
