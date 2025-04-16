@@ -1,6 +1,5 @@
 import Footer from "@/components/Footer";
 import ImageSlideshow from "@/components/ImageSlideshow";
-// import { HiOutlineChatBubbleLeftRight } from "react-icons/hi2";
 
 export default async function Home() {
 
@@ -21,26 +20,6 @@ export default async function Home() {
         </h1>
 
         <ImageSlideshow />
-
-        {/* 
-        <p>
-          Please note that this project was created as a coding exercise to
-          demonstrate basic messaging functionality in the browser. As such, it
-          is not intended for important conversations. Please be considerate
-          when contacting people you do not personally know.
-        </p>
-        <p>
-          Any abusive or inappropriate behavior will result in a ban. We
-          encourage everyone to be kind and professional.
-        </p>
-
-        <div className="flex-grow flex flex-col justify-center items-center">
-          <HiOutlineChatBubbleLeftRight
-            size={40}
-            className="text-secondary dark:text-teal-200"
-          />
-          <p className="my-3">Thank you!</p>
-        </div> */}
       </div>
       <Footer />
     </div>
