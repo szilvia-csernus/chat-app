@@ -112,9 +112,9 @@ export default function MemberCard({ memberId }: MemberCardProps) {
 
               <CardFooter className="z-10 py-0 px-0 absolute bottom-0 left-0 right-0 max-h-8 w-full m-0 overflow-hidden">
                 <div
-                  className={`backdrop-blur-md border-white/20 
-                  border-1 w-[calc(100%_-_2px)] text-center px-4 py-1
-                  text-white drop-shadow-md wide-text-shadow m-auto`}
+                  className="backdrop-blur-lg border-white/20 
+                  border-1 w-full text-center px-4 py-1
+                  text-white drop-shadow-sm wide-text-shadow"
                 >
                   {memberToDisplay ? memberToDisplay.name : ""}
                 </div>

@@ -44,7 +44,7 @@ body {
 .bg-gradient-for-image-overlay {
   background: linear-gradient(
     0deg,
-    rgba(88, 99, 99, 0.3) 0%,
+    rgba(73, 86, 86, 0.3) 0%,
     rgba(254, 254, 254, 0) 30%
   );
 }
