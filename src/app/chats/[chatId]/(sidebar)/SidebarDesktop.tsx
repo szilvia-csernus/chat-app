@@ -32,7 +32,7 @@ export default function SidebarDesktop() {
           color="secondary"
           variant="solid"
           radius="lg"
-          className="w-full text-white h-10"
+          className="w-full text-white h-10 text-md"
         >
           Go back
         </Button>

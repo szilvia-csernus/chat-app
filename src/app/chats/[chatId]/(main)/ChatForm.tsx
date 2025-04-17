@@ -58,7 +58,7 @@ export default function ChatForm() {
           {...register("content")}
           isInvalid={!!errors.content}
           errorMessage={errors.content?.message}
-          className="whitespace-pre-line"
+          className="whitespace-pre-line text-md"
         />
         {isValid && (
           <Button
