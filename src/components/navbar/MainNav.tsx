@@ -45,7 +45,8 @@ export default function MainNav({
   ];
 
   useEffect(() => {
-    const localStorageDisclaimerAccepted = localStorage.getItem("disclaimerAccepted");
+    const localStorageDisclaimerAccepted =
+      localStorage.getItem("disclaimerAccepted");
     if (localStorageDisclaimerAccepted === "true") {
       setDisclaimerAccepted(true);
     } else {
@@ -56,20 +57,25 @@ export default function MainNav({
   useEffect(() => {
     if (disclaimerAccepted) {
       localStorage.setItem("disclaimerAccepted", "true");
-    } 
+    }
   }, [disclaimerAccepted]);
-
 
   return (
     <>
-      {!disclaimerAccepted && isOpen && <Disclaimer isOpen={isOpen} onOpenChange={onOpenChange} setDisclaimerAccepted={setDisclaimerAccepted} />}
+      {!disclaimerAccepted && isOpen && (
+        <Disclaimer
+          isOpen={isOpen}
+          onOpenChange={onOpenChange}
+          setDisclaimerAccepted={setDisclaimerAccepted}
+        />
+      )}
       <Navbar
         isMenuOpen={isMenuOpen}
         onMenuOpenChange={setIsMenuOpen}
         maxWidth="2xl"
         className="bg-gradient-to-r from-slate-700 to-teal-700 p-2 w-full max-w-4xl mx-auto overflow-hidden scrollbar-hide"
         classNames={{
-          item: ["text-m", "text-white", "data-[active=true]:text-orange-300"],
+          item: ["text-m", "text-white", "data-[active=true]:text-accent"],
         }}
       >
         <NavbarContent className="sm:hidden relative" justify="start">
@@ -121,37 +127,37 @@ export default function MainNav({
         {currentMemberId && (
           <NavbarContent className="hidden sm:flex gap-6" justify="center">
             {menuItems.map((item, index) => (
-              <NavLink
-                key={index}
-                href={item.href}
-                label={item.label}
-                unreadCount={item.unreadCount ? item.unreadCount : null}
-                onClick={() => setIsMenuOpen(false)}
-              />
+              <li key={index}>
+                <NavLink
+                  href={item.href}
+                  label={item.label}
+                  unreadCount={item.unreadCount ? item.unreadCount : null}
+                  onClick={() => setIsMenuOpen(false)}
+                />
+              </li>
             ))}
           </NavbarContent>
         )}
         <NavbarContent justify="end">
           {/* User Menu */}
-          <>
+          <li>
             {userName ? (
               <UserMenu userName={userName} photoUrl={photoUrl} />
             ) : (
-              <>
-                <Button
-                  as={Link}
-                  href="/login"
-                  isIconOnly
-                  radius="full"
-                  variant="light"
-                  className="text-white"
-                  onPress={onOpen}
-                >
-                  <FiUser size={25} />
-                </Button>
-              </>
+              <Button
+                as={Link}
+                href="/login"
+                isIconOnly
+                radius="full"
+                variant="light"
+                className="text-white"
+                onPress={onOpen}
+                aria-label="Login"
+              >
+                <FiUser size={25} />
+              </Button>
             )}
-          </>
+          </li>
         </NavbarContent>
       </Navbar>
     </>
