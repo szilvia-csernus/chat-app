@@ -27,6 +27,7 @@ export default function Disclaimer({isOpen, onOpenChange, setDisclaimerAccepted}
         isDismissable={false}
         isKeyboardDismissDisabled={false}
         backdrop="opaque"
+        scrollBehavior="outside"
         hideCloseButton
         classNames={{
           body: "py-10",
@@ -45,32 +46,30 @@ export default function Disclaimer({isOpen, onOpenChange, setDisclaimerAccepted}
               <ModalBody>
                 <div className="space-y-4">
                   <p>
-                    Please note that this is a demo project, not intended for
-                    wide-audience or high-traffic use. As such, please treat it
-                    as a test site.
+                    Please note that this app was built for demonstration
+                    purposes, not intended for wide-audience or high-traffic
+                    use. As such, please treat it as a test site.
                   </p>
                   <p>
                     After signing up, you will be able to create a profile and
-                    send text messages to other users. You also have the option
+                    send text messages to other users. Your email and personal 
+                    data will not be publicly visible. You also have the option
                     to delete your account at any time.
                   </p>
                   <p>
-                    Nevertheless, always be kind and considerate
-                    when contacting others, especially if you do not personally
-                    know them.
+                    Nevertheless, always be kind and considerate when contacting
+                    others, especially if you do not personally know them.
                   </p>
-                  <p>
-                    Any abusive or inappropriate behavior will result in a ban.
-                    Please communicate respectfully and
-                    professionally.
-                  </p>
-
                   <div className="flex-grow flex flex-col justify-center items-center">
                     <HiOutlineChatBubbleLeftRight
                       size={40}
                       className="text-secondary dark:text-teal-200"
                     />
                   </div>
+                  <p className="italic text-center">
+                    Please communicate respectfully and professionally.
+                  </p>
+                  <p className="italic text-center">Thank you!</p>
                 </div>
               </ModalBody>
               <ModalFooter>
@@ -83,7 +82,8 @@ export default function Disclaimer({isOpen, onOpenChange, setDisclaimerAccepted}
                     onPress={() => {
                       setDisclaimerAccepted(true);
                       localStorage.setItem("disclaimerAccepted", "true");
-                      onClose()}}
+                      onClose();
+                    }}
                   >
                     OK
                   </Button>
