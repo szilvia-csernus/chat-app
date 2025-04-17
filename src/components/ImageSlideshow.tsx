@@ -3,12 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
-import loginPage from "@/assets/login-page.jpeg";
-import completeProfilePage1 from "@/assets/complete-profile-page-1.jpeg";
-import completeProfilePage2 from "@/assets/complete-profile-page-2.jpeg";
-import membersPageImg from "@/assets/members-page.jpeg";
-import newChatPageImg from "@/assets/new-chat-page.jpeg";
-import chatPageImg from "@/assets/chat-page.jpeg";
+import loginPage from "@/assets/login-page.webp";
+import completeProfilePage1 from "@/assets/complete-profile-page-1.webp";
+import completeProfilePage2 from "@/assets/complete-profile-page-2.webp";
+import membersPageImg from "@/assets/members-page.webp";
+import newChatPageImg from "@/assets/new-chat-page.webp";
+import chatPageImg from "@/assets/chat-page.webp";
 import { MdArrowBackIosNew, MdArrowForwardIos } from "react-icons/md";
 
 const images = [
