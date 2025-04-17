@@ -13,7 +13,7 @@ export default async function Home() {
           <span className="text-secondary dark:text-teal-200 text-shadow">
             Chat
           </span>
-          <span className="text-[#fb9f3c] dark:text-accent text-shadow font-extrabold">
+          <span className="text-[#fcb160] dark:text-accent text-shadow font-extrabold">
             APP
           </span>
           !

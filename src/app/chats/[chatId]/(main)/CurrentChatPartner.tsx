@@ -55,7 +55,7 @@ export default function CurrentChatPartner() {
             </div>
 
             {!online && (
-              <div className="text-xs text-gray-400 min-w-full relative">
+              <div className="text-xs text-gray-500 dark:text-gray-400 min-w-full relative">
                 Last seen: <LastSeen dateString={chatPartner.lastActive} />
               </div>
             )}

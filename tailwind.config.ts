@@ -22,7 +22,7 @@ const config: Config = {
         foreground: "var(--foreground)",
         primary: "#64748b", // slate-500
         secondary: "#0f766e", // teal-700
-        accent: "#fdba74", // orange-300
+        accent: "#fdc78d", // light orange
         success: "#2dd4bf", // teal-400
       },
     },

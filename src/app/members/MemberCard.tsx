@@ -80,17 +80,19 @@ export default function MemberCard({ memberId }: MemberCardProps) {
             />
           )}
           <Card fullWidth className="bg-inherit">
-            <div className="relative border-1 border-gray-300 
-             dark:border-gray-700 overflow-hidden rounded-2xl z-10">
+            <div
+              className="relative border-1 border-gray-300 
+             dark:border-gray-700 overflow-hidden rounded-2xl z-10"
+            >
               <MemberImage
                 memberImage={memberImageUrl}
                 memberName={memberToDisplay ? memberToDisplay.name : ""}
               />
               {/* Gradient overlay for the image */}
-              <div className="absolute top-0 left-0 right-0 bottom-0 bg-gradient-for-image-overlay" /> 
+              <div className="absolute top-0 left-0 right-0 bottom-0 bg-gradient-for-image-overlay" />
               {currentMember.id === memberId && (
                 <div className="absolute top-2 left-2 z-20">
-                  <div className="border-1 border-white p-1 rounded-2xl bg-[#fb9f3c] text-xs text-white">
+                  <div className="border-1 border-white p-1 rounded-2xl bg-secondary text-xs text-white font-semibold">
                     YOU
                   </div>
                 </div>
