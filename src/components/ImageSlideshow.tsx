@@ -161,8 +161,8 @@ export default function ImageSlideshow() {
           </h2>
           <Image
             src={image.image}
-            className="object-cover max-w-[calc(min((100%-40px),312px))] max-h-[calc(min((100dvh-300px),500px))] 
-            sm:max-w-[350px] sm:max-h-[100%] border-1 border-gray-300 dark:border-gray-700"
+            className="object-cover max-w-[calc(min((100%-40px),312px))] max-h-[calc(min((100dvh-300px),480px))] 
+            sm:max-w-[350px] sm:max-h-[calc(100dvh-350px)] border-1 border-gray-300 dark:border-gray-700"
             alt={image.alt}
             priority={index === 0}
           />
@@ -172,6 +172,7 @@ export default function ImageSlideshow() {
       {/* Navigation Buttons */}
       <button
         onClick={goToPrevious}
+        aria-label="Previous"
         className="absolute -left-2 sm:left-10 top-1/3 transform -translate-y-1/2
          bg-secondary text-white rounded-full p-2 sm:p-4 z-20 
          hover:bg-gray-500 transition-background"
@@ -180,6 +181,7 @@ export default function ImageSlideshow() {
       </button>
       <button
         onClick={goToNext}
+        aria-label="Next"
         className="absolute -right-2 sm:right-10 top-1/3 transform -translate-y-1/2 
         bg-secondary text-white rounded-full p-2 sm:p-4 z-20 
         hover:bg-gray-500 transition-background"
