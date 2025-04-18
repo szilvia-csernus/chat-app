@@ -57,14 +57,13 @@ export default function RecentChat({ chatId }: Props) {
               <div>
                 {chatPartner.deleted ? "Deleted User" : chatPartner.name}
               </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 italic">
+              <div className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
                 {lastMessage ? (
                   <>
-                    <span className="">
-                      [{lastMessageSenderName}]:
-                      {" "}
+                    <span className="italic">[{lastMessageSenderName}]: </span>
+                    <span className="font-bold italic">
+                      {lastMessageContent}
                     </span>
-                    <span className="font-bold">{lastMessageContent}</span>
                   </>
                 ) : (
                   "No message to show"
