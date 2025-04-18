@@ -164,7 +164,7 @@ export default function ImageSlideshow() {
             className="object-cover max-w-[calc(min((100%-40px),312px))] max-h-[calc(min((100dvh-300px),480px))] 
             sm:max-w-[350px] sm:max-h-[calc(100dvh-350px)] border-1 border-gray-300 dark:border-gray-700"
             alt={image.alt}
-            priority={index === 0}
+            priority={index === (0 || 4)}
           />
         </div>
       ))}
