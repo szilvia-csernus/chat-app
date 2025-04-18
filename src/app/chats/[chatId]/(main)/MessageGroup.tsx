@@ -20,7 +20,9 @@ export default function MessageGroup({ date, first }: Props) {
 
   return (
     <div className="mb-4">
-      {date && !(!allMsgsLoadedForCurrentChat && first) && (
+      {/* render the date if it's not the first one or, if all messages 
+      have been loaded render the first one too */}
+      {date && (!first || allMsgsLoadedForCurrentChat) && (
         <div className="flex justify-center mt-2 mb-4">
           <div
             className="py-1 px-12 h-[26px] text-xs font-semibold border-1 text-secondary dark:text-teal-300 rounded-full border-slate-300 dark:border-slate-500 bg-white/5"

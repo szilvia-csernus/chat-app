@@ -30,6 +30,11 @@ const chatsSlice = createSlice({
           state.chats[chat.id] = chat;
           state.chatIds.push(chat.id);
           state.populated = true;
+          // count all the messages in this chat and if it's less than
+          // 10, set allOldMsgsLoaded to true
+          if (chat.msgGroupsData.msgGroupChronList.length < 10) {
+            state.allOldMsgsLoaded[chat.id] = true;
+          }
         }
       });
       const unreadCount = action.payload.reduce(
