@@ -71,7 +71,11 @@ export default function MemberCard({ memberId }: MemberCardProps) {
   return (
     <>
       {currentMember && (
-        <div onClick={onClickHandler} className="cursor-pointer">
+        <div
+          onClick={onClickHandler}
+          className="cursor-pointer border-1 border-gray-300 
+             dark:border-gray-700 rounded-2xl overflow-hidden z-10"
+        >
           {memberToDisplay && isOpen && currentMember.id && (
             <NewChat
               member={memberToDisplay}
@@ -80,10 +84,7 @@ export default function MemberCard({ memberId }: MemberCardProps) {
             />
           )}
           <Card fullWidth className="bg-inherit">
-            <div
-              className="relative border-1 border-gray-300 
-             dark:border-gray-700 overflow-hidden rounded-2xl z-10"
-            >
+            <div className="relative">
               <MemberImage
                 memberImage={memberImageUrl}
                 memberName={memberToDisplay ? memberToDisplay.name : ""}
@@ -114,8 +115,8 @@ export default function MemberCard({ memberId }: MemberCardProps) {
 
               <CardFooter className="z-10 py-0 px-0 absolute bottom-0 left-0 right-0 max-h-8 w-full m-0 overflow-hidden">
                 <div
-                  className="backdrop-blur-lg border-white/20 
-                  border-1 w-full text-center px-4 py-1
+                  className="backdrop-blur-lg  
+                  w-full text-center px-4 py-1
                   text-white drop-shadow-sm wide-text-shadow"
                 >
                   {memberToDisplay ? memberToDisplay.name : ""}
