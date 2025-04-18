@@ -20,6 +20,7 @@ import { selectAllUnreadMsgCount } from "@/redux-store/features/chatsSlice";
 import UnreadCount from "../UnreadCount";
 import { useDisclosure } from "@heroui/react";
 import Disclaimer from "../Disclaimer";
+import useViewportReset from "@/hooks/misc-hooks/useViewportReset";
 
 type MainNavProps = {
   currentMemberId: string | null;
@@ -59,6 +60,8 @@ export default function MainNav({
       localStorage.setItem("disclaimerAccepted", "true");
     }
   }, [disclaimerAccepted]);
+
+  useViewportReset();
 
   return (
     <>
