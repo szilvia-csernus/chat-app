@@ -18,7 +18,12 @@ import {
   triggerMemberUpdateForAllMembers,
   triggerUpdateAboutNewMember,
 } from "./memberActions";
+import dayjs from "dayjs";
 
+
+// This action is triggered by the Pusher webhook, when the
+// user goes inactive. (Presence channel member_removed event)
+/** Updates the last active time of the user in the database. */
 export async function updateProfileLastActive(profileId: string | null) {
   if (!profileId) return null;
   try {
@@ -36,7 +41,7 @@ export async function updateProfileLastActive(profileId: string | null) {
         id: profileId,
       },
       data: {
-        lastActive: new Date(),
+        lastActive: dayjs.utc().toDate(),
       },
     });
   } catch (error) {
@@ -121,14 +126,14 @@ export async function completeProfile(
             create: {
               country: data.country,
               gender: data.gender,
-              dateOfBirth: new Date(data.dateOfBirth),
-              lastActive: new Date(),
+              dateOfBirth: dayjs.utc(data.dateOfBirth).toDate(),
+              lastActive: dayjs.utc().toDate(),
             },
             update: {
               country: data.country,
               gender: data.gender,
-              dateOfBirth: new Date(data.dateOfBirth),
-              lastActive: new Date(),
+              dateOfBirth: dayjs.utc(data.dateOfBirth).toDate(),
+              lastActive: dayjs.utc().toDate(),
             },
           },
         },
@@ -166,7 +171,16 @@ export async function completeProfile(
 
     const memberIds = await getMemberIdsServerFn();
     const newMemberId = user.profile?.id;
+    
     if (memberIds && newMemberId) {
+      const newMember = {
+        id: newMemberId,
+        name: user.name || "",
+        image: user.image,
+        lastActive: (user.profile?.lastActive || new Date()).toISOString(),
+        deleted: user.profile?.deleted || false,
+        online: true,
+      };
       memberIds.forEach(async (data: { id: string }) => {
         if (data.id !== newMemberId) {
           console.log(
@@ -176,16 +190,7 @@ export async function completeProfile(
           );
           await triggerUpdateAboutNewMember({
             profileId: data.id,
-            newMember: {
-              id: newMemberId,
-              name: user.name || "",
-              image: user.image,
-              lastActive: (
-                user.profile?.lastActive || new Date()
-              ).toISOString(),
-              deleted: user.profile?.deleted || false,
-              online: true,
-            },
+            newMember: newMember,
           });
         }
       });
@@ -221,7 +226,7 @@ export async function editProfileDetails(
         profile: {
           update: {
             country: data.country,
-            lastActive: new Date(),
+            lastActive: dayjs.utc().toDate(),
           },
         },
       },
