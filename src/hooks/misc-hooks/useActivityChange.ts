@@ -39,14 +39,14 @@ export function useActivityChange(): boolean {
     dispatch(setIsActive(document.visibilityState === "visible"));
   }, [dispatch]);
 
-  // const handleVisibilityChange = useCallback(() => {
-  //   console.log("visibility change event fired");
-  //   dispatch(setIsActive(document.visibilityState === "visible"));
-  // }, [dispatch]);
+  const handleVisibilityChange = useCallback(() => {
+    console.log("visibility change event fired");
+    dispatch(setIsActive(document.visibilityState === "visible"));
+  }, [dispatch]);
 
   useEffect(() => {
     // Add event listeners
-    // document.addEventListener("visibilitychange", handleVisibilityChange);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("focus", handleFocus);
     window.addEventListener("blur", handleBlur);
     window.addEventListener("online", handleOnline);
@@ -56,7 +56,7 @@ export function useActivityChange(): boolean {
 
     // Cleanup
     return () => {
-      // document.removeEventListener("visibilitychange", handleVisibilityChange);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("focus", handleFocus);
       window.removeEventListener("blur", handleBlur);
       window.removeEventListener("online", handleOnline);
@@ -66,6 +66,7 @@ export function useActivityChange(): boolean {
     };
   }, [
     dispatch,
+    handleVisibilityChange,
     handleFocus,
     handleBlur,
     handleOnline,
