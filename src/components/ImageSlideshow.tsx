@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
 import loginPage from "@/assets/login-page.webp";
@@ -54,7 +54,7 @@ export default function ImageSlideshow() {
   const touchEndX = useRef(0);
 
   // Function to start the automatic image slideshow
-  const startInterval = () => {
+  const startInterval = useCallback(() => {
     // Clear any existing interval before starting a new one
     clearUpInterval();
     const id = setInterval(() => {
@@ -63,7 +63,7 @@ export default function ImageSlideshow() {
       );
     }, 5000);
     intervalRef.current = id;
-  };
+  }, []);
 
   const clearUpInterval = () => {
     if (intervalRef.current) {
@@ -78,7 +78,7 @@ export default function ImageSlideshow() {
     return () => {
       clearUpInterval();
     };
-  }, []);
+  }, [startInterval]);
 
   // Handle manual navigations
 
