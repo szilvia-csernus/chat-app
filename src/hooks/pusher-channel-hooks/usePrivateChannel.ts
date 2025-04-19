@@ -15,6 +15,7 @@ import { addNewChat, deactivateChat } from "@/redux-store/features/chatsSlice";
 import { updateMsgsWithDeletedStatus } from "@/redux-store/features/messagesSlice";
 import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
 import { selectCurrentMemberId } from "@/redux-store/features/currentMemberSlice";
+import { formatShortDateTime } from "@/lib/utils";
 
 
 // Singleton constant is used for the channel to prevent the creation of 
@@ -60,22 +61,34 @@ export const usePrivateChannel = () => {
           "usePrivateChannel: Dispatching addMember for new member",
           newMember
         );
-        dispatch(addMember(newMember));
+        //convert lastActive time to local time
+        const lastActive = formatShortDateTime(newMember.lastActive);
+        const newMemberWithLocalTime = {
+          ...newMember,
+          lastActive: lastActive,
+        };
+        dispatch(addMember(newMemberWithLocalTime));
       }
     },
     [dispatch]
   );
 
   const handleUpdateMember = useCallback(
+    // update member data in redux store on other people's devices
     async (member: Member) => {
-      // update member data in redux store on other people's devices
-      console.log("usePrivateChannel: Updating member data", member);
-      if (member) {
+      //convert lastActive time to local time
+      const lastActive = formatShortDateTime(member.lastActive);
+      const memberWithLocalTime = {
+        ...member,
+        lastActive: lastActive,
+      };
+      console.log("usePrivateChannel: Updating member data", memberWithLocalTime);
+      if (memberWithLocalTime) {
         console.log(
           "usePrivateChannel: Dispatching updateMember for updated member",
-          member
+          memberWithLocalTime
         );
-        dispatch(updateMember(member));
+        dispatch(updateMember(memberWithLocalTime));
       }
     },
     [dispatch]
