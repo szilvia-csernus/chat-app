@@ -2,20 +2,17 @@ import { Member, SerializedMessage } from "@/types";
 import { AppThunk, RootState } from "./store";
 import {
   addNewMsgGroup,
-  // appendMsgId,
   resetChatUnreadCount,
   selectLastMsgIdByChatId,
   setAllOldMsgsLoadedForChatId,
   updateUnreadCount,
 } from "./features/chatsSlice";
 import {
-  // getAllUnreadMessageCount,
   getRecentChats,
   getUnreadMessageCount,
   loadNewMessagesAndUnreadCount,
 } from "@/app/actions/chatActions";
 import {
-  // getMoreNewMessages,
   getMoreOldMessages,
   updateMessagesWithReadStatus,
   updateReadStatus,
@@ -23,7 +20,6 @@ import {
 import { addNewMsg, selectMsgById } from "./features/messagesSlice";
 import {
   getCurrentProfile,
-  updateProfileLastActive,
 } from "@/app/actions/profileActions";
 import {
   mapProfileDataToCurrentMember,
@@ -40,6 +36,7 @@ import { usePopulateStore } from "./hooks";
 import { serializeMessage } from "@/lib/serialize";
 import { setLastMessageInFocus } from "./features/uiSlice";
 import { insertMsgIdIntoGroup } from "./utilityFunctions";
+import dayjs from "dayjs";
 
 export function fetchCurrentMember(): AppThunk {
   return async (dispatch) => {
@@ -75,11 +72,19 @@ export function fetchAllMembers(): AppThunk {
   };
 }
 
+// This function runs on all online members devices and updates the removed 
+// (i.e. removed from the online list) member's last active time, and also 
+// updates the current member's last active time in the database
 export function updateMemberLastActive(id: string): AppThunk {
   return async (dispatch) => {
-    const lastActive = new Date().toISOString();
+    const lastActive = dayjs.utc().tz(dayjs.tz.guess()).toISOString();
+    console.log("utc", dayjs.utc().toISOString())
+    console.log("tz", dayjs.utc().tz(dayjs.tz.guess()).toISOString());
     dispatch(updateMemberWithLastActiveTime({ id, lastActive }));
-    await updateProfileLastActive(id);
+    
+    // UPDATING THE CURRENT MEMBER'S LAST ACTIVE TIME IN THE DATABASE
+    // IS HANDLED BY A WEBHOOK!!
+    
   };
 }
 
@@ -99,14 +104,6 @@ export function addNewMessage(
     // Both sides: add the message to the store
     dispatch(addNewMsg(message));
     dispatch(insertMsgId(message, chatId));
-    // dispatch(
-    //   appendMsgId({
-    //     chatId,
-    //     senderId: message.senderId!,
-    //     messageId: message.id,
-    //     date,
-    //   })
-    // );
 
     // Receiver side: if chat is not visible,
     // update the unread count for that chat

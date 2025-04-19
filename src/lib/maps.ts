@@ -17,6 +17,7 @@ import {
   serializeProfileDataToMember,
   serializeMessage,
 } from "@/lib/serialize";
+import { formatShortDate } from "./utils";
 
 
 function mapProfileDataToMember(profile: ProfileData): Member {
@@ -101,14 +102,14 @@ function groupMessagesByDate(mesages: MessageData[]): MsgGroupsData {
       msgGroupChronList: []
     };
   }
-  let currentDate: string = mesages[0].createdAt.toISOString().split("T")[0];
+  let currentDate: string = formatShortDate(mesages[0].createdAt);
   const msgGroups: MsgGroups = {};
   const msgGroupChronList: string[] = [];
   let startIndex: number = 0;
   let endIndex: number = 0;
 
   mesages.forEach((message, idx) => {
-    const messageDate = message.createdAt.toISOString().split("T")[0];
+    const messageDate = formatShortDate(message.createdAt);
 
     if (messageDate !== currentDate) {
       endIndex = idx;

@@ -4,8 +4,8 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import isToday from "dayjs/plugin/isToday";
 import isYesterday from "dayjs/plugin/isYesterday";
-
-
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 
 export function handleFormServerErrors<TFieldValues extends FieldValues>(
   errorResponse: { error: string | ZodIssue[] },
@@ -36,16 +36,25 @@ export const calculateAge = (dateString: string) => {
 };
 
 
+// Extend dayjs with the required plugins
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+const getUserTimezone = () => dayjs.tz.guess();
+
 export function formatShortTime(date: Date) {
-  return dayjs(date).format("H:mm");
+  return dayjs.utc(date).tz(getUserTimezone()).format("H:mm");
 }
 
 export function formatShortDate(date: Date) {
-  return dayjs(date).format("D MMMM, YYYY");
+  return dayjs.utc(date).tz(getUserTimezone()).format("D MMMM, YYYY");
 }
 
-export function formatShortDateTime(dateString: string) {
-  return dayjs(dateString).format("dddd, D MMMM, H:mm");
+export function formatShortDateTime(date: Date | string) {
+  return dayjs
+    .utc(date)
+    .tz(getUserTimezone())
+    .format("dddd, D MMMM, H:mm");
 }
 
 export function timeAgoDate(date: string) {
@@ -53,17 +62,19 @@ export function timeAgoDate(date: string) {
   dayjs.extend(isYesterday);
   dayjs.extend(relativeTime);
 
-  if (dayjs(date).isToday()) {
+  const localDate = dayjs.utc(date).tz(getUserTimezone());
+
+  if (localDate.isToday()) {
     return "Today";
   }
-  if (dayjs(date).isYesterday()) {
+  if (localDate.isYesterday()) {
     return "Yesterday";
   }
 
-  return dayjs(date).fromNow();
+  return localDate.fromNow();
 }
 
 export function timeAgoDateTime(date: string) {
   dayjs.extend(relativeTime);
-  return dayjs(date).fromNow();
+  return dayjs.utc(date).tz(getUserTimezone()).fromNow();
 }
