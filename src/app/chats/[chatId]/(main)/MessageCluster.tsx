@@ -23,7 +23,7 @@ export default function MessageCluster({ clusterId, date }: Props) {
     selectCurrentChatMsgClusterById(state.chats, date, clusterId)
   );
   const senderId = msgCluster?.senderId;
-  const messageIds = msgCluster?.msgIds || [];
+  const messageIds = msgCluster?.msgIds || [] as string[];
   const currentMember = useAppSelector(selectCurrentMember);
   const chatPartnerId = useAppSelector(selectCurrentChatPartnerId);
   const chatPartner = useAppSelector((state) =>
@@ -70,7 +70,7 @@ export default function MessageCluster({ clusterId, date }: Props) {
           { "items-start": !isCurrentMemberSender }
         )}
       >
-        {messageIds.map((msgId) => (
+        {messageIds.map((msgId: string) => (
           <li key={msgId}>
             <Suspense key={msgId} fallback={<div>Loading message...</div>}>
               <MessageBox

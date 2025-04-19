@@ -69,7 +69,7 @@ export default function Chat({ chatId }: { chatId: string }) {
       scrollToBottom();
     }
   }); // No dependency array! This is because we want to scroll to the bottom whenever
-  // a new message is sent or received, not only when the focus changes.
+  // a new message is sent or received, not only when the lastMessageInFocus changes.
 
   useEffect(() => {
     const updateChatId = async () => {

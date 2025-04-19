@@ -35,7 +35,7 @@ export default function MessageBox({
       className={clsx("flex items-center text-secondary dark:text-teal-300")}
     >
       <div className="flex justify-end gap-2 w-full">
-        <div className="text-xs">{message?.time}</div>
+        <div className="text-xs">{message?.time || ""}</div>
         {message?.read && isCurrentMemberSender && (
           <div className="text-xs text-gray-400 italic w-auto">
             Seen &#10003;
@@ -58,7 +58,7 @@ export default function MessageBox({
               }
             )}
           >
-            {message?.content}
+            {message?.content || ""}
           </p>
           {rendermessageDetails()}
         </div>

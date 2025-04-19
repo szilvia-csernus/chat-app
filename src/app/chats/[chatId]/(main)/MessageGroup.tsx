@@ -15,7 +15,7 @@ export default function MessageGroup({ date, first }: Props) {
     selectCurrentChatMsgClustersDataByDate(state.chats, date)
   );
 
-  const msgClusterIds = messageClustersData?.clusterIdsChronList || [];
+  const msgClusterIds = messageClustersData?.clusterIdsChronList || [] as string[];
   const allMsgsLoadedForCurrentChat = useAppSelector(selectAllOldMsgsLoadedForCurrentChat);
 
   return (
@@ -33,7 +33,7 @@ export default function MessageGroup({ date, first }: Props) {
       )}
       {/* message clusters for specific date */}
       <ul>
-        {msgClusterIds.map((id) => (
+        {msgClusterIds.map((id: string) => (
           <li key={id}>
             <MessageCluster clusterId={id} date={date} />
           </li>
