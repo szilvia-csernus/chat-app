@@ -61,7 +61,7 @@ const getMembersServerFn = nextCache(
   { tags: ["all-members"] }
 );
 
-/** Returns all the members data from the server cache, inc. 
+/** Returns all the members data from the server cache, inc.
  * conversation id for the current user. */
 export async function getMembers() {
   try {
@@ -93,29 +93,66 @@ export async function getMembers() {
   }
 }
 
+/** Returns a cached member's data by its id. */
+const getLastActiveByMemberIdServerFn = (id: string) =>
+  nextCache(
+    async () => {
+      try {
+        const lastActive = await prisma.profile.findUnique({
+          where: {
+            id,
+          },
+          select: {
+            lastActive: true,
+          },
+        });
+        return lastActive;
+      } catch (error) {
+        console.log(error);
+        return null;
+      }
+    },
+    [`member-last-active:${id}`], 
+    { tags: [`member-last-active:${id}`] }
+  );
+
 /** Fetches a member's data by its id. */
-export async function getMemberById(id: string) {
+export async function getChatPartnerLastActiveByChatId(chatId: string) {
   await authWithError();
 
-  try {
-    const profile = await prisma.profile.findUnique({
-      where: {
-        id,
-      },
-      include: {
-        user: {
-          select: {
-            name: true,
-            image: true,
-          },
+  const currentProfileId = await getCurrentProfileId();
+  if (!currentProfileId) return null;
+
+  const chat = await prisma.conversation.findUnique({
+    where: {
+      id: chatId,
+    },
+    select: {
+      profiles: {
+        select: {
+          id: true,
         },
       },
-    });
-    return profile;
-  } catch (error) {
-    console.log(error);
+    },
+  });
+
+  // If the chat doesn't exist or the current user is not a participant
+  if (!chat || !chat.profiles.some((p) => p.id === currentProfileId)) {
     return null;
   }
+
+  const chatPartner = chat.profiles.find(
+    (profile) => profile.id !== currentProfileId
+  );
+
+  if (!chatPartner) return null;
+
+  const getLastActiveByMemberId = getLastActiveByMemberIdServerFn(
+    chatPartner.id
+  );
+  const profile = await getLastActiveByMemberId();
+  if (!profile) return null;
+  return profile.lastActive;
 }
 
 /** Triggers new-member function in user's private channel, to be used after
