@@ -46,7 +46,7 @@ export function formatShortTime(date: Date) {
   return dayjs.utc(date).tz(getUserTimezone()).format("H:mm");
 }
 
-export function formatShortDate(date: Date) {
+export function formatShortDate(date: Date | string) {
   return dayjs.utc(date).tz(getUserTimezone()).format("D MMMM, YYYY");
 }
 
@@ -54,7 +54,7 @@ export function formatShortDateTime(date: Date | string) {
   return dayjs
     .utc(date)
     .tz(getUserTimezone())
-    .format("dddd, D MMMM, H:mm");
+    .format("dddd, D MMMM, YYYY H:mm");
 }
 
 export function timeAgoDate(date: string) {
@@ -75,6 +75,23 @@ export function timeAgoDate(date: string) {
 }
 
 export function timeAgoDateTime(date: string) {
+  dayjs.extend(isToday);
+  dayjs.extend(isYesterday);
   dayjs.extend(relativeTime);
-  return dayjs.utc(date).tz(getUserTimezone()).fromNow();
+  
+  const localDate = dayjs.utc(date).tz(getUserTimezone());
+
+  // if date is less than an hour ago, use the display the time difference in words
+  if (dayjs().diff(localDate, 'hour') < 1) {
+    return localDate.fromNow();
+  }
+
+  if (localDate.isToday()) {
+    return `Today, ${localDate.format("H:mm")}`;
+  }
+  if (localDate.isYesterday()) {
+    return `Yesterday, ${localDate.format("H:mm")}`;
+  }
+
+  return formatShortDate(date);
 }
