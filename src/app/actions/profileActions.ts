@@ -23,6 +23,7 @@ import dayjs from "dayjs";
 
 // This action is triggered by the Pusher webhook, when the
 // user goes inactive. (Presence channel member_removed event)
+// Authentications happens in the webhook api (api/pusher-webhook).
 /** Updates the last active time of the user in the database. */
 export async function updateProfileLastActive(profileId: string | null) {
   if (!profileId) return null;
@@ -36,7 +37,7 @@ export async function updateProfileLastActive(profileId: string | null) {
       return null;
     }
 
-    return prisma.profile.update({
+    const update = prisma.profile.update({
       where: {
         id: profileId,
       },
@@ -44,6 +45,11 @@ export async function updateProfileLastActive(profileId: string | null) {
         lastActive: dayjs.utc().toDate(),
       },
     });
+
+    revalidateTag(`member-last-active:${profileId}`);
+
+    return update
+    
   } catch (error) {
     console.error(error);
     return null;
