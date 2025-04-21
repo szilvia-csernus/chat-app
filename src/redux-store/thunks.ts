@@ -73,8 +73,8 @@ export function fetchAllMembers(): AppThunk {
 }
 
 // This function runs on all online members devices and updates the removed 
-// (i.e. removed from the online list) member's last active time, and also 
-// updates the current member's last active time in the database
+// (i.e. removed from the online list) member's last active time in the 
+// client side code.
 export function updateMemberLastActive(id: string): AppThunk {
   return async (dispatch) => {
     const lastActive = dayjs.utc().tz(dayjs.tz.guess()).toISOString();
