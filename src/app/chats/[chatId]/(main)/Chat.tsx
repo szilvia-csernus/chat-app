@@ -16,17 +16,40 @@ import {
 import {
   fetchDataAndPopulateStore,
   loadMoreMessages,
+  updateMemberLastActive,
 } from "@/redux-store/thunks";
 import InfiniteScroll from "@/components/InfiniteScroll";
 import { selectLastMessageInFocus, setLastMessageInFocus } from "@/redux-store/features/uiSlice";
 import { updateLastChatId } from "@/app/actions/chatActions";
+import { formatShortDateTime } from "@/lib/utils";
+import { updateMemberWithLastActiveTime } from "@/redux-store/features/membersSlice";
 
 
-export default function Chat({ chatId }: { chatId: string }) {
+type Props = {
+  chatId: string;
+  chatPartnerLastActive: Date | null;
+}
+
+export default function Chat({ chatId, chatPartnerLastActive }: Props) {
   const populated = useAppSelector(selectChatsPopulated);
   const dispatch = useAppDispatch();
 
   const currentChat = useAppSelector((state) => selectCurrentChat(state.chats));
+
+  useEffect(() => {
+    if (currentChat && chatPartnerLastActive) {
+      // Update the last active time of the chat partner
+      const lastActive = formatShortDateTime(chatPartnerLastActive);
+      dispatch(
+        updateMemberWithLastActiveTime({
+          id: currentChat.chatPartnerId,
+          lastActive,
+        })
+      );
+    }
+  }, [currentChat, chatPartnerLastActive, dispatch]);
+  
+
   const firstLoadedMsgId = useAppSelector((state) =>
     selectFirstLoadedMsgIdByChatId(state, currentChat?.id || null)
   );
