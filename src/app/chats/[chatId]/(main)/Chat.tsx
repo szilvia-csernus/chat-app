@@ -16,7 +16,6 @@ import {
 import {
   fetchDataAndPopulateStore,
   loadMoreMessages,
-  updateMemberLastActive,
 } from "@/redux-store/thunks";
 import InfiniteScroll from "@/components/InfiniteScroll";
 import { selectLastMessageInFocus, setLastMessageInFocus } from "@/redux-store/features/uiSlice";
