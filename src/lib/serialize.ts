@@ -8,7 +8,7 @@ import {
   CurrentProfileData,
   MessageData,
 } from "@/types";
-import { formatShortDateTime, formatShortTime } from "./utils";
+import { formatShortTime } from "./utils";
 
 export function serializeMessage(message: MessageData): SerializedMessage {
   return {
@@ -18,7 +18,7 @@ export function serializeMessage(message: MessageData): SerializedMessage {
     senderId: message.senderId || null,
     read: message.read,
     deleted: message.deleted,
-    createdAt: formatShortDateTime(message.createdAt),
+    createdAt: message.createdAt.toISOString(),
   };
 }
 
