@@ -1,4 +1,4 @@
-import { timeAgoDate} from "@/lib/utils";
+import { formatShortDate, timeAgoDate} from "@/lib/utils";
 import React, { useEffect, useState } from "react";
 
 export default function MessagesDate({ dateString }: { dateString: string }) {
@@ -16,7 +16,14 @@ export default function MessagesDate({ dateString }: { dateString: string }) {
     };
 
     const updateMessagesDate = () => {
-      setMessagesDate(timeAgoDate(dateString));
+      const currentDate = new Date();
+      const timeDifference = currentDate.getTime() - new Date(dateString).getTime(); // Changed to getTime()
+      // If timeDifference is less than 7 days
+      if (timeDifference < 1000 * 60 * 60 * 24 * 7) {
+        setMessagesDate(timeAgoDate(dateString));
+      } else {
+        setMessagesDate(formatShortDate(dateString))
+      }
 
       // Schedule the next update
       const nextInterval = calculateTimeUntilMidnight();
