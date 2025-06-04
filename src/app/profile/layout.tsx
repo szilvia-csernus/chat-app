@@ -8,7 +8,7 @@ export default async function ProfilePageLayout({
 }) {
   return (
     <div className="w-full flex flex-col justify-strech">
-      <div className="h-full min-h-[calc(100dvh-160px)] md:border-1 border-slate-300 dark:border-slate-700 bg-zig-zag flex flex-grow w-full md:my-2 items-center md:items-start justify-center">
+      <div className="h-full min-h-[calc(100dvh-160px)] md:min-h-[calc(100dvh-176px)] md:border-1 border-slate-300 dark:border-slate-800 bg-zig-zag flex flex-grow w-full md:my-2 items-center md:items-start justify-center">
         {children}
       </div>
       <Footer />
