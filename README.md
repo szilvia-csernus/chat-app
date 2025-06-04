@@ -13,7 +13,7 @@ An interactive chat application built with [Next.js](https://nextjs.org). This a
 ## Features
 
 - **User Authentication**: [Auth.js](https://authjs.dev) is used for secure user authentication. OAuth Providers: Google, GitHub and LinkedIn.
-- **Real-Time Messaging**: [Pusher](https://pusher.com) is utilised for real-time message delivery.
+- **Real-Time Data Delivery**: [Pusher](https://pusher.com) is utilised for real-time messages and user updates.
 - **Responsive Design**: Fully optimized for desktop and mobile devices.
 - **User Profiles**: View, edit and delete user profiles.
 - **Dark Mode**: Seamless light and dark mode support.
