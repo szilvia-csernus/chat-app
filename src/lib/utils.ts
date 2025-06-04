@@ -47,7 +47,7 @@ export function formatShortTime(date: Date) {
 }
 
 export function formatShortDate(date: Date | string) {
-  return dayjs.utc(date).tz(getUserTimezone()).format("D MMMM, YYYY");
+  return dayjs.utc(date).tz(getUserTimezone()).format("ddd, D MMM, YYYY")
 }
 
 export function formatShortDateTime(date: Date | string) {
@@ -81,7 +81,7 @@ export function timeAgoDateTime(date: string) {
   
   const localDate = dayjs.utc(date).tz(getUserTimezone());
 
-  // if date is less than an hour ago, use the display the time difference in words
+  // if date is less than an hour ago, display the time difference in words
   if (dayjs().diff(localDate, 'hour') < 1) {
     return localDate.fromNow();
   }
