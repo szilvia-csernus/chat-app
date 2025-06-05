@@ -52,10 +52,10 @@ const chatsSlice = createSlice({
       state.allUnreadMessageCount += action.payload.unreadMessageCount;
       state.allOldMsgsLoaded[action.payload.id] = true;
     },
-    setCurrentChat(state, action: PayloadAction<ChatData>) {
-      state.chats[action.payload.id] = action.payload;
-      state.currentChatId = action.payload.id;
-    },
+    // setCurrentChat(state, action: PayloadAction<ChatData>) {
+    //   state.chats[action.payload.id] = action.payload;
+    //   state.currentChatId = action.payload.id;
+    // },
     setCurrentChatId(state, action: PayloadAction<string>) {
       state.currentChatId = action.payload;
     },
@@ -71,14 +71,19 @@ const chatsSlice = createSlice({
     addNewMsgGroup(state, action: PayloadAction<{chatId: string, dateString: string}>) {
       const chat = state.chats[action.payload.chatId];
       const msgGroupData = chat.msgGroupsData;
-      const newDate = dayjs.utc(action.payload.dateString);
+
+      
+
       // Check if the date is already in the list
       if (!msgGroupData.msgGroups[action.payload.dateString]) {
         msgGroupData.msgGroups[action.payload.dateString] = {
           msgClusters: {},
           clusterIdsChronList: [],
         };
+
         const chronList = msgGroupData.msgGroupChronList;
+        // transform dateString to a dayjs object so it can be compared
+        const newDate = dayjs.utc(action.payload.dateString);
         for (let i = 0; i < chronList.length; i++) {
           const groupDate = dayjs.utc(chronList[i]);
           // If the date is less than group date, insert it before
@@ -200,7 +205,7 @@ const chatsSlice = createSlice({
 
 export const {
   setChats,
-  setCurrentChat,
+  // setCurrentChat,
   addNewChat,
   setCurrentChatId,
   deactivateChat,
