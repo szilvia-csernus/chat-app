@@ -1,5 +1,4 @@
 "use client";
-console.log("Channels component rendered");
 
 import { usePresenceChannel } from "@/hooks/pusher-channel-hooks/usePresenceChannel";
 import { useActivityChange } from "@/hooks/misc-hooks/useActivityChange";

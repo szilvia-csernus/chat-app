@@ -18,7 +18,6 @@ import { selectActiveChatIds, selectChatsPopulated } from "@/redux-store/feature
 const chatChannelRefs: { [key: string]: Channel | null } = {};
 
 export const usePrivateChatChannels = () => {
-  console.log("Private Chat");
 
   const dispatch = useAppDispatch();
   const currentMemberId = useAppSelector(selectCurrentMemberId);
@@ -28,7 +27,6 @@ export const usePrivateChatChannels = () => {
 
   const handleNewMessage = useCallback(
     (chatId: string, message: SerializedMessage) => {
-      console.log("Handling new message", chatId);
       dispatch(addNewMessage(chatId, message));
     },
     [dispatch]
@@ -57,10 +55,6 @@ export const usePrivateChatChannels = () => {
       for (const id of activeChatIds)  {
         if (!chatChannelRefs[id] || !chatChannelRefs[id].subscribed) {
           const channel = pusherClient.subscribe(`private-chat-${id}`);
-          console.log(
-            "usePrivateChatChannel: Subscribed to chat channel",
-            `private-chat-${id}`
-          );
 
           channel.bind(
             "new-message",
@@ -68,16 +62,13 @@ export const usePrivateChatChannels = () => {
               chatId: string;
               message: SerializedMessage;
             }) => {
-              // console.log("New message received", data.chatId, data.message);
               handleNewMessage(data.chatId, data.message);
             }
           );
           channel.bind("message-read", (data: { messageId: string }) => {
-            // console.log("Message read event received", data);
             handleMessageRead(data.messageId);
           });
           channel.bind("pusher:subscription_succeeded", () => {
-            console.log("Subscription succeeded for channel", `private-chat-${id}`);
             handleRefreshChat(id);
           });
           chatChannelRefs[id] = channel;
@@ -89,7 +80,6 @@ export const usePrivateChatChannels = () => {
       if (!activeChatIds.includes(id)) {
         const channel = chatChannelRefs[id];
         if (channel) {
-          console.log("Unsubscribed from channel", `private-chat-${id}`);
           channel.unbind();
           pusherClient.unsubscribe(`private-chat-${id}`);
           chatChannelRefs[id] = null;
@@ -101,7 +91,6 @@ export const usePrivateChatChannels = () => {
       activeChatIds.forEach((id) => {
         const channel = chatChannelRefs[id];
         if (channel) {
-          console.log("Unsubscribed from channel", `private-chat-${id}`);
           channel.unbind();
           pusherClient.unsubscribe(`private-chat-${id}`);
           chatChannelRefs[id] = null;

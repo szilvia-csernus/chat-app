@@ -43,10 +43,6 @@ export function fetchCurrentMember(): AppThunk {
     const currentProfile = await getCurrentProfile();
     const currentMember =
       currentProfile && mapProfileDataToCurrentMember(currentProfile);
-    console.log(
-      "currentMemberSlice: Current member in fetchCurrentMember",
-      !!currentMember
-    );
     if (currentMember) {
       dispatch(setCurrentMember(currentMember));
       dispatch(addMember(currentMember as Member));
@@ -58,14 +54,9 @@ export function fetchAllMembers(): AppThunk {
   return async (dispatch, getState) => {
     const state = getState();
     const currentMember = state.currentMember.currentMember;
-    console.log(
-      "membersSlice: Current member in fetchAllMembers",
-      !!currentMember
-    );
     const membersData = (await getMembers()) || null;
     const members = membersData && mapProfilesDataToMembers(membersData);
 
-    console.log("membersSlice: Members in fetchAllMembers", members);
     if (currentMember && members) {
       dispatch(setMembers(members));
     }
@@ -78,8 +69,6 @@ export function fetchAllMembers(): AppThunk {
 export function updateMemberLastActive(id: string): AppThunk {
   return async (dispatch) => {
     const lastActive = dayjs.utc().tz(dayjs.tz.guess()).toISOString();
-    console.log("utc", dayjs.utc().toISOString())
-    console.log("tz", dayjs.utc().tz(dayjs.tz.guess()).toISOString());
     dispatch(updateMemberWithLastActiveTime({ id, lastActive }));
     
     // UPDATING THE CURRENT MEMBER'S LAST ACTIVE TIME IN THE DATABASE
@@ -95,11 +84,8 @@ export function addNewMessage(
   return async (dispatch, getState) => {
     const state: RootState = getState();
     const currentChatId = state.chats.currentChatId;
-    console.log("addNewMessage: Current chat id", currentChatId);
     const chatVisible = state.ui.chatVisible;
-    console.log("addNewMessage: Chat visible", chatVisible);
     const currentMemberId = state.currentMember.currentMember?.id;
-    console.log("addNewMessage: Current member id", currentMemberId);
 
     // Both sides: add the message to the store
     dispatch(addNewMsg(message));
@@ -109,7 +95,6 @@ export function addNewMessage(
     // update the unread count for that chat
     if (!chatVisible && message.senderId !== currentMemberId) {
       const unreadCount = await getUnreadMessageCount(chatId);
-      console.log("addNewMessage: Updating unread count", unreadCount);
       if (unreadCount !== null) {
         dispatch(updateUnreadCount({ chatId, count: unreadCount }));
       }
@@ -122,17 +107,12 @@ export function addNewMessage(
       currentChatId === chatId &&
       message.senderId !== currentMemberId
     ) {
-      console.log(
-        "addNewMessage: Updating read status in the database for message",
-        message.id
-      );
       await updateReadStatus(message.id);
     }
 
     // Both sides: if the message is for the current chat and the chat is visible,
     // scroll the new message into view
     if (chatVisible && currentChatId === chatId) {
-      console.log("addNewMessage: Scrolling into view for message");
       dispatch(setLastMessageInFocus(true));
     }
   };
@@ -178,24 +158,16 @@ export function loadMoreMessages(
   oldestMsgId: string
 ): AppThunk {
   return async (dispatch, getState) => {
-    console.log(
-      "loadMoreMessages called with chatId:",
-      chatId,
-      "and oldestMsgId:",
-      oldestMsgId
-    );
 
     if (!chatId) return null;
 
     const messages = await getMoreOldMessages(chatId, oldestMsgId);
-    console.log("Messages fetched in loadMoreOldMessages:", messages);
 
     if (!messages) {
       return null;
     }
 
     if (messages.length === 0) {
-      console.log("No more messages to load.");
       return null;
     }
 
@@ -221,7 +193,6 @@ export function loadMoreMessages(
 
 export function refreshChat(chatId: string | null): AppThunk {
   return async (dispatch, getState) => {
-    console.log("refreshWidhNewMessages called with chatId:", chatId);
 
     if (!chatId) return null;
 
@@ -230,15 +201,11 @@ export function refreshChat(chatId: string | null): AppThunk {
     const lastMsgDate =
       selectMsgById(state.messages, latestMsgId)?.createdAt || null;
 
-    console.log("Last message date:", lastMsgDate);
-
     const result = await loadNewMessagesAndUnreadCount(chatId, lastMsgDate);
     if (!result) {
-      console.log("No new messages or unread count available.");
       return null;
     }
     const { messages, unreadCount } = result;
-    console.log("Messages fetched in loadMoreNewMessages:", messages);
 
     if (!messages) {
       return null;

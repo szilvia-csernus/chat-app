@@ -20,7 +20,6 @@ import { selectCurrentChatId } from "@/redux-store/features/chatsSlice";
 import { selectChatVisible } from "@/redux-store/features/uiSlice";
 
 export const usePresenceChannel = () => {
-  console.log("Presence");
 
   // Ref is used for the channel to prevent the creation of multiple channels
   //  when the component re-renders (Singleton would be equally valid)
@@ -34,16 +33,9 @@ export const usePresenceChannel = () => {
 
   const handleSetMembers = useCallback(
     (memberIds: string[]) => {
-      console.log("Setting members' online list", memberIds);
       dispatch(setMembersOnlineStatus({ memberIds }));
       // if the member has a chat open, update the messages' read status
       // and reset the unread message count
-      console.log(
-        "usePresenceChannel: currentChatId",
-        currentChatId,
-        "chatVisible",
-        chatVisible
-      );
       if (currentChatId && chatVisible) {
         dispatch(resetUnreadMsgCount(currentChatId));
       }
@@ -53,7 +45,6 @@ export const usePresenceChannel = () => {
 
   const handleAddMember = useCallback(
     async (memberId: string) => {
-      console.log("Adding member to online list", memberId);
       // add member to online members' list
       dispatch(updateOnlineStatus({ memberId, online: true }));
     },
@@ -64,14 +55,7 @@ export const usePresenceChannel = () => {
   const handleRemoveMember = useCallback(
     async (memberId: string | null) => {
       if (!memberId) return;
-
-      console.log(
-        "usePresenceChannel: Removing member from online list",
-        memberId
-      );
       dispatch(updateOnlineStatus({ memberId, online: false }));
-
-      console.log("usePresenceChannel: Updating chat partner last active");
       dispatch(updateMemberLastActive(memberId));
     },
     [dispatch]
@@ -79,11 +63,9 @@ export const usePresenceChannel = () => {
 
   const subscribeToChannel = useCallback(() => {
     if (presenceChannelRef.current && presenceChannelRef.current.subscribed) {
-      console.log("Already subscribed to presence channel.");
       return;
     }
     if (!presenceChannelRef.current) {
-      console.log("Subscribing to presence channel...");
       presenceChannelRef.current = pusherClient.subscribe(
         "presence-chat-app"
       ) as PresenceChannel;
@@ -124,7 +106,6 @@ export const usePresenceChannel = () => {
   }, [handleSetMembers, handleAddMember, handleRemoveMember]);
 
   const unsubscribeFromChannel = useCallback(() => {
-    console.log("Unsubscribing from presence channel...");
     if (presenceChannelRef.current && presenceChannelRef.current.subscribed) {
       presenceChannelRef.current.unbind();
       presenceChannelRef.current.unsubscribe();

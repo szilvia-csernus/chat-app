@@ -7,40 +7,32 @@ import { useCallback, useEffect } from "react";
 export function useActivityChange(): boolean {
   const dispatch = useAppDispatch();
   const isActive = useAppSelector(selectIsActive);
-  console.log("useActivityChange: activity state", isActive);
 
   const handleFocus = useCallback(() => {
-    console.log("focus event fired");
     dispatch(setIsActive(true));
   }, [dispatch]);
 
   const handleBlur = useCallback(() => {
-    console.log("blur event fired");
     dispatch(setIsActive(false));
   }, [dispatch]);
 
   const handleOnline = useCallback(() => {
-    console.log("online event fired");
     dispatch(setIsActive(document.visibilityState === "visible"));
   }, [dispatch]);
 
   const handleOffline = useCallback(() => {
-    console.log("offline event fired");
     dispatch(setIsActive(false));
   }, [dispatch]);
 
   const handleFreeze = useCallback(() => {
-    console.log("freeze event fired");
     dispatch(setIsActive(false));
   }, [dispatch]);
 
   const handleResume = useCallback(() => {
-    console.log("resume event fired");
     dispatch(setIsActive(document.visibilityState === "visible"));
   }, [dispatch]);
 
   const handleVisibilityChange = useCallback(() => {
-    console.log("visibility change event fired");
     dispatch(setIsActive(document.visibilityState === "visible"));
   }, [dispatch]);
 
