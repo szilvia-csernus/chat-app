@@ -17,7 +17,7 @@ import {
   serializeProfileDataToMember,
   serializeMessage,
 } from "@/lib/serialize";
-import { formatShortDate } from "./utils";
+import { formatDateString } from "./utils";
 
 
 function mapProfileDataToMember(profile: ProfileData): Member {
@@ -95,26 +95,25 @@ function clusterMessagesBySender(messages: MessageData[]): MsgClustersData {
   return { msgClusters, clusterIdsChronList: clusterIds };
 }
 
-function groupMessagesByDate(mesages: MessageData[]): MsgGroupsData {
-  if (mesages.length === 0) {
+function groupMessagesByDate(messages: MessageData[]): MsgGroupsData {
+  if (messages.length === 0) {
     return {
       msgGroups: {} as MsgGroups,
       msgGroupChronList: []
     };
   }
-  let currentDate: string = formatShortDate(mesages[0].createdAt);
+  let currentDate: string = formatDateString(messages[0].createdAt);
   const msgGroups: MsgGroups = {};
   const msgGroupChronList: string[] = [];
   let startIndex: number = 0;
   let endIndex: number = 0;
 
-  mesages.forEach((message, idx) => {
-    const messageDate = formatShortDate(message.createdAt);
-
+  messages.forEach((message, idx) => {
+    const messageDate = formatDateString(message.createdAt);
     if (messageDate !== currentDate) {
       endIndex = idx;
       const msgClusterData = clusterMessagesBySender(
-        mesages.slice(startIndex, endIndex)
+        messages.slice(startIndex, endIndex)
       );
       msgGroups[currentDate] = msgClusterData
       msgGroupChronList.push(currentDate);
@@ -122,11 +121,12 @@ function groupMessagesByDate(mesages: MessageData[]): MsgGroupsData {
       startIndex = idx;
       currentDate = messageDate;
     }
-  });
+  }
+);
 
   // Add the last group
   const msgClusterData = clusterMessagesBySender(
-    mesages.slice(startIndex)
+    messages.slice(startIndex)
   );
   msgGroups[currentDate] = msgClusterData;
   msgGroupChronList.push(currentDate);
