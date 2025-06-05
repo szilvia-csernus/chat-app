@@ -46,6 +46,10 @@ export function formatShortTime(date: Date) {
   return dayjs.utc(date).tz(getUserTimezone()).format("H:mm");
 }
 
+export function formatDateString(date: Date) {
+  return dayjs.utc(date).tz(getUserTimezone()).format("YYYY-MM-DD");
+}
+
 export function formatShortDate(date: Date | string) {
   return dayjs.utc(date).tz(getUserTimezone()).format("ddd, D MMM, YYYY")
 }
