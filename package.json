@@ -16,7 +16,7 @@
     "@heroui/react": "^2.7.5",
     "@hookform/resolvers": "^3.9.0",
     "@reduxjs/toolkit": "^2.6.1",
-    "cloudinary": "^2.6.0",
+    "cloudinary": "^2.7.0",
     "dayjs": "^1.11.13",
     "framer-motion": "^11.11.9",
     "next": "^15.2.4",
