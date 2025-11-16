@@ -122,7 +122,6 @@ export default function ImageSlideshow() {
 
     const deltaX = touchStartX.current - touchEndX.current; // Calculate the horizontal distance
 
-
     // Only trigger navigation if the swipe distance is greater than 50px
     if (Math.abs(deltaX) > 50) {
       if (deltaX > 0) {
@@ -133,6 +132,11 @@ export default function ImageSlideshow() {
         goToPrevious();
       }
     }
+  };
+
+  // Transition properties for smooth opacity changes
+  const transitionStyle = {
+    transition: "opacity 1s ease-in-out, transform 1s ease-in-out",
   };
 
   return (
@@ -148,13 +152,14 @@ export default function ImageSlideshow() {
           <div
             key={currentImageIndex - 2}
             className={`absolute -top-12 scale-110 -translate-x-1 translate-y-1/2
-              transition-all duration-1000 ease-linear z-90 
+              z-90 
               w-full max-w-[calc(100dvw-100px)] h-full sm:min-w-max sm:h-full sm:max-h-[600px]
               font-semibold text-md
               mt-2
               flex flex-col items-center
               `}
             style={{
+              ...transitionStyle,
               zIndex: 1,
               transform: "translateX(-93%) scale(0.2)",
               opacity: 0.3,
@@ -179,13 +184,14 @@ export default function ImageSlideshow() {
           <div
             key={currentImageIndex - 1}
             className={`absolute -top-12 scale-110 -translate-x-1 translate-y-1/2
-              transition-all duration-1000 ease-linear z-90 
+              z-90 
               w-full max-w-[calc(100dvw-100px)] h-full sm:min-w-max sm:h-full sm:max-h-[600px]
               font-semibold text-md
               mt-2
               flex flex-col items-center
               `}
             style={{
+              ...transitionStyle,
               zIndex: 2,
               transform: "translateX(-75%) scale(0.7)",
               opacity: 0.6,
@@ -239,13 +245,14 @@ export default function ImageSlideshow() {
           <div
             key={currentImageIndex + 1}
             className={`absolute -top-12 scale-110 -translate-x-1 translate-y-1
-              transition-all duration-1000 ease-linear z-90 
+              z-90 
               w-full max-w-[calc(100dvw-100px)] h-full sm:min-w-max sm:h-full sm:max-h-[600px]
               font-semibold text-md
               mt-2
               flex flex-col items-center
               `}
             style={{
+              ...transitionStyle,
               zIndex: 2,
               transform: "translateX(-20%) scale(0.7)",
               opacity: 0.6,
@@ -270,13 +277,14 @@ export default function ImageSlideshow() {
           <div
             key={currentImageIndex + 2}
             className={`absolute -top-12 scale-110 -translate-x-1 translate-y-1
-              transition-all duration-1000 ease-linear z-90 
+              z-90 
               w-full max-w-[calc(100dvw-100px)] h-full sm:min-w-max sm:h-full sm:max-h-[600px]
               font-semibold text-md
               mt-2
               flex flex-col items-center
               `}
             style={{
+              ...transitionStyle,
               zIndex: 1,
               transform: "translateX(-5%) scale(0.2)",
               opacity: 0.3,
