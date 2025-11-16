@@ -1,14 +1,15 @@
 import PusherServer from "pusher";
 import PusherClient from "pusher-js";
 
-/* eslint-disable */
-declare global {
-  var pusherServerInstance: PusherServer | undefined;
-  var pusherClientInstance: PusherClient | undefined;
-}
+type PusherGlobal = typeof globalThis & {
+  pusherServerInstance?: PusherServer;
+  pusherClientInstance?: PusherClient;
+};
 
-if (!global.pusherServerInstance) {
-  global.pusherServerInstance = new PusherServer({
+const globalForPusher = globalThis as PusherGlobal;
+
+if (!globalForPusher.pusherServerInstance) {
+  globalForPusher.pusherServerInstance = new PusherServer({
     appId: process.env.PUSHER_APP_ID!,
     key: process.env.NEXT_PUBLIC_PUSHER_APP_KEY!,
     secret: process.env.PUSHER_APP_SECRET!,
@@ -17,8 +18,8 @@ if (!global.pusherServerInstance) {
   });
 }
 
-if (!global.pusherClientInstance) {
-  global.pusherClientInstance = new PusherClient(
+if (!globalForPusher.pusherClientInstance) {
+  globalForPusher.pusherClientInstance = new PusherClient(
     process.env.NEXT_PUBLIC_PUSHER_APP_KEY!,
     {
       channelAuthorization: {
@@ -30,8 +31,8 @@ if (!global.pusherClientInstance) {
   );
 }
 
-export const pusherServer = global.pusherServerInstance;
-export const pusherClient = global.pusherClientInstance;
+export const pusherServer = globalForPusher.pusherServerInstance;
+export const pusherClient = globalForPusher.pusherClientInstance;
 
 // this code makes sure that during development, hot-module-reload would not repeatedly create
 // new instances. This way, we can avoid overcharge by having only one instance for
