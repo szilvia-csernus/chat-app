@@ -31,8 +31,8 @@ An interactive chat application built with [Next.js](https://nextjs.org). This a
 - **Authentication**: [Auth.js @v5(beta)](https://authjs.dev) for secure user authentication.
 - **Real-Time Messaging**: [Pusher](https://pusher.com)
 - **Front-End State Management**: [Redux RTK](https://redux.js.org) for comprehensive state management.
-- **Image processing and storage**: [Cloudinary](https://cloudinary.com) for image storage, [Vercel](https://vercel.com) for deployment.
-- **Deployment**: [Vercel](https://vercel.com), [Neon](https://neon.tech) for database hosting.
+- **Image processing and storage**: [Cloudinary](https://cloudinary.com)
+- **Deployment**: [Vercel](https://vercel.com), [Neon](https://neon.tech)
 
 ---
 
